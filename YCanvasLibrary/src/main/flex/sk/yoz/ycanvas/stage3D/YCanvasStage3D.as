@@ -1,5 +1,6 @@
 package sk.yoz.ycanvas.stage3D
 {
+    import flash.display.BitmapData;
     import flash.display.Stage;
     import flash.display.Stage3D;
     import flash.events.Event;
@@ -7,7 +8,9 @@ package sk.yoz.ycanvas.stage3D
     
     import sk.yoz.ycanvas.AbstractYCanvas;
     
+    import starling.core.RenderSupport;
     import starling.core.Starling;
+    import starling.display.Stage;
     
     /**
     * A Stage3D implementation of canvas based on Starling.
@@ -29,8 +32,8 @@ package sk.yoz.ycanvas.stage3D
         * 
         * @param initCallback A function to be called when context is created.
         */
-        public function YCanvasStage3D(stage:Stage, stage3D:Stage3D, 
-            viewPort:Rectangle, initCallback:Function)
+        public function YCanvasStage3D(stage:flash.display.Stage, 
+            stage3D:Stage3D, viewPort:Rectangle, initCallback:Function)
         {
             super(viewPort);
             this.initCallback = initCallback;
@@ -62,6 +65,24 @@ package sk.yoz.ycanvas.stage3D
             
             if(engine)
                 engine.viewPort = value;
+        }
+        
+        /**
+         * @inheritDoc
+         */
+        override public function get bitmapData():BitmapData
+        {
+            var width:uint = viewPort.width;
+            var height:uint = viewPort.height;
+            var stage:starling.display.Stage = engine.stage;
+            var support:RenderSupport = new RenderSupport();
+            support.clear(stage.color, 1.0);
+            support.setOrthographicProjection(width, height);
+            engine.stage.render(support, 1.0);
+            
+            var result:BitmapData = new BitmapData(width, height, true);
+            engine.context.drawToBitmapData(result);
+            return result;
         }
         
         /**

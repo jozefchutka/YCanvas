@@ -1,5 +1,7 @@
 package sk.yoz.ycanvas.utils
 {
+    import flash.geom.Point;
+    
     import sk.yoz.ycanvas.AbstractYCanvas;
     import sk.yoz.ycanvas.interfaces.ILayer;
     import sk.yoz.ycanvas.interfaces.IPartition;
@@ -108,6 +110,30 @@ package sk.yoz.ycanvas.utils
         }
         
         /**
+        * Returns partitions on all levels overlaping specified point.
+        */
+        public static function getAt(canvas:AbstractYCanvas, point:Point):
+            Vector.<IPartition>
+        {
+            var layers:Vector.<ILayer> = canvas.layers;
+            var layer:ILayer, partition:IPartition;
+            var partitions:Vector.<IPartition> = new Vector.<IPartition>();
+            var partitionsLength:uint;
+            for(var i:uint = 0, length:uint = layers.length; i < length; i++)
+            {
+                layer = layers[i];
+                partitionsLength = layer.partitions.length;
+                for(var j:uint = 0; j < partitionsLength; j++)
+                {
+                    partition = layer.partitions[j];
+                    if(isOverlapingPoint(point, layer, partition))
+                        partitions.push(partition);
+                }
+            }
+            return partitions;
+        }
+        
+        /**
         * Tests whether partition on one layer overlaps another partition
         * in a different layer.
         */
@@ -133,6 +159,20 @@ package sk.yoz.ycanvas.utils
                 && lowPartition.y >= upPartition.y 
                 && lowPartition.y < upPartition.y 
                     + upPartition.expectedHeight * upLayer.level;
+        }
+        
+        /**
+        * Tests whether partition on a layer overlaps a specific point.
+        */
+        private static function isOverlapingPoint(point:Point, layer:ILayer, 
+            partition:IPartition):Boolean
+        {
+            return point.x >= partition.x
+                && point.x < partition.x 
+                + partition.expectedWidth * layer.level
+                && point.y >= partition.y 
+                && point.y < partition.y 
+                + partition.expectedHeight * layer.level;
         }
         
         /**

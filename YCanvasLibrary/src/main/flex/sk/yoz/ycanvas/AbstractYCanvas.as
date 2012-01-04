@@ -1,5 +1,6 @@
 package sk.yoz.ycanvas
 {
+    import flash.display.BitmapData;
     import flash.display.DisplayObject;
     import flash.geom.Matrix;
     import flash.geom.Point;
@@ -161,6 +162,14 @@ package sk.yoz.ycanvas
             cachedConversionMatrix = 
                 getConversionMatrix(center, scale, rotation, viewPort);
             return cachedConversionMatrix;
+        }
+        
+        /**
+        * Returns screenshot for actual viewPort.
+        */
+        public function get bitmapData():BitmapData
+        {
+            throw new Error("This method must be overriden.");
         }
         
         /**
