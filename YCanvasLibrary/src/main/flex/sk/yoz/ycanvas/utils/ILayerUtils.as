@@ -6,7 +6,7 @@ package sk.yoz.ycanvas.utils
     /**
     * An utility class for layer livecycle optimization.
     */
-    public class LayerOptimizationUtils
+    public class ILayerUtils
     {
         /**
         * Disposes all layers from a canvas layer list based on z index.

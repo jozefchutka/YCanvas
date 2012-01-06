@@ -5,19 +5,96 @@ package sk.yoz.ycanvas.utils
     import sk.yoz.ycanvas.AbstractYCanvas;
     import sk.yoz.ycanvas.interfaces.ILayer;
     import sk.yoz.ycanvas.interfaces.IPartition;
+    import sk.yoz.ycanvas.valueObjects.LayerPartitions;
     
     /**
      * An utility class for partition livecycle optimization.
      */
-    public class PartitionOptimizationUtils
+    public class IPartitionUtils
     {
         private static const OVERLAP_ALL:uint = 0;
         private static const OVERLAP_LOWER:uint = 1;
         private static const OVERLAP_UPPER:uint = 2;
         
         /**
-        * Disposes all partitions on all layers that does not hit viewPort.
+        * Returns partitions in other layers that overlaps the partition.
+        * 
+        * @param layer A layer containing the partition.
+        * @param partition A partition to be tested.
         */
+        public static function getOverlaping(canvas:AbstractYCanvas, 
+            layer:ILayer, partition:IPartition):Vector.<LayerPartitions>
+        {
+            return getOverlapingByMode(canvas, layer, partition, OVERLAP_ALL);
+        }
+        
+        /**
+         * Returns partitions in lower layers that overlaps the partition.
+         * 
+         * @param layer A layer containing the partition.
+         * @param partition A partition to be tested.
+         */
+        public static function getLower(canvas:AbstractYCanvas, layer:ILayer, 
+            partition:IPartition):Vector.<LayerPartitions>
+        {
+            return getOverlapingByMode(canvas, layer, partition, OVERLAP_LOWER);
+        }
+        
+        /**
+         * Returns partitions in upper layers that overlaps the partition.
+         * 
+         * @param layer A layer containing the partition.
+         * @param partition A partition to be tested.
+         */
+        public static function getUpper(canvas:AbstractYCanvas, layer:ILayer, 
+            partition:IPartition):Vector.<LayerPartitions>
+        {
+            return getOverlapingByMode(canvas, layer, partition, OVERLAP_UPPER);
+        }
+        
+        /**
+        * Returns partitions in layers that overlaps (based on mode) a 
+        * custom partition in a layer.
+        */
+        private static  function getOverlapingByMode(canvas:AbstractYCanvas,
+            layer:ILayer, partition:IPartition, mode:uint):
+            Vector.<LayerPartitions>
+        {
+            var layers:Vector.<ILayer> = canvas.layers;
+            var iLayer:ILayer, iLength:uint, iPartition:IPartition;
+            var iPartitions:Vector.<IPartition>;
+            var isLower:Boolean = mode == OVERLAP_LOWER;
+            var isUpper:Boolean = mode == OVERLAP_UPPER;
+            var list:Vector.<LayerPartitions> = new Vector.<LayerPartitions>();
+            var layerPartitions:LayerPartitions;
+            for(var i:uint = 0, length:uint = layers.length; i < length; i++)
+            {
+                iLayer = layers[i];
+                if(iLayer == layer
+                    || (isLower && iLayer.level > layer.level)
+                    || (isUpper && iLayer.level < layer.level))
+                    continue;
+                
+                iPartitions = iLayer.partitions.concat();
+                iLength = iPartitions.length;
+                layerPartitions = new LayerPartitions;
+                layerPartitions.layer = iLayer;
+                layerPartitions.partitions = new Vector.<IPartition>();
+                list.push(layerPartitions);
+                
+                for(var j:uint = 0; j < iLength; j++)
+                {
+                    iPartition = iPartitions[j];
+                    if(isOverlaping(layer, partition, iLayer, iPartition))
+                        layerPartitions.partitions.push(iPartition);
+                }
+            }
+            return list;
+        }
+        
+        /**
+         * Disposes all partitions on all layers that does not hit viewPort.
+         */
         public static function disposeInvisible(canvas:AbstractYCanvas):void
         {
             var layers:Vector.<ILayer> = canvas.layers;
@@ -31,46 +108,9 @@ package sk.yoz.ycanvas.utils
         }
         
         /**
-        * Disposes partitions in other layers that overlaps the partition.
-        * 
-        * @param layer A layer containing the partition.
-        * @param partition A partition to be tested.
-        */
-        public static function disposeOverlaping(
-            canvas:AbstractYCanvas, layer:ILayer, partition:IPartition):void
-        {
-            disposeOverlapingByMode(canvas, layer, partition, OVERLAP_ALL);
-        }
-        
-        /**
-         * Disposes partitions in lower layers that overlaps the partition.
-         * 
-         * @param layer A layer containing the partition.
-         * @param partition A partition to be tested.
-         */
-        public static function disposeLower(
-            canvas:AbstractYCanvas, layer:ILayer, partition:IPartition):void
-        {
-            disposeOverlapingByMode(canvas, layer, partition, OVERLAP_LOWER);
-        }
-        
-        /**
-         * Disposes partitions in upper layers that overlaps the partition.
-         * 
-         * @param layer A layer containing the partition.
-         * @param partition A partition to be tested.
-         */
-        public static function disposeUpper(
-            canvas:AbstractYCanvas, layer:ILayer, partition:IPartition):void
-        {
-            disposeOverlapingByMode(canvas, layer, partition, OVERLAP_UPPER);
-        }
-        
-        
-        /**
         * Disposes a list of partitions in layer.
         */
-        private static function dispose(canvas:AbstractYCanvas, layer:ILayer, 
+        public static function dispose(canvas:AbstractYCanvas, layer:ILayer, 
             partitions:Vector.<IPartition>):void
         {
             var length:uint = partitions.length;
@@ -79,58 +119,46 @@ package sk.yoz.ycanvas.utils
         }
         
         /**
-        * Disposes partitions in layers (based on mode) that overlaps the 
-        * partition.
+        * Disposes a list of LayerPartitions.
         */
-        private static  function disposeOverlapingByMode(canvas:AbstractYCanvas,
-            layer:ILayer, partition:IPartition, mode:uint):void
+        public static function diposeLayerPartitionsList(canvas:AbstractYCanvas,
+            layerPartitions:Vector.<LayerPartitions>):void
         {
-            var layers:Vector.<ILayer> = canvas.layers;
-            var iLayer:ILayer, iLength:uint, iPartition:IPartition;
-            var iPartitions:Vector.<IPartition>;
-            var isLower:Boolean = mode == OVERLAP_LOWER;
-            var isUpper:Boolean = mode == OVERLAP_UPPER;
-            for(var i:uint = 0, length:uint = layers.length; i < length; i++)
-            {
-                iLayer = layers[i];
-                if(iLayer == layer
-                    || (isLower && iLayer.level > layer.level)
-                    || (isUpper && iLayer.level < layer.level))
-                    continue;
-                
-                iPartitions = iLayer.partitions.concat();
-                iLength = iPartitions.length;
-                for(var j:uint = 0; j < iLength; j++)
-                {
-                    iPartition = iPartitions[j];
-                    if(isOverlaping(layer, partition, iLayer, iPartition))
-                        canvas.disposePartition(iLayer, iPartition);
-                }
-            }
+            var length:uint = layerPartitions.length;
+            for(var i:uint = 0; i < length; i++)
+                dispose(canvas, layerPartitions[i].layer, 
+                    layerPartitions[i].partitions);
         }
         
         /**
         * Returns partitions on all levels overlaping specified point.
         */
         public static function getAt(canvas:AbstractYCanvas, point:Point):
-            Vector.<IPartition>
+            Vector.<LayerPartitions>
         {
             var layers:Vector.<ILayer> = canvas.layers;
             var layer:ILayer, partition:IPartition;
-            var partitions:Vector.<IPartition> = new Vector.<IPartition>();
             var partitionsLength:uint;
+            var layerPartitions:LayerPartitions;
+            var list:Vector.<LayerPartitions> = new Vector.<LayerPartitions>();
             for(var i:uint = 0, length:uint = layers.length; i < length; i++)
             {
                 layer = layers[i];
                 partitionsLength = layer.partitions.length;
+                
+                layerPartitions = new LayerPartitions;
+                layerPartitions.layer = layers[i];
+                layerPartitions.partitions = new Vector.<IPartition>();
+                list.push(layerPartitions);
+                
                 for(var j:uint = 0; j < partitionsLength; j++)
                 {
                     partition = layer.partitions[j];
                     if(isOverlapingPoint(point, layer, partition))
-                        partitions.push(partition);
+                        layerPartitions.partitions.push(partition);
                 }
             }
-            return partitions;
+            return list;
         }
         
         /**
