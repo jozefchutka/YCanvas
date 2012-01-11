@@ -88,6 +88,7 @@ package sk.yoz.ycanvas
         {
             _viewPort = value;
             invalidateTransformationCache();
+            centerRoot();
         }
         
         public function get viewPort():Rectangle
@@ -386,7 +387,7 @@ package sk.yoz.ycanvas
         /**
         * Aligns root to vertical and horizontal center.
         */
-        protected function centerCanvas():void
+        protected function centerRoot():void
         {
             root.x = viewPort.width / 2;
             root.y = viewPort.height / 2;

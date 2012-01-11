@@ -88,9 +88,9 @@ package sk.yoz.ycanvas.stage3D
         /**
         * @inheritDoc
         */
-        override protected function centerCanvas():void
+        override protected function centerRoot():void
         {
-            root && super.centerCanvas();
+            root && super.centerRoot();
         }
         
         /**
@@ -101,7 +101,7 @@ package sk.yoz.ycanvas.stage3D
         private function onContextCreated(event:Event):void
         {
             _root = YCanvasRootStage3D(engine.stage.getChildAt(0));
-            centerCanvas();
+            centerRoot();
             initCallback();
         }
     }
