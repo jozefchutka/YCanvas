@@ -11,8 +11,8 @@ package sk.yoz.ycanvas.demo.explorer.modes
     import flash.geom.Matrix;
     import flash.net.URLRequest;
     import flash.system.LoaderContext;
+    import flash.system.System;
     
-    import sk.yoz.events.URLRequestBufferEvent;
     import sk.yoz.net.URLRequestBuffer;
     import sk.yoz.net.URLRequestBufferItem;
     import sk.yoz.ycanvas.demo.explorer.events.PartitionEvent;
@@ -24,13 +24,14 @@ package sk.yoz.ycanvas.demo.explorer.modes
     
     public class Partition implements IPartitionStage3D
     {
-        protected var bitmapData:BitmapData;
+        private static const buffer:URLRequestBuffer = new URLRequestBuffer(6, 15000);
         private static var cachedTexture:Texture;
+        
+        protected var bitmapData:BitmapData;
         
         private var dispatcher:IEventDispatcher;
         private var error:Boolean;
         private var loader:Loader;
-        private static const buffer:URLRequestBuffer = new URLRequestBuffer(6, 15000);
         
         private var _x:int;
         private var _y:int;
@@ -53,8 +54,6 @@ package sk.yoz.ycanvas.demo.explorer.modes
             _content = new Image(getTexture(requestedWidth, requestedHeight));
             content.x = x;
             content.y = y;
-            
-            buffer.addEventListener(URLRequestBufferEvent.REQUEST_TIMEOUT, onRequestTimeout);
         }
         
         public function get x():int
@@ -107,8 +106,6 @@ package sk.yoz.ycanvas.demo.explorer.modes
             if(cachedTexture && cachedTexture.width == width
                 && cachedTexture.height == height)
                 return cachedTexture;
-            if(cachedTexture)
-                cachedTexture.dispose();
             cachedTexture = Texture.fromBitmapData(
                 new BitmapData(width, height, true, 0xffffff));
             return cachedTexture;
@@ -122,7 +119,7 @@ package sk.yoz.ycanvas.demo.explorer.modes
         protected function set texture(value:BitmapData):void
         {
             if(content)
-                Image(content).texture.dispose();
+                Image(content).texture.base.dispose();
             Image(content).texture = Texture.fromBitmapData(bitmapData);
         }
         
@@ -157,7 +154,7 @@ package sk.yoz.ycanvas.demo.explorer.modes
                 bufferItem = buffer.getWaitingByLoader(loader);
                 bufferItem && buffer.removeWaitingById(bufferItem.id);
                 bufferItem = buffer.getActiveByLoader(loader);
-                bufferItem  && buffer.removeActiveById(bufferItem.id);
+                bufferItem && buffer.removeActiveById(bufferItem.id);
                 
                 try
                 {
@@ -184,10 +181,15 @@ package sk.yoz.ycanvas.demo.explorer.modes
         
         public function dispose():void
         {
-            stopLoading();
+            stopLoading(true);
             bitmapData && bitmapData.dispose();
             bitmapData = null;
-            content && content.removeFromParent(true);
+            if(content)
+            {
+                Image(content).texture.base.dispose();
+                Image(content).texture.dispose();
+                content.dispose();
+            } 
         }
         
         public function toString():String
@@ -218,11 +220,6 @@ package sk.yoz.ycanvas.demo.explorer.modes
             error = true;
             updateTexture();
             stopLoading(false);
-        }
-        
-        private function onRequestTimeout(event:URLRequestBufferEvent):void
-        {
-            stopLoading();
         }
     }
 }

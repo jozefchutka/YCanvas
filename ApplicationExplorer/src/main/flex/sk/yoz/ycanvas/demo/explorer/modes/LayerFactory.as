@@ -2,6 +2,7 @@ package sk.yoz.ycanvas.demo.explorer.modes
 {
     import flash.geom.Point;
     
+    import sk.yoz.ycanvas.demo.explorer.valueObjects.FactoryData;
     import sk.yoz.ycanvas.interfaces.ILayer;
     import sk.yoz.ycanvas.interfaces.ILayerFactory;
     import sk.yoz.ycanvas.interfaces.IPartitionFactory;
@@ -9,11 +10,14 @@ package sk.yoz.ycanvas.demo.explorer.modes
     public class LayerFactory implements ILayerFactory
     {
         protected var partitionFactory:IPartitionFactory;
+        protected var factoryData:FactoryData;
         protected var layers:Vector.<Layer> = new Vector.<Layer>();
         
-        public function LayerFactory(partitionFactory:IPartitionFactory)
+        public function LayerFactory(partitionFactory:IPartitionFactory, 
+            factoryData:FactoryData)
         {
             this.partitionFactory = partitionFactory;
+            this.factoryData = factoryData;
         }
         
         public function create(scale:Number, center:Point):ILayer
@@ -26,12 +30,14 @@ package sk.yoz.ycanvas.demo.explorer.modes
             Layer(layer).dispose();
         }
         
-        protected function createLayers(maxLevel:uint, partitionWidth:uint, 
-            partitionHeight:uint):void
+        protected function createLayers():void
         {
-            for(var level:uint = 1; level <= maxLevel; level *= 2)
-                layers.push(new Layer(
-                    level, partitionWidth, partitionHeight, partitionFactory));
+            var max:uint = factoryData.layerMaxLevel;
+            var step:uint = factoryData.layerStep;
+            var w:uint = factoryData.partitionWidth;
+            var h:uint = factoryData.partitionHeight;
+            for(var level:uint = 1; level <= max; level *= step)
+                layers.push(new Layer(level, w, h, partitionFactory));
         }
         
         private function getLayerByScale(scale:Number):Layer

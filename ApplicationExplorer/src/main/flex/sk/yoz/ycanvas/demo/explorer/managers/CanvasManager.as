@@ -5,6 +5,7 @@ package sk.yoz.ycanvas.demo.explorer.managers
     import flash.events.Event;
     import flash.events.IEventDispatcher;
     import flash.events.TimerEvent;
+    import flash.geom.Point;
     import flash.geom.Rectangle;
     import flash.utils.Timer;
     
@@ -12,10 +13,9 @@ package sk.yoz.ycanvas.demo.explorer.managers
     import sk.yoz.ycanvas.demo.explorer.events.CanvasEvent;
     import sk.yoz.ycanvas.demo.explorer.events.PartitionEvent;
     import sk.yoz.ycanvas.demo.explorer.modes.Layer;
+    import sk.yoz.ycanvas.demo.explorer.modes.Mode;
     import sk.yoz.ycanvas.demo.explorer.modes.Partition;
-    import sk.yoz.ycanvas.interfaces.ILayerFactory;
     import sk.yoz.ycanvas.interfaces.IPartition;
-    import sk.yoz.ycanvas.interfaces.IPartitionFactory;
     import sk.yoz.ycanvas.stage3D.YCanvasStage3D;
     import sk.yoz.ycanvas.utils.ILayerUtils;
     import sk.yoz.ycanvas.utils.IPartitionUtils;
@@ -24,25 +24,40 @@ package sk.yoz.ycanvas.demo.explorer.managers
     public class CanvasManager
     {
         private var _canvas:AbstractYCanvas;
-        private var timer:Timer = new Timer(500, 1);
+        private var timer:Timer = new Timer(250, 1);
         private var canvasInitCallback:Function;
         private var dispatcher:IEventDispatcher;
         
         public function CanvasManager(stage:Stage, stage3D:Stage3D, 
             viewPort:Rectangle, canvasInitCallback:Function, 
-            dispatcher:IEventDispatcher, partitionFactory:IPartitionFactory, 
-            layerFactory:ILayerFactory)
+            dispatcher:IEventDispatcher)
         {
             this.dispatcher = dispatcher;
             this.canvasInitCallback = canvasInitCallback;
             
             _canvas = new YCanvasStage3D(stage, stage3D, viewPort, canvasInit);
-            canvas.partitionFactory = partitionFactory;
-            canvas.layerFactory = layerFactory;
             
             dispatcher.addEventListener(CanvasEvent.TRANSFORMATION_STARTED, onCanvasTransformationStarted);
             dispatcher.addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onCanvasTransformationFinished);
             dispatcher.addEventListener(PartitionEvent.LOADED, onPartitionLoaded);
+        }
+        
+        public function set mode(value:Mode):void
+        {
+            while(canvas.layers.length)
+                canvas.disposeLayer(canvas.layers[0]);
+            
+            var partitionFactoryClass:Class = value.partitionFactory;
+            var layerFactoryClass:Class = value.layerFactory;
+            
+            canvas.partitionFactory = new partitionFactoryClass(dispatcher);
+            canvas.layerFactory = new layerFactoryClass(canvas.partitionFactory, value.factoryData);
+            canvas.center = new Point(value.transformation.centerX,
+                value.transformation.centerY);
+            canvas.rotation = value.transformation.rotation;
+            canvas.scale = value.transformation.scale;
+            dispatcher.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_FINISHED));
+            render();
         }
         
         public function get canvas():AbstractYCanvas
@@ -118,7 +133,6 @@ package sk.yoz.ycanvas.demo.explorer.managers
         {
             if(canvasInitCallback != null)
                 canvasInitCallback();
-            render();
             timer.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerComplete);
         }
         

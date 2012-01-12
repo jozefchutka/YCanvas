@@ -13,6 +13,7 @@ package sk.yoz.ycanvas.demo.explorer.managers
     import sk.yoz.ycanvas.AbstractYCanvas;
     import sk.yoz.ycanvas.demo.explorer.Assets;
     import sk.yoz.ycanvas.demo.explorer.events.CanvasEvent;
+    import sk.yoz.ycanvas.demo.explorer.valueObjects.CanvasLimits;
     import sk.yoz.ycanvas.demo.explorer.valueObjects.CanvasTransformation;
     import sk.yoz.ycanvas.demo.explorer.view.Board;
     import sk.yoz.ycanvas.utils.TransformationUtils;
@@ -52,16 +53,8 @@ package sk.yoz.ycanvas.demo.explorer.managers
             this.dispatcher = dispatcher;
             this.stage = stage;
             
-            rotator.buttonMode = true;
-            rotator.doubleClickEnabled = true;
             board.addChild(rotator);
-            
-            zoomer.buttonMode = true;
             board.addChild(zoomer);
-            
-            resize();
-            updateTransformation();
-            
             board.addEventListener(MouseEvent.MOUSE_OVER, onBoardOver);
             board.addEventListener(MouseEvent.MOUSE_DOWN, onBoardDown);
             board.addEventListener(MouseEvent.MOUSE_WHEEL, onBoardWheel);
@@ -69,6 +62,8 @@ package sk.yoz.ycanvas.demo.explorer.managers
             board.addEventListener(MouseEvent.ROLL_OVER, onBoardRollOver);
             board.addEventListener(MouseEvent.ROLL_OUT, onBoardRollOut);
             
+            rotator.buttonMode = true;
+            rotator.doubleClickEnabled = true;
             rotator.addEventListener(MouseEvent.MOUSE_OVER, onRotatorOver);
             rotator.addEventListener(MouseEvent.MOUSE_DOWN, onRotatorDown);
             rotator.addEventListener(MouseEvent.ROLL_OUT, onRotatorRollOut);
@@ -77,10 +72,20 @@ package sk.yoz.ycanvas.demo.explorer.managers
             zoomer.addEventListener(MouseEvent.MOUSE_OVER, onZoomerOver);
             zoomer.addEventListener(MouseEvent.MOUSE_DOWN, onZoomerDown);
             zoomer.addEventListener(MouseEvent.ROLL_OUT, onZoomerRollOut);
+            zoomer.buttonMode = true;
             
             stage.addEventListener(Event.MOUSE_LEAVE, onStageMouseLeave);
             
+            resize();
+            updateTransformation();
+            
             dispatcher.addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onCanvasTransformationFinished);
+        }
+        
+        public function set limits(value:CanvasLimits):void
+        {
+            minScale = value.scaleMin;
+            maxScale = value.scaleMax;
         }
         
         private function get globalPointInTweenTarget():Point
@@ -280,6 +285,7 @@ package sk.yoz.ycanvas.demo.explorer.managers
         
         private function onRotatorDoubleClick(event:MouseEvent):void
         {
+            event.stopImmediatePropagation();
             rotateToTween(0);
         }
         

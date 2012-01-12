@@ -1,6 +1,7 @@
 package sk.yoz.ycanvas.demo.explorer.modes.onboard
 {
     import sk.yoz.ycanvas.demo.explorer.modes.LayerFactory;
+    import sk.yoz.ycanvas.demo.explorer.valueObjects.FactoryData;
     import sk.yoz.ycanvas.interfaces.IPartitionFactory;
     
     public class OnBoardLayerFactory extends LayerFactory
@@ -9,10 +10,11 @@ package sk.yoz.ycanvas.demo.explorer.modes.onboard
         public static const PARTITION_WIDTH:uint = 256;
         public static const PARTITION_HEIGHT:uint = 256;
         
-        public function OnBoardLayerFactory(partitionFactory:IPartitionFactory):void
+        public function OnBoardLayerFactory(partitionFactory:IPartitionFactory, 
+            factoryData:FactoryData):void
         {
-            super(partitionFactory);
-            createLayers(MAX_LEVEL, PARTITION_WIDTH, PARTITION_HEIGHT);
+            super(partitionFactory, factoryData);
+            createLayers();
         }
     }
 }
