@@ -37,7 +37,7 @@ package sk.yoz.net
             nextID++;
             var index:uint = getIndexForPriority(priority);
             var item:URLRequestBufferItem = new URLRequestBufferItem(
-                this, nextID, loader, request, null, priority, delay)
+                this, nextID, loader, request, context, priority, delay)
             waitingList.splice(index, 0, item);
             
             var type:String = URLRequestBufferEvent.WAITING_REQUEST_ADDED;

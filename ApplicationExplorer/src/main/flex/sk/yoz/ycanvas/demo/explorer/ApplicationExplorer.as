@@ -4,7 +4,6 @@ package sk.yoz.ycanvas.demo.explorer
     import flash.display.StageAlign;
     import flash.display.StageScaleMode;
     import flash.events.Event;
-    import flash.geom.Point;
     import flash.geom.Rectangle;
     
     import net.hires.debug.Stats;
@@ -13,14 +12,8 @@ package sk.yoz.ycanvas.demo.explorer
     import sk.yoz.ycanvas.demo.explorer.managers.CanvasManager;
     import sk.yoz.ycanvas.demo.explorer.managers.TransformationManager;
     import sk.yoz.ycanvas.demo.explorer.modes.Mode;
-    import sk.yoz.ycanvas.demo.explorer.modes.onboard.OnBoardLayerFactory;
-    import sk.yoz.ycanvas.demo.explorer.modes.onboard.OnBoardPartitionFactory;
-    import sk.yoz.ycanvas.demo.explorer.modes.walloffame.WallOfFameLayerFactory;
-    import sk.yoz.ycanvas.demo.explorer.modes.walloffame.WallOfFamePartitionFactory;
     import sk.yoz.ycanvas.demo.explorer.view.Board;
     import sk.yoz.ycanvas.demo.explorer.view.Buttons;
-    import sk.yoz.ycanvas.interfaces.ILayerFactory;
-    import sk.yoz.ycanvas.interfaces.IPartitionFactory;
     
     [SWF(frameRate="60", backgroundColor="#ffffff")]
     public class ApplicationExplorer extends Sprite

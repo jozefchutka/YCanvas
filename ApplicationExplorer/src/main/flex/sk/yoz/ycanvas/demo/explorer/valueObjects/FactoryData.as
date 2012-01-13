@@ -6,5 +6,6 @@ package sk.yoz.ycanvas.demo.explorer.valueObjects
         public var layerStep:uint;
         public var partitionWidth:uint;
         public var partitionHeight:uint;
+        public var partitionClass:Class;
     }
 }

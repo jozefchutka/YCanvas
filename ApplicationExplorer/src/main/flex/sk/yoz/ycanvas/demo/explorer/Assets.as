@@ -15,5 +15,17 @@ package sk.yoz.ycanvas.demo.explorer
         
         [Embed(source="/buttons/walloffame.png")]
         public static const BUTTON_WALLOFFAME_CLASS:Class;
+        
+        [Embed(source="/buttons/webcanvas.png")]
+        public static const BUTTON_WEBCANVAS_CLASS:Class;
+        
+        [Embed(source="/buttons/mapquest.png")]
+        public static const BUTTON_MAPQUEST_CLASS:Class;
+        
+        [Embed(source="/buttons/arcgis.png")]
+        public static const BUTTON_ARCGIS_CLASS:Class;
+        
+        [Embed(source="/buttons/openstreetmaps.png")]
+        public static const BUTTON_OPENSTREETMAPS_CLASS:Class;
     }
 }

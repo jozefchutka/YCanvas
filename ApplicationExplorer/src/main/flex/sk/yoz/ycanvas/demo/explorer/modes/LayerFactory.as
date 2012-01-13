@@ -18,6 +18,7 @@ package sk.yoz.ycanvas.demo.explorer.modes
         {
             this.partitionFactory = partitionFactory;
             this.factoryData = factoryData;
+            createLayers();
         }
         
         public function create(scale:Number, center:Point):ILayer

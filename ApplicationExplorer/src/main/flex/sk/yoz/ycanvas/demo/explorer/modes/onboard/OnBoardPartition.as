@@ -8,13 +8,14 @@ package sk.yoz.ycanvas.demo.explorer.modes.onboard
     
     public class OnBoardPartition extends Partition
     {
-        private static var BACKGROUND:BitmapData = new BitmapData(
-            OnBoardLayerFactory.PARTITION_WIDTH, 
-            OnBoardLayerFactory.PARTITION_HEIGHT, false, 0xffffff);
+        private static var BACKGROUND:BitmapData;
         
         public function OnBoardPartition(layer:Layer, x:int, y:int, 
             requestedWidth:uint, requestedHeight:uint, dispatcher:IEventDispatcher)
         {
+            if(!BACKGROUND)
+                BACKGROUND = new BitmapData(requestedWidth, requestedHeight, false, 0xffffff);
+            
             super(layer, x, y, requestedWidth, requestedHeight, dispatcher);
         }
         

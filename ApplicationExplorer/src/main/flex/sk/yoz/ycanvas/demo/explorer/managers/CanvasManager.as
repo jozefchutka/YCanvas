@@ -50,7 +50,7 @@ package sk.yoz.ycanvas.demo.explorer.managers
             var partitionFactoryClass:Class = value.partitionFactory;
             var layerFactoryClass:Class = value.layerFactory;
             
-            canvas.partitionFactory = new partitionFactoryClass(dispatcher);
+            canvas.partitionFactory = new partitionFactoryClass(dispatcher, value.factoryData);
             canvas.layerFactory = new layerFactoryClass(canvas.partitionFactory, value.factoryData);
             canvas.center = new Point(value.transformation.centerX,
                 value.transformation.centerY);

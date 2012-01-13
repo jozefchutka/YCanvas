@@ -28,7 +28,7 @@ package sk.yoz.ycanvas.demo.explorer.modes.walloffame
             var rand:String = Math.round(new Date().time / 0xffffff).toString();
             var server:uint = Math.abs(x + y) % 10;
             var result:String = "http://img" + server + ".wall-of-fame.com/map/" 
-                + level + "/" + x +"_" + y + ".jpg?rand=" + rand;
+                + level + "/" + x + "_" + y + ".jpg?rand=" + rand;
             return result;
         }
     }

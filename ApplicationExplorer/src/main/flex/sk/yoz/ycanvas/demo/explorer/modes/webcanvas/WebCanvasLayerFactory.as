@@ -1,14 +1,12 @@
-package sk.yoz.ycanvas.demo.explorer.modes.walloffame
+package sk.yoz.ycanvas.demo.explorer.modes.webcanvas
 {
-    import sk.yoz.ycanvas.demo.explorer.modes.Layer;
     import sk.yoz.ycanvas.demo.explorer.modes.LayerFactory;
     import sk.yoz.ycanvas.demo.explorer.valueObjects.FactoryData;
     import sk.yoz.ycanvas.interfaces.IPartitionFactory;
     
-    public class WallOfFameLayerFactory extends LayerFactory
+    public class WebCanvasLayerFactory extends LayerFactory
     {
-        public function WallOfFameLayerFactory(partitionFactory:IPartitionFactory, 
-            factoryData:FactoryData)
+        public function WebCanvasLayerFactory(partitionFactory:IPartitionFactory, factoryData:FactoryData)
         {
             super(partitionFactory, factoryData);
         }
@@ -16,9 +14,9 @@ package sk.yoz.ycanvas.demo.explorer.modes.walloffame
         override protected function getLayerIndex(scale:Number):uint
         {
             var zoom:Number = 1 / scale;
-            if(zoom < 2)
+            if(zoom < 3)
                 return 0;
-            if(zoom < 6)
+            if(zoom < 15)
                 return 1;
             return 2;
         }

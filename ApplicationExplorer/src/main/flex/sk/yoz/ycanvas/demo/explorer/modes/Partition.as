@@ -120,7 +120,7 @@ package sk.yoz.ycanvas.demo.explorer.modes
         {
             if(content)
                 Image(content).texture.base.dispose();
-            Image(content).texture = Texture.fromBitmapData(bitmapData);
+            Image(content).texture = Texture.fromBitmapData(value);
         }
         
         public function applyDisplayObject(source:flash.display.DisplayObject, 
@@ -136,7 +136,7 @@ package sk.yoz.ycanvas.demo.explorer.modes
             loader = new Loader;
             var request:URLRequest = new URLRequest(url);
             var context:LoaderContext = new LoaderContext(true);
-            buffer.push(loader, request);
+            buffer.push(loader, request, context);
             
             var loaderInfo:LoaderInfo = loader.contentLoaderInfo;
             loaderInfo.addEventListener(Event.COMPLETE, onComplete);

@@ -14,6 +14,10 @@ package sk.yoz.ycanvas.demo.explorer.view
         {
             add(Assets.BUTTON_ONBOARD_CLASS, Mode.ONBOARD);
             add(Assets.BUTTON_WALLOFFAME_CLASS, Mode.WALLOFFAME);
+            add(Assets.BUTTON_WEBCANVAS_CLASS, Mode.WEBCANVAS);
+            add(Assets.BUTTON_MAPQUEST_CLASS, Mode.MAPQUEST);
+            add(Assets.BUTTON_ARCGIS_CLASS, Mode.ARCGIS);
+            add(Assets.BUTTON_OPENSTREETMAPS_CLASS, Mode.OPENSTREETMAPS);
         }
         
         private function add(buttonClass:Class, mode:Mode):void
@@ -21,7 +25,7 @@ package sk.yoz.ycanvas.demo.explorer.view
             var sprite:Sprite = new Sprite;
             var bitmap:Bitmap = new buttonClass;
             if(numChildren)
-                bitmap.x = getChildAt(numChildren - 1).x 
+                sprite.x = getChildAt(numChildren - 1).x 
                     + getChildAt(numChildren - 1).width + 5;
             
             sprite.addChild(bitmap);
