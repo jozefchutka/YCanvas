@@ -1,6 +1,7 @@
 package sk.yoz.ycanvas.demo.explorer.modes
 {
     import sk.yoz.ycanvas.demo.explorer.modes.arcgis.ArcGisPartition;
+    import sk.yoz.ycanvas.demo.explorer.modes.flickr.FlickrPartition;
     import sk.yoz.ycanvas.demo.explorer.modes.mapquest.MapQuestPartition;
     import sk.yoz.ycanvas.demo.explorer.modes.onboard.OnBoardPartition;
     import sk.yoz.ycanvas.demo.explorer.modes.openstreetmaps.OpenStreetMapsPartition;
@@ -37,6 +38,10 @@ package sk.yoz.ycanvas.demo.explorer.modes
         public static const OPENSTREETMAPS:Mode = 
             new Mode(LayerFactory, PartitionFactory,
                 2 << 15, 2, OpenStreetMapsPartition, 256, 256, 1, 1 / (2 << 15), 35e6, 25e6, 1 / 16384, 0);
+        
+        public static const FLICKR:Mode = 
+            new Mode(LayerFactory, PartitionFactory,
+                1, 2, FlickrPartition, 256, 256, 1, 1 / 2, 0, 0, 1 / 1.5, 0);
         
         public var layerFactory:Class;
         public var partitionFactory:Class;

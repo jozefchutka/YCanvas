@@ -118,8 +118,7 @@ package sk.yoz.ycanvas.demo.explorer.modes
         
         protected function set texture(value:BitmapData):void
         {
-            if(content)
-                Image(content).texture.base.dispose();
+            content && disposeTexture();
             Image(content).texture = Texture.fromBitmapData(value);
         }
         
@@ -186,10 +185,15 @@ package sk.yoz.ycanvas.demo.explorer.modes
             bitmapData = null;
             if(content)
             {
-                Image(content).texture.base.dispose();
-                Image(content).texture.dispose();
+                disposeTexture();
                 content.dispose();
             } 
+        }
+        
+        protected function disposeTexture():void
+        {
+            Image(content).texture.base.dispose();
+            Image(content).texture.dispose();
         }
         
         public function toString():String

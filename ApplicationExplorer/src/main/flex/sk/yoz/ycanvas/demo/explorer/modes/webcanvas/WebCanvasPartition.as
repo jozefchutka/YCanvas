@@ -19,11 +19,12 @@ package sk.yoz.ycanvas.demo.explorer.modes.webcanvas
             var x:int = this.x / expectedWidth / layer.level - correction;
             var y:int = this.y / expectedHeight / layer.level - correction;
             var d:Number = new Date().time;
-            var result:String = "http://webcanvas.com/php/" 
+            var url:String = "http://webcanvas.com/php/" 
                 + getZ(layer.level) + ".php?t=" 
                 + (x < 0 ? "n" + (-x).toString() : x.toString()) + "_" 
                 + (y < 0 ? "n" + (-y).toString() : y.toString()) 
                 + "&" + d;
+            var result:String = "http://ycanvas.yoz.sk/demo/proxy.php?url=" + escape(url);
             return result;
         }
         

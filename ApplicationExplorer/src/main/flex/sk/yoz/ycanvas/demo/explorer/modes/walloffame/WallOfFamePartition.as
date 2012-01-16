@@ -3,6 +3,8 @@ package sk.yoz.ycanvas.demo.explorer.modes.walloffame
     import flash.display.BitmapData;
     import flash.events.IEventDispatcher;
     
+    import sk.yoz.image.ImageResizer;
+    import sk.yoz.math.ResizeMath;
     import sk.yoz.ycanvas.demo.explorer.modes.Layer;
     import sk.yoz.ycanvas.demo.explorer.modes.Partition;
     
@@ -30,6 +32,12 @@ package sk.yoz.ycanvas.demo.explorer.modes.walloffame
             var result:String = "http://img" + server + ".wall-of-fame.com/map/" 
                 + level + "/" + x + "_" + y + ".jpg?rand=" + rand;
             return result;
+        }
+        
+        override protected function set texture(value:BitmapData):void
+        {
+            super.texture = ImageResizer.bilinear(value, expectedWidth, 
+                expectedHeight, ResizeMath.METHOD_PAN_AND_SCAN);
         }
     }
 }

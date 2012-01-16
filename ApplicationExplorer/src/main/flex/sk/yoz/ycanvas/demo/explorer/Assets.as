@@ -27,5 +27,8 @@ package sk.yoz.ycanvas.demo.explorer
         
         [Embed(source="/buttons/openstreetmaps.png")]
         public static const BUTTON_OPENSTREETMAPS_CLASS:Class;
+        
+        [Embed(source="/buttons/flickr.png")]
+        public static const BUTTON_FLICKR_CLASS:Class;
     }
 }

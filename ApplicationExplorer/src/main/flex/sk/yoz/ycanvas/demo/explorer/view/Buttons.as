@@ -18,6 +18,7 @@ package sk.yoz.ycanvas.demo.explorer.view
             add(Assets.BUTTON_MAPQUEST_CLASS, Mode.MAPQUEST);
             add(Assets.BUTTON_ARCGIS_CLASS, Mode.ARCGIS);
             add(Assets.BUTTON_OPENSTREETMAPS_CLASS, Mode.OPENSTREETMAPS);
+            add(Assets.BUTTON_FLICKR_CLASS, Mode.FLICKR);
         }
         
         private function add(buttonClass:Class, mode:Mode):void
