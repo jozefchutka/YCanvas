@@ -17,3 +17,5 @@ You can see [http://ycanvas.yoz.sk/explorer Ycanvas explorer demo live on ycanva
 * [http://www.flickr.com Flickr] - gallery experiment
 
 The engine is optimized for rendering speed as well as for relasing unused system resources. While GPU api for flash player requires textures at width and height at power of two, you can reach the best performance when using 256x256 or 512x512 source images etc.
+
+If you like YCanvas, feel free to [ycanvas.yoz.sk/donate.html donate via PayPal].
