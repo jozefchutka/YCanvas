@@ -208,7 +208,7 @@ package sk.yoz.ycanvas.demo.explorer.modes
                 texture = bitmapData;
         }
         
-        private function onComplete(event:Event):void
+        protected function onComplete(event:Event):void
         {
             var loaderInfo:LoaderInfo = LoaderInfo(event.target);
             bitmapData = Bitmap(loaderInfo.content).bitmapData;

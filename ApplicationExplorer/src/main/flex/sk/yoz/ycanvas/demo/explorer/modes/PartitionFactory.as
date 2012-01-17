@@ -23,7 +23,7 @@ package sk.yoz.ycanvas.demo.explorer.modes
         {
             var partitionClass:Class = factoryData.partitionClass;
             return new partitionClass(layer as Layer, x, y, 
-                layer.partitionWidth, layer.partitionHeight, dispatcher);;
+                layer.partitionWidth, layer.partitionHeight, dispatcher);
         }
         
         public function disposePartition(partition:IPartition):void

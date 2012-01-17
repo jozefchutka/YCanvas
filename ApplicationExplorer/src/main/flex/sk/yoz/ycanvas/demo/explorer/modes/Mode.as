@@ -41,7 +41,7 @@ package sk.yoz.ycanvas.demo.explorer.modes
         
         public static const FLICKR:Mode = 
             new Mode(LayerFactory, PartitionFactory,
-                1, 2, FlickrPartition, 256, 256, 1, 1 / 2, 0, 0, 1 / 1.5, 0);
+                1, 2, FlickrPartition, 512, 512, 1, 1 / 3, 0, 0, 1 / 1.5, 0);
         
         public var layerFactory:Class;
         public var partitionFactory:Class;

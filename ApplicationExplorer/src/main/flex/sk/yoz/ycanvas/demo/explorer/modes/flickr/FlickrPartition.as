@@ -1,12 +1,20 @@
 package sk.yoz.ycanvas.demo.explorer.modes.flickr
 {
     import flash.display.BitmapData;
+    import flash.events.Event;
     import flash.events.IEventDispatcher;
+    import flash.events.MouseEvent;
+    import flash.geom.Matrix;
+    import flash.geom.Point;
+    import flash.geom.Rectangle;
     
     import sk.yoz.image.ImageResizer;
     import sk.yoz.math.ResizeMath;
     import sk.yoz.ycanvas.demo.explorer.modes.Layer;
     import sk.yoz.ycanvas.demo.explorer.modes.Partition;
+    
+    import starling.events.TouchEvent;
+    import starling.events.TouchPhase;
     
     public class FlickrPartition extends Partition
     {
@@ -523,6 +531,7 @@ package sk.yoz.ycanvas.demo.explorer.modes.flickr
                 ] }, "stat": "ok" }
         
         private static var photos:Array;
+        private var isOver:Boolean;
         
         public function FlickrPartition(layer:Layer, x:int, y:int, 
             requestedWidth:uint, requestedHeight:uint, dispatcher:IEventDispatcher)
@@ -548,6 +557,50 @@ package sk.yoz.ycanvas.demo.explorer.modes.flickr
         {
             super.texture = ImageResizer.bilinear(value, expectedWidth, 
                 expectedHeight, ResizeMath.METHOD_PAN_AND_SCAN);
+        }
+        
+        private function onTouch(event:TouchEvent):void
+        {
+            if(event.getTouch(content, TouchPhase.HOVER))
+            {
+                !isOver && showDetail();
+                isOver = true;
+            }
+            else
+            {
+                isOver && hideDetail();
+                isOver = false;
+            }
+        }
+        
+        private function showDetail():void
+        {
+            content.parent.setChildIndex(content, content.parent.numChildren -1);
+            var detail:BitmapData = new BitmapData(bitmapData.width * 2 + 10, bitmapData.height * 2 + 10, false, 0xffffff);
+            var matrix:Matrix = new Matrix;
+            matrix.scale(2, 2);
+            matrix.tx = matrix.ty = 5;
+            detail.draw(bitmapData, matrix);
+            content.width = detail.width;
+            content.height = detail.height;
+            content.pivotX = expectedWidth / detail.width * (detail.width - expectedWidth) / 2;
+            content.pivotY = expectedHeight / detail.height * (detail.height - expectedHeight) / 2;
+            super.texture = detail;
+        }
+        
+        private function hideDetail():void
+        {
+            content.width = expectedWidth;
+            content.height = expectedHeight;
+            content.pivotX = 0;
+            content.pivotY = 0;
+            texture = bitmapData;
+        }
+        
+        override protected function onComplete(event:Event):void
+        {
+            super.onComplete(event);
+            content.addEventListener(TouchEvent.TOUCH, onTouch);
         }
     }
 }

@@ -33,7 +33,8 @@ package sk.yoz.ycanvas.demo.explorer
         {
             stage.align = StageAlign.TOP_LEFT;
             stage.scaleMode = StageScaleMode.NO_SCALE;
-            addChild(new Stats);
+            if(loaderInfo.parameters.debug == "true")
+                addChild(new Stats);
             
             board.doubleClickEnabled = true;
             
