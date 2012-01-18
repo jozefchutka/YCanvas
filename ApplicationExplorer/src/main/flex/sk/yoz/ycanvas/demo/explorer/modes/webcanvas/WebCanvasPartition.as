@@ -24,7 +24,7 @@ package sk.yoz.ycanvas.demo.explorer.modes.webcanvas
                 + (x < 0 ? "n" + (-x).toString() : x.toString()) + "_" 
                 + (y < 0 ? "n" + (-y).toString() : y.toString()) 
                 + "&" + d;
-            var result:String = "http://ycanvas.yoz.sk/demo/proxy.php?url=" + escape(url);
+            var result:String = "http://ycanvas.yoz.sk/explorer/proxy.php?url=" + escape(url);
             return result;
         }
         
