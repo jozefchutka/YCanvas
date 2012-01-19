@@ -22,6 +22,7 @@ package sk.yoz.ycanvas.utils
         * Scales canvas to a custom scale keeping the lock point on the same 
         * place.
         * 
+        * @param scale Target scale.
         * @param lock Canvas point around which canvas scales.
         */
         public static function scaleTo(canvas:AbstractYCanvas, scale:Number, 
@@ -55,6 +56,32 @@ package sk.yoz.ycanvas.utils
             canvas.center = GeometryMath.rotatePointByRadians(
                 canvas.center, lock, delta);
             canvas.rotation = rotation;
+        }
+        
+        /**
+        * Rotates and scales canvas to a custom values keeping lock point on 
+        * the same place.
+        * 
+        * @param rotation Target rotation in radians.
+        * @param scale Target scale.
+        * @param lock Canvas point around which canvas transforms.
+        */
+        public static function rotateScaleTo(canvas:AbstractYCanvas, 
+            rotation:Number, scale:Number, lock:Point=null):void
+        {
+            if(!lock)
+                lock = canvas.center;
+            
+            var delta:Number = canvas.rotation - rotation;
+            var center:Point = GeometryMath.rotatePointByRadians(
+                canvas.center, lock, delta);
+            var c:Number = 1 - canvas.scale / scale;
+            center.x += (lock.x - center.x) * c;
+            center.y += (lock.y - center.y) * c;
+            
+            canvas.center = center;
+            canvas.rotation = rotation;
+            canvas.scale = scale;
         }
     }
 }
