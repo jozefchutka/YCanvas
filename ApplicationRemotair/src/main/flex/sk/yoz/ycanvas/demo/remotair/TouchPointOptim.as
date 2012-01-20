@@ -1,5 +1,7 @@
 package sk.yoz.ycanvas.demo.remotair
 {
+    import flash.events.TouchEvent;
+    
     import sk.yoz.touch.simulator.TouchPoint;
     
     public class TouchPointOptim extends TouchPoint
@@ -14,7 +16,8 @@ package sk.yoz.ycanvas.demo.remotair
         
         override public function dispatch(type:String):void
         {
-            if(dispatchedX != x || dispatchedY != y)
+            if(type != TouchEvent.TOUCH_MOVE 
+                || dispatchedX != x || dispatchedY != y)
                 super.dispatch(type);
             
             dispatchedX = x;

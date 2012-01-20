@@ -12,8 +12,6 @@ package sk.yoz.ycanvas.demo.remotair
     
     import net.hires.debug.Stats;
     
-    import sk.yoz.math.GeometryMath;
-    import sk.yoz.touch.MultitouchDragZoom;
     import sk.yoz.touch.events.MultitouchDragZoomEvent;
     import sk.yoz.ycanvas.interfaces.IPartition;
     import sk.yoz.ycanvas.stage3D.YCanvasStage3D;
@@ -28,7 +26,7 @@ package sk.yoz.ycanvas.demo.remotair
         private var position:Point;
         private var renderTimer:Timer = new Timer(500, 1);
         private var simulator:TouchSimulator = new TouchSimulator;
-        private var multitouch:MultitouchDragZoom = new TransitionMultitouch;
+        private var multitouch:TransitionMultitouch = new TransitionMultitouch;
         
         public function ApplicationRemotair()
         {
@@ -54,11 +52,10 @@ package sk.yoz.ycanvas.demo.remotair
             
             addChild(simulator);
             multitouch.attach(simulator);
+            
             simulator.addEventListener(MultitouchDragZoomEvent.DRAG_ZOOM, onDragZoom);
-            
             stage.addEventListener(Event.RESIZE, onStageResize);
-            //simulator.addEventListener(TouchEvent.TOUCH_BEGIN, onTouchBegin);
-            
+            simulator.addEventListener(TouchEvent.TOUCH_BEGIN, onTouchBegin);
             renderTimer.addEventListener(TimerEvent.TIMER_COMPLETE, render);
         }
         
@@ -118,7 +115,7 @@ package sk.yoz.ycanvas.demo.remotair
                 return;
             
             TransformationUtils.rotateScaleTo(canvas, 
-                canvas.rotation + minifyRotation(event.rotation * GeometryMath.TO_RADIANS), 
+                canvas.rotation + minifyRotation(event.rotation), 
                 canvas.scale * event.scale, 
                 canvas.globalToCanvas(event.lock))
             renderLater();
