@@ -1,24 +1,25 @@
 package sk.yoz.ycanvas.demo.remotair
 {
-    import com.greensock.TweenMax;
-    
     import flash.display.Sprite;
     import flash.display.StageAlign;
     import flash.display.StageScaleMode;
     import flash.events.Event;
     import flash.events.TimerEvent;
+    import flash.events.TouchEvent;
     import flash.geom.Point;
     import flash.geom.Rectangle;
     import flash.utils.Timer;
     
     import net.hires.debug.Stats;
     
+    import sk.yoz.math.GeometryMath;
     import sk.yoz.touch.MultitouchDragZoom;
     import sk.yoz.touch.events.MultitouchDragZoomEvent;
     import sk.yoz.ycanvas.interfaces.IPartition;
     import sk.yoz.ycanvas.stage3D.YCanvasStage3D;
     import sk.yoz.ycanvas.utils.ILayerUtils;
     import sk.yoz.ycanvas.utils.IPartitionUtils;
+    import sk.yoz.ycanvas.utils.TransformationUtils;
     
     [SWF(frameRate="60", backgroundColor="#ffffff")]
     public class ApplicationRemotair extends Sprite
@@ -27,9 +28,7 @@ package sk.yoz.ycanvas.demo.remotair
         private var position:Point;
         private var renderTimer:Timer = new Timer(500, 1);
         private var simulator:TouchSimulator = new TouchSimulator;
-        private var multitouch:MultitouchDragZoom = new MultitouchDragZoom;
-        private var currentTransformation:CanvasTransformation = new CanvasTransformation;
-        private var targetTransformation:CanvasTransformation = new CanvasTransformation;
+        private var multitouch:MultitouchDragZoom = new TransitionMultitouch;
         
         public function ApplicationRemotair()
         {
@@ -51,8 +50,6 @@ package sk.yoz.ycanvas.demo.remotair
         {
             canvas.center = new Point(35e6, 25e6);
             canvas.scale = 1 / 16384;
-            currentTransformation.fromCanvas(canvas);
-            targetTransformation.fromCanvas(canvas);
             render();
             
             addChild(simulator);
@@ -60,6 +57,7 @@ package sk.yoz.ycanvas.demo.remotair
             simulator.addEventListener(MultitouchDragZoomEvent.DRAG_ZOOM, onDragZoom);
             
             stage.addEventListener(Event.RESIZE, onStageResize);
+            //simulator.addEventListener(TouchEvent.TOUCH_BEGIN, onTouchBegin);
             
             renderTimer.addEventListener(TimerEvent.TIMER_COMPLETE, render);
         }
@@ -119,24 +117,51 @@ package sk.yoz.ycanvas.demo.remotair
             if(event.scale == 1 && event.rotation == 0)
                 return;
             
-            targetTransformation.applyScaleRotation(
-                event.scale, 
-                event.rotation, 
-                event.lock,
-                canvas);
-            
-            TweenMax.to(currentTransformation, .2, {
-                centerX:targetTransformation.centerX, 
-                centerY:targetTransformation.centerY, 
-                rotation:targetTransformation.rotation, 
-                scale:targetTransformation.scale, 
-                onUpdate:onTweenUpdate});
+            TransformationUtils.rotateScaleTo(canvas, 
+                canvas.rotation + minifyRotation(event.rotation * GeometryMath.TO_RADIANS), 
+                canvas.scale * event.scale, 
+                canvas.globalToCanvas(event.lock))
+            renderLater();
         }
         
-        private function onTweenUpdate():void
+        private function minifyRotation(rotation:Number):Number
         {
-            currentTransformation.toCanvas(canvas);
-            renderLater();
+            while(rotation > Math.PI)   rotation -= Math.PI * 2;
+            while(rotation < -Math.PI)  rotation += Math.PI * 2;
+            return rotation;
+        }
+        
+        private function onTouchBegin(event:TouchEvent):void
+        {
+            if(!event.isPrimaryTouchPoint)
+                return;
+            
+            simulator.addEventListener(TouchEvent.TOUCH_MOVE, onTouchMove);
+            simulator.addEventListener(TouchEvent.TOUCH_END, onTouchEnd);
+            position = canvas.globalToCanvas(new Point(event.localX, event.localY));
+        }
+        
+        private function onTouchMove(event:TouchEvent):void
+        {
+            if(!event.isPrimaryTouchPoint)
+                return;
+            
+            var current:Point = canvas.globalToCanvas(new Point(event.localX, event.localY));
+            var center:Point = new Point(
+                canvas.center.x - current.x + position.x, 
+                canvas.center.y - current.y + position.y);
+            TransformationUtils.moveTo(canvas, center);
+            position = canvas.globalToCanvas(new Point(event.localX, event.localY));
+            render();
+        }
+        
+        private function onTouchEnd(event:TouchEvent):void
+        {
+            if(!event.isPrimaryTouchPoint)
+                return;
+            
+            simulator.removeEventListener(TouchEvent.TOUCH_MOVE, onTouchMove);
+            simulator.removeEventListener(TouchEvent.TOUCH_END, onTouchEnd);
         }
     }
 }
