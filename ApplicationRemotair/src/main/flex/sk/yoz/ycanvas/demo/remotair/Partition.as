@@ -11,6 +11,8 @@ package sk.yoz.ycanvas.demo.remotair
     import flash.net.URLRequest;
     import flash.system.LoaderContext;
     
+    import sk.yoz.net.URLRequestBuffer;
+    import sk.yoz.net.URLRequestBufferItem;
     import sk.yoz.ycanvas.interfaces.ILayer;
     import sk.yoz.ycanvas.stage3D.interfaces.IPartitionStage3D;
     
@@ -20,6 +22,8 @@ package sk.yoz.ycanvas.demo.remotair
     
     public class Partition implements IPartitionStage3D
     {
+        private static const buffer:URLRequestBuffer = new URLRequestBuffer(6, 15000);
+        
         private var _x:int;
         private var _y:int;
         private var _content:starling.display.DisplayObject;
@@ -90,10 +94,18 @@ package sk.yoz.ycanvas.demo.remotair
             var level:uint = 18 - getPow(layer.level);
             var x:int = this.x / expectedWidth / layer.level;
             var y:int = this.y / expectedHeight / layer.level;
-            var server:String = getServer(Math.abs(x + y) % 3);
-            var result:String = "http://" + server + ".tile.openstreetmap.org/" 
-                + level + "/" + x + "/" + y + ".png";
+            var server:uint = Math.abs(x + y) % 4 + 1;
+            var result:String = "http://mtile0" + server + ".mqcdn.com/tiles/1.0.0/vy/sat/" 
+                + level + "/" + x + "/" + y + ".jpg";
             return result;
+            /*
+            var level:uint = 18 - getPow(layer.level);
+            var x:int = this.x / expectedWidth / layer.level;
+            var y:int = this.y / expectedHeight / layer.level;
+            var result:String = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/" 
+                + level + "/" + y + "/" + x;
+            return result;
+            */
         }
         
         public function load():void
@@ -101,7 +113,7 @@ package sk.yoz.ycanvas.demo.remotair
             loader = new Loader;
             var request:URLRequest = new URLRequest(url);
             var context:LoaderContext = new LoaderContext(true);
-            loader.load(request, context);
+            buffer.push(loader, request, context);
             
             var loaderInfo:LoaderInfo = loader.contentLoaderInfo;
             loaderInfo.addEventListener(Event.COMPLETE, onComplete);
@@ -112,6 +124,12 @@ package sk.yoz.ycanvas.demo.remotair
         {
             if(!loading)
                 return;
+            
+            var bufferItem:URLRequestBufferItem;
+            bufferItem = buffer.getWaitingByLoader(loader);
+            bufferItem && buffer.removeWaitingById(bufferItem.id);
+            bufferItem = buffer.getActiveByLoader(loader);
+            bufferItem && buffer.removeActiveById(bufferItem.id);
             
             try
             {
@@ -165,15 +183,6 @@ package sk.yoz.ycanvas.demo.remotair
                 i++;
             }
             return i;
-        }
-        
-        private function getServer(value:uint):String
-        {
-            if(value == 1)
-                return "a";
-            if(value == 2)
-                return "b";
-            return "c";
         }
         
         private function onComplete(event:Event):void

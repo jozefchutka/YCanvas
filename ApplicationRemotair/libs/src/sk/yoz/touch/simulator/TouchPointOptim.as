@@ -1,8 +1,7 @@
-package sk.yoz.ycanvas.demo.remotair
+package sk.yoz.touch.simulator
 {
     import flash.events.TouchEvent;
     
-    import sk.yoz.touch.simulator.TouchPoint;
     
     public class TouchPointOptim extends TouchPoint
     {

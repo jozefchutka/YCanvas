@@ -4,16 +4,16 @@ package sk.yoz.touch.events
     import flash.events.TouchEvent;
     import flash.geom.Point;
     
-    public class MultitouchDragZoomEvent extends Event
+    public class TwoFingerEvent extends Event
     {
-        public static const DRAG_ZOOM:String = "MultitouchDragZoomEventDRAG_ZOOM";
+        public static const SCALE_AND_ROTATE:String = "twoFingerScaleAndRotate";
         
         private var _source:TouchEvent;
         private var _lock:Point;
         private var _scale:Number;
         private var _rotation:Number;
         
-        public function MultitouchDragZoomEvent(type:String, source:TouchEvent, 
+        public function TwoFingerEvent(type:String, source:TouchEvent, 
             lock:Point, scale:Number, rotation:Number)
         {
             super(type, false, true);
@@ -46,8 +46,7 @@ package sk.yoz.touch.events
         
         override public function clone():Event
         {
-            return new MultitouchDragZoomEvent(
-                type, source, lock, scale, rotation);
+            return new TwoFingerEvent(type, source, lock, scale, rotation);
         }
     }
 }
