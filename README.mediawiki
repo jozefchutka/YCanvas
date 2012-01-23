@@ -1,4 +1,4 @@
-YCanvas is an open source ActionScript 3 library that provides stage3D (GPU) engine for perfectly overlapping grid based zooming projects like world maps or [http://onboard.yoz.sk onBoard].
+YCanvas is an open source ActionScript 3 library that provides stage3D (GPU) engine for perfectly overlapping grid based zooming projects like world maps or [http://onboard.yoz.sk onBoard] or simply ''tile maps renderer''.
 
 Repository content:
 
