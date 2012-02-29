@@ -76,9 +76,10 @@ package sk.yoz.ycanvas.stage3D
             var height:uint = viewPort.height;
             var stage:starling.display.Stage = engine.stage;
             var support:RenderSupport = new RenderSupport();
-            support.clear(stage.color, 1.0);
+            RenderSupport.clear(stage.color, 1.0);
             support.setOrthographicProjection(width, height);
-            engine.stage.render(support, 1.0);
+            engine.stage.render(support, 1);
+            support.finishQuadBatch();
             
             var result:BitmapData = new BitmapData(width, height, true);
             engine.context.drawToBitmapData(result);

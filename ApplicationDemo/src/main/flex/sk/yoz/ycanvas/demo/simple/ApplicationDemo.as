@@ -1,5 +1,6 @@
 package sk.yoz.ycanvas.demo.simple
 {
+    import flash.display.Bitmap;
     import flash.display.Sprite;
     import flash.display.StageAlign;
     import flash.display.StageScaleMode;
@@ -14,7 +15,7 @@ package sk.yoz.ycanvas.demo.simple
     import sk.yoz.ycanvas.utils.IPartitionUtils;
     import sk.yoz.ycanvas.utils.TransformationUtils;
     
-    [SWF(frameRate="60", backgroundColor="#ffffff")]
+    [SWF(frameRate="60", backgroundColor="#ffff00")]
     public class ApplicationDemo extends Sprite
     {
         private var canvas:YCanvasStage3D;
@@ -28,6 +29,14 @@ package sk.yoz.ycanvas.demo.simple
             canvas = new YCanvasStage3D(stage, stage.stage3Ds[0], viewPort, canvasInit);
             canvas.partitionFactory = new PartitionFactory;
             canvas.layerFactory = new LayerFactory(canvas.partitionFactory);
+            
+            stage.addEventListener(MouseEvent.CLICK, function(event:Event):void
+            {
+                var bitmap:Bitmap = new Bitmap(canvas.bitmapData);
+                bitmap.width = 300;
+                bitmap.height = 300;
+                stage.addChild(bitmap);
+            });
         }
         
         private function get viewPort():Rectangle

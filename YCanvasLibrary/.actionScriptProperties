@@ -3,7 +3,7 @@
   <compiler additionalCompilerArguments="-locale en_US -swf-version=13" autoRSLOrdering="true" copyDependentFiles="false" fteInMXComponents="false" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin" removeUnusedRSL="true" sourceFolderPath="src/main/flex" strict="true" targetPlayerVersion="11.1.0" useApolloConfig="false" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
     <compilerSourcePath>
       <compilerSourcePathEntry kind="1" linkType="1" path="libs/src"/>
-      <compilerSourcePathEntry kind="1" linkType="1" path="libs/starling-0.9.1"/>
+      <compilerSourcePathEntry kind="1" linkType="1" path="libs/starling-1.0"/>
     </compilerSourcePath>
     <libraryPath defaultLinkType="0">
       <libraryPathEntry kind="4" path="">
