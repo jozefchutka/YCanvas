@@ -33,12 +33,14 @@ package sk.yoz.ycanvas.stage3D
         * @param initCallback A function to be called when context is created.
         */
         public function YCanvasStage3D(stage:flash.display.Stage, 
-            stage3D:Stage3D, viewPort:Rectangle, initCallback:Function)
+            stage3D:Stage3D, viewPort:Rectangle, initCallback:Function,
+            rootClass:Class = null)
         {
             super(viewPort);
             this.initCallback = initCallback;
             
-            engine = new Starling(YCanvasRootStage3D, stage, viewPort, stage3D);
+            var root:Class = rootClass || YCanvasRootStage3D;
+            engine = new Starling(root, stage, viewPort, stage3D);
             engine.enableErrorChecking = false;
             engine.start();
             
