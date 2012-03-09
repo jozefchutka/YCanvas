@@ -2,10 +2,6 @@ package sk.yoz.math
 {
     public class FastCollisions
     {
-        public function FastCollisions()
-        {
-        }
-        
         public static function rectangles(
             r1p1x:Number, r1p1y:Number, r1p2x:Number, r1p2y:Number,
             r1p3x:Number, r1p3y:Number, r1p4x:Number, r1p4y:Number,
@@ -98,6 +94,53 @@ package sk.yoz.math
                    (x1 < b1x && x2 < b1x && x3 < b1x && x4 < b1x))
                     return false;
             }
+            return true;
+        }
+        
+        public static function pointInRectangle(px:Number, py:Number,
+            r1x:Number, r1y:Number, r2x:Number, r2y:Number,
+            r3x:Number, r3y:Number, r4x:Number, r4y:Number):Boolean
+        {
+            var a:Number, x:Number, y:Number;
+            if(r1x == r2x)
+            {
+                x = r1x, y = py;
+                if(y > (r1y > r2y ? r1y : r2y)) return false;
+                if(y < (r1y < r2y ? r1y : r2y)) return false;
+            }
+            else if(r1y == r2y)
+            {
+                x = px, y = r1y;
+            }
+            else
+            {
+                a = (r1y - r2y) / (r1x - r2x);
+                x = (py - r2y + r2x * a + px / a) / (a + 1 / a);
+                y = py + (px - x) / a;
+            }
+            
+            if(x > (r1x > r2x ? r1x : r2x)) return false;
+            if(x < (r1x < r2x ? r1x : r2x)) return false;
+            
+            if(r2x == r3x)
+            {
+                x = r2x, y = py;
+                if(y > (r2y > r3y ? r2y : r3y)) return false;
+                if(y < (r2y < r3y ? r2y : r3y)) return false;
+            }
+            else if(r2y == r3y)
+            {
+                x = px, y = r2y;
+            }
+            else
+            {
+                a = (r2y - r3y) / (r2x - r3x);
+                x = (py - r3y + r3x * a + px / a) / (a + 1 / a);
+                y = py + (px - x) / a;
+            }
+            
+            if(x > (r2x > r3x ? r2x : r3x)) return false;
+            if(x < (r2x < r3x ? r2x : r3x)) return false;
             return true;
         }
     }
