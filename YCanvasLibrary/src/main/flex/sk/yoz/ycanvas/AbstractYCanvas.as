@@ -262,6 +262,19 @@ package sk.yoz.ycanvas
         }
         
         /**
+        * Disposes whole YCanvas.
+        */
+        public function dispose():void
+        {
+            while(root.layers.length)
+                disposeLayer(root.layers[0]);
+            root.dispose();
+            _root = null;
+            partitionFactory = null;
+            layerFactory = null;
+        }
+        
+        /**
         * Provides complete layer dispose.
         */
         public function disposeLayer(layer:ILayer):void

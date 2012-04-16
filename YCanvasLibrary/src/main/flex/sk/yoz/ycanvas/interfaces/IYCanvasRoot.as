@@ -39,5 +39,10 @@ package sk.yoz.ycanvas.interfaces
         * A method for removing a layer.
         */
         function removeLayer(layer:ILayer):void
+        
+        /**
+        * Completely disposes root.
+        */
+        function dispose():void
     }
 }

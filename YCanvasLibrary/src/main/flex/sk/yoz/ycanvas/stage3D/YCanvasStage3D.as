@@ -89,6 +89,21 @@ package sk.yoz.ycanvas.stage3D
         }
         
         /**
+         * @inheritDoc
+         */
+        override public function dispose():void
+        {
+            super.dispose();
+            
+            var type:String = Event.CONTEXT3D_CREATE;
+            var stage3D:Stage3D = engine.stage3D;
+            stage3D.removeEventListener(type, onContextCreated, false);
+            engine.dispose();
+            engine = null;
+            initCallback = null;
+        }
+        
+        /**
         * @inheritDoc
         */
         override protected function centerRoot():void
