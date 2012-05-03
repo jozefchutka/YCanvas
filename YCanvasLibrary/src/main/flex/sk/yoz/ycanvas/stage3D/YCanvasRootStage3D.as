@@ -4,6 +4,7 @@ package sk.yoz.ycanvas.stage3D
     import sk.yoz.ycanvas.interfaces.IYCanvasRoot;
     import sk.yoz.ycanvas.stage3D.interfaces.ILayerStage3D;
     
+    import starling.display.DisplayObject;
     import starling.display.Sprite;
     
     /**
@@ -43,12 +44,12 @@ package sk.yoz.ycanvas.stage3D
             var index:int = layers.indexOf(layer);
             if(index == -1)
             {
-                addChild(layerStage3D.content);
+                addLayerChild(layerStage3D.content);
                 layers.push(layer);
             }
             else if(index != layers.length - 1)
             {
-                setChildIndex(layerStage3D.content, numChildren - 1);
+                setLayerChildIndex(layerStage3D.content, numChildren - 1);
                 layers.splice(index, 1);
                 layers.push(layer);
             }
@@ -60,10 +61,34 @@ package sk.yoz.ycanvas.stage3D
         public function removeLayer(layer:ILayer):void
         {
             var layerStage3D:ILayerStage3D = layer as ILayerStage3D;
-            removeChild(layerStage3D.content);
+            removeLayerChild(layerStage3D.content);
             
             var index:int = layers.indexOf(layer);
             layers.splice(index, 1);
+        }
+        
+        /**
+        * Method extracted to be easily overriden.
+        */
+        protected function addLayerChild(child:DisplayObject):void
+        {
+            addChild(child);
+        }
+        
+        /**
+         * Method extracted to be easily overriden.
+         */
+        protected function setLayerChildIndex(child:DisplayObject, index:int):void
+        {
+            setChildIndex(child, index);
+        }
+        
+        /**
+         * Method extracted to be easily overriden.
+         */
+        protected function removeLayerChild(child:DisplayObject):void
+        {
+            removeChild(child);
         }
     }
 }
