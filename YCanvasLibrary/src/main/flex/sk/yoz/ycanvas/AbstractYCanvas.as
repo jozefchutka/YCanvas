@@ -12,6 +12,7 @@ package sk.yoz.ycanvas
     import sk.yoz.ycanvas.interfaces.IPartition;
     import sk.yoz.ycanvas.interfaces.IPartitionFactory;
     import sk.yoz.ycanvas.interfaces.IYCanvasRoot;
+    import sk.yoz.ycanvas.utils.DisplayObjectUtils;
     import sk.yoz.ycanvas.valueObjects.MarginPoints;
     
     /**
@@ -366,7 +367,8 @@ package sk.yoz.ycanvas
         */
         public function applyDisplayObject(source:DisplayObject):void
         {
-            var sourceMatrix:Matrix = source.transform.concatenatedMatrix;
+            var sourceMatrix:Matrix = 
+                DisplayObjectUtils.getConcatenatedMatrix(source);
             var matrix:Matrix, partitionMatrix:Matrix;
             
             for each(var layer:ILayer in layers)
