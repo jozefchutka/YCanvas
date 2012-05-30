@@ -12,6 +12,8 @@ package sk.yoz.ycanvas.utils
     {
         /**
         * Moves canvas center to a custom position.
+        * 
+        * @param center Target position.
         */
         public static function moveTo(canvas:AbstractYCanvas, center:Point):void
         {
@@ -40,8 +42,8 @@ package sk.yoz.ycanvas.utils
         }
         
         /**
-        * Rotates canvas to a custom rotation keeping lock point on the same 
-        * place.
+        * Rotates canvas to a custom rotation maintaning lock point on the same 
+        * position.
         * 
         * @param rotation Target rotation in radians.
         * @param lock Canvas point around which canvas rotates.
@@ -55,6 +57,19 @@ package sk.yoz.ycanvas.utils
             var delta:Number = canvas.rotation - rotation;
             canvas.center = GeometryMath.rotatePointByRadians(
                 canvas.center, lock, delta);
+            canvas.rotation = rotation;
+        }
+        
+        /**
+        * Moves and rotates canvas to a custom position and rotation.
+        * 
+        * @param center Target position.
+        * @param rotation Target rotation in radians.
+        */
+        public static function moveRotateTo(canvas:AbstractYCanvas, 
+            center:Point, rotation:Number):void
+        {
+            canvas.center = center;
             canvas.rotation = rotation;
         }
         
