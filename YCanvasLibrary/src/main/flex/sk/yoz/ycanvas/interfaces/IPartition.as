@@ -1,6 +1,6 @@
 package sk.yoz.ycanvas.interfaces
 {
-    import flash.display.DisplayObject;
+    import flash.display.IBitmapDrawable;
     import flash.geom.Matrix;
 
     public interface IPartition
@@ -34,13 +34,14 @@ package sk.yoz.ycanvas.interfaces
         
         /**
         * An API providing functionality to apply any 
-        * flash.display.DisplayObject and its transformation matrix 
-        * to a partition. Can
+        * flash.display.IBitmapDrawable and its transformation matrix 
+        * to a partition.
         * If a partition implementation is based on bitmapData, a method
         * implementation may look as simple as 
         * bitmapData.draw(source, matrix);.
         */
-        function applyDisplayObject(source:DisplayObject, matrix:Matrix):void
+        function applyIBitmapDrawable(source:IBitmapDrawable, matrix:Matrix)
+            :void
         
         /**
         * Produces a readable partition description.

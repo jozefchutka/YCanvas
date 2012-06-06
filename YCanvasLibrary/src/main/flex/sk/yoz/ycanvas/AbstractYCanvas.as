@@ -2,6 +2,7 @@ package sk.yoz.ycanvas
 {
     import flash.display.BitmapData;
     import flash.display.DisplayObject;
+    import flash.display.IBitmapDrawable;
     import flash.geom.Matrix;
     import flash.geom.Point;
     import flash.geom.Rectangle;
@@ -360,15 +361,27 @@ package sk.yoz.ycanvas
         }
         
         /**
-        * Applies display object to all existing paritions with proper 
-        * transformation matrix.
+        * Applies any display object on stage to all existing paritions with 
+        * proper transformation matrix.
         * 
         * @param source DisplayObject must be added on stage.
         */
         public function applyDisplayObject(source:DisplayObject):void
         {
-            var sourceMatrix:Matrix = 
-                DisplayObjectUtils.getConcatenatedMatrix(source);
+            applyIBitmapDrawableWithMatrix(source, 
+                DisplayObjectUtils.getConcatenatedMatrix(source));
+        }
+        
+        /**
+         * Applies display object to all existing paritions using 
+         * transformation matrix.
+         * 
+         * @param source Any DisplayObject.
+         * @param sourceMatrix Any Matrix.
+         */
+        public function applyIBitmapDrawableWithMatrix(source:IBitmapDrawable, 
+            sourceMatrix:Matrix):void
+        {
             var matrix:Matrix, partitionMatrix:Matrix;
             
             for each(var layer:ILayer in layers)
@@ -380,7 +393,7 @@ package sk.yoz.ycanvas
                 matrix = sourceMatrix.clone();
                 matrix.translate(-viewPort.x, -viewPort.y);
                 matrix.concat(partitionMatrix);
-                partition.applyDisplayObject(source, matrix);
+                partition.applyIBitmapDrawable(source, matrix);
             }
         }
         
