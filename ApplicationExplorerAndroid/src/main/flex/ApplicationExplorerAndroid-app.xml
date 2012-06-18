@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<application xmlns="http://ns.adobe.com/air/application/3.3">
+    <id>sk.yoz.ycanvas.demo.explorer.ApplicationExplorerAndroid</id>
+    <filename>ApplicationExplorerAndroid</filename>
+    <name>ApplicationExplorerAndroid</name>
+    <versionNumber>0.0.1</versionNumber>
+    
+    <!-- A string value (such as "v1", "2.5", or "Alpha 1") that represents the version of the application, as it should be shown to users. Optional. -->
+    <!-- <versionLabel></versionLabel> -->
+    
+    <!-- <description></description> -->
+    <copyright>(c) 2012 Jozef Chutka</copyright>
+
+    <initialWindow>
+        <content>[This value will be overwritten by Flash Builder in the output app.xml]</content>
+        <!-- <title></title> -->
+        <aspectRatio>landscape</aspectRatio>
+        <renderMode>direct</renderMode>
+        <autoOrients>false</autoOrients>
+        <fullScreen>true</fullScreen>
+        <visible>true</visible>
+    </initialWindow>
+
+    <android>
+        <manifestAdditions><![CDATA[
+            <manifest android:installLocation="auto">
+                <uses-permission android:name="android.permission.INTERNET"/>
+            </manifest>
+        ]]></manifestAdditions>
+    </android>
+</application>

@@ -3,6 +3,8 @@
 /ApplicationDemo/bin-release
 /ApplicationExplorer/bin-debug
 /ApplicationExplorer/bin-release
+/ApplicationExplorerAndroid/bin-debug
+/ApplicationExplorerAndroid/bin-release
 /ApplicationRemotair/bin-debug
 /ApplicationRemotair/bin-release
 /YCanvasLibrary/bin

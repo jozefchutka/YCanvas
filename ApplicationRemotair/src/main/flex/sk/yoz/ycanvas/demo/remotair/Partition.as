@@ -2,7 +2,7 @@ package sk.yoz.ycanvas.demo.remotair
 {
     import flash.display.Bitmap;
     import flash.display.BitmapData;
-    import flash.display.DisplayObject;
+    import flash.display.IBitmapDrawable;
     import flash.display.Loader;
     import flash.display.LoaderInfo;
     import flash.events.Event;
@@ -152,7 +152,7 @@ package sk.yoz.ycanvas.demo.remotair
             loader = null;
         }
         
-        public function applyDisplayObject(source:flash.display.DisplayObject, matrix:Matrix):void
+        public function applyIBitmapDrawable(source:IBitmapDrawable, matrix:Matrix):void
         {
         }
         
