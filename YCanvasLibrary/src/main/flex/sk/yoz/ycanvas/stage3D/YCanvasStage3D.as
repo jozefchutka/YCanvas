@@ -70,8 +70,8 @@ package sk.yoz.ycanvas.stage3D
         }
         
         /**
-         * @inheritDoc
-         */
+        * @inheritDoc
+        */
         override public function get bitmapData():BitmapData
         {
             var width:uint = viewPort.width;
@@ -89,8 +89,16 @@ package sk.yoz.ycanvas.stage3D
         }
         
         /**
-         * @inheritDoc
-         */
+        * @inheritDoc
+        */
+        override public function set showStats(value:Boolean):void
+        {
+            engine.showStats = true;
+        }
+        
+        /**
+        * @inheritDoc
+        */
         override public function dispose():void
         {
             super.dispose();

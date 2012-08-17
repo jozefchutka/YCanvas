@@ -176,6 +176,14 @@ package sk.yoz.ycanvas
         }
         
         /**
+        * Shows stats.
+        */
+        public function set showStats(value:Boolean):void
+        {
+            throw new Error("This method must be overriden.");
+        }
+        
+        /**
         * Return margin points (4 corner points of viewPort) in canvas 
         * coordinates based on current canvas transformation and validation
         * margin offset.
