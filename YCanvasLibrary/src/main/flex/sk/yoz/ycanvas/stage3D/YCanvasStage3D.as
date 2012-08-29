@@ -3,7 +3,6 @@ package sk.yoz.ycanvas.stage3D
     import flash.display.BitmapData;
     import flash.display.Stage;
     import flash.display.Stage3D;
-    import flash.events.Event;
     import flash.geom.Rectangle;
     
     import sk.yoz.ycanvas.AbstractYCanvas;
@@ -11,6 +10,7 @@ package sk.yoz.ycanvas.stage3D
     import starling.core.RenderSupport;
     import starling.core.Starling;
     import starling.display.Stage;
+    import starling.events.Event;
     
     /**
     * A Stage3D implementation of canvas based on Starling.
@@ -41,11 +41,9 @@ package sk.yoz.ycanvas.stage3D
             
             var root:Class = rootClass || YCanvasRootStage3D;
             engine = new Starling(root, stage, viewPort, stage3D);
-            engine.enableErrorChecking = false;
+            engine.enableErrorChecking = true;
             engine.start();
-            
-            var type:String = Event.CONTEXT3D_CREATE;
-            stage3D.addEventListener(type, onContextCreated, false, -1, true);
+            engine.addEventListener(Event.ROOT_CREATED, onRootCreated);
         }
         
         /**
@@ -103,9 +101,7 @@ package sk.yoz.ycanvas.stage3D
         {
             super.dispose();
             
-            var type:String = Event.CONTEXT3D_CREATE;
-            var stage3D:Stage3D = engine.stage3D;
-            stage3D.removeEventListener(type, onContextCreated, false);
+            engine.removeEventListener(Event.ROOT_CREATED, onRootCreated);
             engine.dispose();
             engine = null;
             initCallback = null;
@@ -120,13 +116,14 @@ package sk.yoz.ycanvas.stage3D
         }
         
         /**
-        * A listener executed after Stage3D context has been created. At this 
+        * A listener executed after Root object has been created. At this 
         * point we are able to instantiate root from Starling. A callback
         * defined from the constructor is executed.
         */
-        private function onContextCreated(event:Event):void
+        private function onRootCreated(event:Event, 
+            root:YCanvasRootStage3D):void
         {
-            _root = YCanvasRootStage3D(engine.stage.getChildAt(0));
+            _root = root;
             centerRoot();
             initCallback();
         }
