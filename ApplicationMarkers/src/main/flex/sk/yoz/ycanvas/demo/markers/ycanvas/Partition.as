@@ -25,7 +25,7 @@ package sk.yoz.ycanvas.demo.markers.ycanvas
     
     public class Partition implements IPartitionStage3D
     {
-        private static const buffer:URLRequestBuffer = new URLRequestBuffer(8, 15000);
+        private static const buffer:URLRequestBuffer = new URLRequestBuffer(6, 15000);
         private static var cachedTexture:Texture;
         
         protected var bitmapData:BitmapData;
