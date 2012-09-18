@@ -41,7 +41,7 @@ package sk.yoz.ycanvas.demo.markers.ycanvas
                 layers.push(new Layer(level, w, h, partitionFactory));
         }
         
-        public function getLayerByScale(scale:Number):Layer
+        private function getLayerByScale(scale:Number):Layer
         {
             return layers[getLayerIndex(scale)];
         }

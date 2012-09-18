@@ -9,14 +9,12 @@ package sk.yoz.ycanvas.demo.markers.managers
     import flash.geom.Rectangle;
     import flash.utils.Timer;
     
-    import sk.yoz.ycanvas.AbstractYCanvas;
     import sk.yoz.ycanvas.demo.markers.events.CanvasEvent;
     import sk.yoz.ycanvas.demo.markers.events.PartitionEvent;
     import sk.yoz.ycanvas.demo.markers.modes.Mode;
     import sk.yoz.ycanvas.demo.markers.ycanvas.Canvas;
     import sk.yoz.ycanvas.demo.markers.ycanvas.CanvasRoot;
     import sk.yoz.ycanvas.demo.markers.ycanvas.Layer;
-    import sk.yoz.ycanvas.demo.markers.ycanvas.LayerFactory;
     import sk.yoz.ycanvas.demo.markers.ycanvas.Partition;
     import sk.yoz.ycanvas.interfaces.IPartition;
     import sk.yoz.ycanvas.utils.ILayerUtils;
@@ -72,8 +70,7 @@ package sk.yoz.ycanvas.demo.markers.managers
         
         public function get mainLayer():Layer
         {
-            return LayerFactory(canvas.layerFactory).getLayerByScale(canvas.scale) as Layer; 
-            //return canvas.layers[canvas.layers.length - 1] as Layer;
+            return canvas.layers[canvas.layers.length - 1] as Layer;
         }
         
         public function set viewPort(value:Rectangle):void
