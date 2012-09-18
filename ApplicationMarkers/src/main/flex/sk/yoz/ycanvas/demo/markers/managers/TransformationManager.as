@@ -1,4 +1,4 @@
-package sk.yoz.ycanvas.demo.explorer.managers
+package sk.yoz.ycanvas.demo.markers.managers
 {
     import com.greensock.TweenMax;
     
@@ -11,11 +11,11 @@ package sk.yoz.ycanvas.demo.explorer.managers
     import flash.geom.Point;
     
     import sk.yoz.ycanvas.AbstractYCanvas;
-    import sk.yoz.ycanvas.demo.explorer.Assets;
-    import sk.yoz.ycanvas.demo.explorer.events.CanvasEvent;
-    import sk.yoz.ycanvas.demo.explorer.valueObjects.CanvasLimits;
-    import sk.yoz.ycanvas.demo.explorer.valueObjects.CanvasTransformation;
-    import sk.yoz.ycanvas.demo.explorer.view.Board;
+    import sk.yoz.ycanvas.demo.markers.Assets;
+    import sk.yoz.ycanvas.demo.markers.events.CanvasEvent;
+    import sk.yoz.ycanvas.demo.markers.valueObjects.CanvasLimits;
+    import sk.yoz.ycanvas.demo.markers.valueObjects.CanvasTransformation;
+    import sk.yoz.ycanvas.demo.markers.view.Board;
     import sk.yoz.ycanvas.utils.TransformationUtils;
     
     public class TransformationManager

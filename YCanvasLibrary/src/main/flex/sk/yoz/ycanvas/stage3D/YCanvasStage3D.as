@@ -41,7 +41,8 @@ package sk.yoz.ycanvas.stage3D
             
             var root:Class = rootClass || YCanvasRootStage3D;
             engine = new Starling(root, stage, viewPort, stage3D);
-            engine.enableErrorChecking = true;
+            engine.enableErrorChecking = false;
+            engine.shareContext = false;
             engine.start();
             engine.addEventListener(Event.ROOT_CREATED, onRootCreated);
         }

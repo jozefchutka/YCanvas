@@ -49,7 +49,7 @@ package sk.yoz.ycanvas.stage3D
             }
             else if(index != layers.length - 1)
             {
-                setLayerChildIndex(layerStage3D.content, numChildren - 1);
+                setLayerChildIndex(layerStage3D.content, layers.length - 1);
                 layers.splice(index, 1);
                 layers.push(layer);
             }
