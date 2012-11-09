@@ -50,7 +50,7 @@ package
         
         private function canvasInit():void
         {
-            transformationManager = new TransformationManager(canvasManager.canvas, board, this, stage);
+            transformationManager = new TransformationManager(canvasManager.canvas, board, this);
             transformationManager.limits = Mode.ONBOARD.limits;
             canvasManager.mode = Mode.ONBOARD;
             
@@ -73,7 +73,6 @@ package
         {
             canvasManager.viewPort = viewPort;
             board.viewPort = viewPort;
-            transformationManager && transformationManager.resize();
             buttons.x = 10;
             buttons.y = viewPort.top + viewPort.height - buttons.height - 10;;
         }
