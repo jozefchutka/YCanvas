@@ -37,6 +37,12 @@ package sk.yoz.touch
             TweenMax.killTweensOf(transition1);
         }
         
+        public function get isTweening():Boolean
+        {
+            return TweenMax.isTweening(transition0)
+                || TweenMax.isTweening(transition1);
+        }
+        
         override protected function dispatch(event:TouchEvent, 
             target:Point):void
         {
@@ -56,6 +62,8 @@ package sk.yoz.touch
         
         override protected function onTouchMove(event:TouchEvent):void
         {
+            if(countFingers != 2 && isTweening)
+                return;
             if(countFingers != 2)
                 resetTransitions();
             super.onTouchMove(event);

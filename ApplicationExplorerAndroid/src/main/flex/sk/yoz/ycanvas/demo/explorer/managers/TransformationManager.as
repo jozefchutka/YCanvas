@@ -47,6 +47,7 @@ package sk.yoz.ycanvas.demo.explorer.managers
             multitouch.transitionDuration = transitionDuration;
             
             board.addEventListener(TwoFingerEvent.SCALE_AND_ROTATE, onScaleAndRotate);
+            
             board.addEventListener(TouchEvent.TOUCH_BEGIN, onTouchBegin);
             board.addEventListener(TouchEvent.TOUCH_MOVE, onTouchMove, false, 1);
             board.addEventListener(TouchEvent.TOUCH_END, onTouchEnd);
@@ -123,14 +124,11 @@ package sk.yoz.ycanvas.demo.explorer.managers
         
         private function onTouchMove(event:TouchEvent):void
         {
-            if(multitouch.countFingers != 1)
-                return killTween();
-            
-            multitouch.killTweens();
             killTween();
+            
             var point:Point = multitouch.getPoint(event);
             var current:Point = getGlobalPointInTweenTarget(point);
-            if(!last)
+            if(!last || multitouch.isTweening || multitouch.countFingers != 1)
             {
                 last = current;
                 return;
@@ -142,11 +140,7 @@ package sk.yoz.ycanvas.demo.explorer.managers
             transition.y = canvas.center.y;
             TweenMax.to(transition, transitionDuration, {
                 x:transitionTarget.x, y:transitionTarget.y, 
-                onUpdate:function():void
-                {
-                    TransformationUtils.moveTo(canvas, transition);
-                    renderLater();
-                }});
+                onUpdate:onTweenUpdate});
             
             last = getGlobalPointInTweenTarget(point);
         }
@@ -155,6 +149,12 @@ package sk.yoz.ycanvas.demo.explorer.managers
         {
             resetTransitionTarget();
             last = null;
+        }
+        
+        private function onTweenUpdate():void
+        {
+            TransformationUtils.moveTo(canvas, transition);
+            renderLater();
         }
     }
 }
