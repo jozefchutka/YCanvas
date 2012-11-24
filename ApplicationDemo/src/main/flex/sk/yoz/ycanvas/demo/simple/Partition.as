@@ -181,7 +181,9 @@ package sk.yoz.ycanvas.demo.simple
         {
             var loaderInfo:LoaderInfo = LoaderInfo(event.target);
             bitmapData = Bitmap(loaderInfo.content).bitmapData;
-            Image(content).texture = Texture.fromBitmapData(bitmapData);
+			(content as Image).texture.base.dispose();
+			(content as Image).texture.dispose();
+    		(content as Image).texture = Texture.fromBitmapData(bitmapData);
             stopLoading();
         }
         
