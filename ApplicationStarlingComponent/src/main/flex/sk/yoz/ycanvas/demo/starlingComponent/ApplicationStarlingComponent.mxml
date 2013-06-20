@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+               xmlns:s="library://ns.adobe.com/flex/spark" 
+               xmlns:mx="library://ns.adobe.com/flex/mx"
+               minWidth="955" minHeight="600" backgroundAlpha="0"
+               frameRate="60"
+               applicationComplete="onApplicationComplete()">
+    <fx:Script>
+        <![CDATA[
+            import mx.events.ResizeEvent;
+            
+            import sk.yoz.ycanvas.AbstractYCanvas;
+            import sk.yoz.ycanvas.demo.starlingComponent.partitions.ArcGisPartition;
+            import sk.yoz.ycanvas.demo.starlingComponent.partitions.MapQuestPartition;
+            import sk.yoz.ycanvas.demo.starlingComponent.partitions.OpenStreetMapsPartition;
+            import sk.yoz.ycanvas.utils.TransformationUtils;
+            
+            import starling.core.Starling;
+            import starling.display.Sprite;
+            import starling.events.Event;
+            
+            private var starling:Starling;
+            private var component1:YCanvasStarlingComponent;
+            private var component2:YCanvasStarlingComponent;
+            private var component3:YCanvasStarlingComponent;
+            private var component4:YCanvasStarlingComponent;
+            private var component5:YCanvasStarlingComponent;
+            
+            private function onApplicationComplete():void
+            {
+                var viewPort:Rectangle = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
+                starling = new Starling(starling.display.Sprite, stage, viewPort, stage.stage3Ds[0]);
+                starling.start();
+                starling.addEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
+                
+                stage.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
+            }
+            
+            private function onRootCreated(event:starling.events.Event, root:starling.display.Sprite):void
+            {
+                var container:starling.display.Sprite = new starling.display.Sprite();
+                //container.x = 300;
+                //container.y = 200;
+                root.addChild(container);
+                
+                component1 = new YCanvasStarlingComponent(OpenStreetMapsPartition);
+                container.addChild(component1);
+                
+                component2 = new YCanvasStarlingComponent(MapQuestPartition);
+                container.addChild(component2);
+                
+                component3 = new YCanvasStarlingComponent(ArcGisPartition);
+                container.addChild(component3);
+                
+                component4 = new YCanvasStarlingComponent(OpenStreetMapsPartition);
+                container.addChild(component4);
+                
+                component5 = new YCanvasStarlingComponent(OpenStreetMapsPartition);
+                container.addChild(component5);
+                
+                resizeComponents();
+                
+                placeholder.addEventListener(ResizeEvent.RESIZE, onPlaceholderResize);
+            }
+            
+            private function resizeComponents():void
+            {
+                var w:uint = placeholder.width;
+                var h:uint = placeholder.height;
+                starling.viewPort = new Rectangle(placeholder.x, placeholder.y, w, h);
+                
+                component1.stage.stageWidth = w;
+                component1.stage.stageHeight = h;
+                
+                component1.x = 0;
+                component1.y = 0;
+                component1.width = w / 2;
+                component1.height = h / 2;
+                
+                component2.x = w / 2;
+                component2.y = 0;
+                component2.width = w / 2;
+                component2.height = h / 2;
+                
+                component3.x = 0;
+                component3.y = h / 2;
+                component3.width = w / 2;
+                component3.height = h / 2;
+                
+                component4.x = w / 2;
+                component4.y = h / 2;
+                component4.width = w / 2;
+                component4.height = h / 2;
+                
+                component5.x = w / 4;
+                component5.y = h / 4;
+                component5.width = w / 2;
+                component5.height = h / 2;
+            }
+            
+            private function onPlaceholderResize(event:ResizeEvent):void
+            {
+                resizeComponents();
+            }
+            
+            private function onMouseWheel(event:MouseEvent):void
+            {
+                var canvas:AbstractYCanvas = component1.controller;
+                
+                TransformationUtils.scaleTo(canvas, 
+                    canvas.scale * (event.delta > 0 ? 1.5 : 0.7), 
+                    canvas.globalToCanvas(new Point(placeholder.mouseX, placeholder.mouseY)));
+                canvas.render();
+            }
+        ]]>
+    </fx:Script>
+    
+    <s:layout>
+        <s:HorizontalLayout />
+    </s:layout>
+    
+    <s:VGroup width="20%">
+        <s:Label text="hello world"/>
+    </s:VGroup>
+    
+    <mx:UIComponent id="placeholder" width="100%" height="100%"/>
+</s:Application>
