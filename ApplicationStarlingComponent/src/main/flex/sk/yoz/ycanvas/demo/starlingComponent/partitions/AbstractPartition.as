@@ -6,12 +6,14 @@ package sk.yoz.ycanvas.demo.starlingComponent.partitions
     import flash.display.Loader;
     import flash.display.LoaderInfo;
     import flash.events.Event;
+    import flash.events.IEventDispatcher;
     import flash.events.IOErrorEvent;
     import flash.geom.Matrix;
     import flash.net.URLRequest;
     import flash.system.LoaderContext;
     
-    import sk.yoz.ycanvas.interfaces.ILayer;
+    import sk.yoz.ycanvas.demo.starlingComponent.Layer;
+    import sk.yoz.ycanvas.demo.starlingComponent.events.PartitionEvent;
     import sk.yoz.ycanvas.stage3D.interfaces.IPartitionStage3D;
     
     import starling.display.DisplayObject;
@@ -23,17 +25,19 @@ package sk.yoz.ycanvas.demo.starlingComponent.partitions
         private var _x:int;
         private var _y:int;
         private var _content:starling.display.DisplayObject;
-        private var _layer:ILayer;
+        private var _layer:Layer;
         
+        private var dispatcher:IEventDispatcher;
         private var bitmapData:BitmapData;
         private var error:Boolean;
         private var loader:Loader;
         
-        public function AbstractPartition(layer:ILayer, x:int, y:int)
+        public function AbstractPartition(layer:Layer, x:int, y:int, dispatcher:IEventDispatcher)
         {
             _layer = layer;
             _x = x;
             _y = y;
+            this.dispatcher = dispatcher;
             
             _content = new Image(Texture.fromBitmapData(new BitmapData(256, 256, true, 0x0)));
             content.x = x;
@@ -80,7 +84,7 @@ package sk.yoz.ycanvas.demo.starlingComponent.partitions
             return bitmapData || error;
         }
         
-        protected function get layer():ILayer
+        public function get layer():Layer
         {
             return _layer;
         }
@@ -179,6 +183,9 @@ package sk.yoz.ycanvas.demo.starlingComponent.partitions
             (content as Image).texture.dispose();
             (content as Image).texture = Texture.fromBitmapData(bitmapData);
             stopLoading();
+            
+            var type:String = PartitionEvent.LOADED;
+            dispatcher.dispatchEvent(new PartitionEvent(type, this));
         }
         
         private function onError(event:Event):void

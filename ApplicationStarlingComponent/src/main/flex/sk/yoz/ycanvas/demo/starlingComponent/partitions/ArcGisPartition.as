@@ -1,12 +1,14 @@
 package sk.yoz.ycanvas.demo.starlingComponent.partitions
 {
+    import flash.events.IEventDispatcher;
+    
     import sk.yoz.ycanvas.demo.starlingComponent.Layer;
     
     public class ArcGisPartition extends AbstractPartition
     {
-        public function ArcGisPartition(layer:Layer, x:int, y:int)
+        public function ArcGisPartition(layer:Layer, x:int, y:int, dispatcher:IEventDispatcher)
         {
-            super(layer, x, y);
+            super(layer, x, y, dispatcher);
         }
         
         override protected function get url():String

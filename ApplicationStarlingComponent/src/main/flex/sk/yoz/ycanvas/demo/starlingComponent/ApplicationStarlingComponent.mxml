@@ -4,22 +4,21 @@
                xmlns:mx="library://ns.adobe.com/flex/mx"
                minWidth="955" minHeight="600" backgroundAlpha="0"
                frameRate="60"
-               applicationComplete="onApplicationComplete()">
+               applicationComplete="onApplicationComplete()"
+               click="onClick()">
     <fx:Script>
         <![CDATA[
             import mx.events.ResizeEvent;
             
-            import sk.yoz.ycanvas.AbstractYCanvas;
             import sk.yoz.ycanvas.demo.starlingComponent.partitions.ArcGisPartition;
             import sk.yoz.ycanvas.demo.starlingComponent.partitions.MapQuestPartition;
             import sk.yoz.ycanvas.demo.starlingComponent.partitions.OpenStreetMapsPartition;
-            import sk.yoz.ycanvas.utils.TransformationUtils;
             
             import starling.core.Starling;
             import starling.display.Sprite;
             import starling.events.Event;
             
-            private var starling:Starling;
+            private var engine:Starling;
             private var component1:YCanvasStarlingComponent;
             private var component2:YCanvasStarlingComponent;
             private var component3:YCanvasStarlingComponent;
@@ -29,11 +28,24 @@
             private function onApplicationComplete():void
             {
                 var viewPort:Rectangle = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
-                starling = new Starling(starling.display.Sprite, stage, viewPort, stage.stage3Ds[0]);
-                starling.start();
-                starling.addEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
+                engine = new Starling(starling.display.Sprite, stage, viewPort, stage.stage3Ds[0]);
+                engine.start();
+                engine.addEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
+            }
+            
+            private function get currentComponent():YCanvasStarlingComponent
+            {
+                var starlingPoint:Point = new Point(stage.mouseX - engine.viewPort.x, stage.mouseY - engine.viewPort.y);
+                return engine.stage.hitTest(starlingPoint) as YCanvasStarlingComponent;
+            }
+            
+            private function onClick():void
+            {
+                if(!currentComponent)
+                    return;
                 
-                stage.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
+                var globalPoint:Point = new Point(mouseX, mouseY);
+                var ycanvasPoint:Point = currentComponent.controller.globalToViewPort(globalPoint);
             }
             
             private function onRootCreated(event:starling.events.Event, root:starling.display.Sprite):void
@@ -43,19 +55,19 @@
                 //container.y = 200;
                 root.addChild(container);
                 
-                component1 = new YCanvasStarlingComponent(OpenStreetMapsPartition);
+                component1 = new YCanvasStarlingComponent(OpenStreetMapsPartition, stage);
                 container.addChild(component1);
                 
-                component2 = new YCanvasStarlingComponent(MapQuestPartition);
+                component2 = new YCanvasStarlingComponent(MapQuestPartition, stage);
                 container.addChild(component2);
                 
-                component3 = new YCanvasStarlingComponent(ArcGisPartition);
+                component3 = new YCanvasStarlingComponent(ArcGisPartition, stage);
                 container.addChild(component3);
                 
-                component4 = new YCanvasStarlingComponent(OpenStreetMapsPartition);
+                component4 = new YCanvasStarlingComponent(OpenStreetMapsPartition, stage);
                 container.addChild(component4);
                 
-                component5 = new YCanvasStarlingComponent(OpenStreetMapsPartition);
+                component5 = new YCanvasStarlingComponent(OpenStreetMapsPartition, stage);
                 container.addChild(component5);
                 
                 resizeComponents();
@@ -67,7 +79,7 @@
             {
                 var w:uint = placeholder.width;
                 var h:uint = placeholder.height;
-                starling.viewPort = new Rectangle(placeholder.x, placeholder.y, w, h);
+                engine.viewPort = new Rectangle(placeholder.x, placeholder.y, w, h);
                 
                 component1.stage.stageWidth = w;
                 component1.stage.stageHeight = h;
@@ -102,16 +114,6 @@
             {
                 resizeComponents();
             }
-            
-            private function onMouseWheel(event:MouseEvent):void
-            {
-                var canvas:AbstractYCanvas = component1.controller;
-                
-                TransformationUtils.scaleTo(canvas, 
-                    canvas.scale * (event.delta > 0 ? 1.5 : 0.7), 
-                    canvas.globalToCanvas(new Point(placeholder.mouseX, placeholder.mouseY)));
-                canvas.render();
-            }
         ]]>
     </fx:Script>
     
@@ -119,7 +121,7 @@
         <s:HorizontalLayout />
     </s:layout>
     
-    <s:VGroup width="20%">
+    <s:VGroup width="200">
         <s:Label text="hello world"/>
     </s:VGroup>
     

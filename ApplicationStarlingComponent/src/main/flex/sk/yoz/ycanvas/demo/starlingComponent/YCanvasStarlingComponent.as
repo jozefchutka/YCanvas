@@ -1,43 +1,71 @@
 package sk.yoz.ycanvas.demo.starlingComponent
 {
+    import flash.display.Stage;
+    import flash.events.EventDispatcher;
     import flash.geom.Point;
     import flash.geom.Rectangle;
     
-    import sk.yoz.ycanvas.utils.TransformationUtils;
+    import sk.yoz.ycanvas.demo.starlingComponent.valueObjects.CanvasLimits;
     
     import starling.core.RenderSupport;
     import starling.core.Starling;
     import starling.display.DisplayObject;
     import starling.display.Sprite;
-    import starling.events.Touch;
-    import starling.events.TouchEvent;
-    import starling.events.TouchPhase;
     
     public class YCanvasStarlingComponent extends Sprite
     {
-        public var controller:YCanvasStarlingComponentController;
+        private var transformationDispatcher:EventDispatcher;
         
-        private var position:Point;
-        
+        private var _controller:YCanvasStarlingComponentController;
+        private var _transformationManager:TransformationManager;
         private var _width:Number = 200;
         private var _height:Number = 200;
-        private var _controllerViewPort:Rectangle;
+        private var _localViewPort:Rectangle;
+        private var _globalViewPort:Rectangle;
         
-        public function YCanvasStarlingComponent(partitionConstructor:Class)
+        public function YCanvasStarlingComponent(partitionConstructor:Class, stage:flash.display.Stage)
         {
             super();
             
-            controller = new YCanvasStarlingComponentController(controllerViewPort, partitionConstructor);
+            transformationDispatcher = new EventDispatcher();
+            
+            _controller = new YCanvasStarlingComponentController(globalViewPort, partitionConstructor, transformationDispatcher);
             addChild(controller.component);
             
-            addEventListener(TouchEvent.TOUCH, onTouch);
+            _transformationManager = new TransformationManager(this, transformationDispatcher, stage);
+            
+            var limits:CanvasLimits = new CanvasLimits;
+            limits.scaleMin = 1;
+            limits.scaleMax = 1 / (2 << 15);
+            transformationManager.limits = limits;
+        }
+        
+        public function get controller():YCanvasStarlingComponentController
+        {
+            return _controller;
+        }
+        
+        public function get transformationManager():TransformationManager
+        {
+            return _transformationManager;
+        }
+        
+        override public function set x(value:Number):void
+        {
+            super.x = value;
+            invalidateViewPort();
+        }
+        
+        override public function set y(value:Number):void
+        {
+            super.y = value;
+            invalidateViewPort();
         }
         
         override public function set width(value:Number):void
         {
             _width = value;
-            _controllerViewPort = null;
-            updateViewPort();
+            validateViewPort();
         }
         
         override public function get width():Number
@@ -48,8 +76,7 @@ package sk.yoz.ycanvas.demo.starlingComponent
         override public function set height(value:Number):void
         {
             _height = value;
-            _controllerViewPort = null;
-            updateViewPort();
+            validateViewPort();
         }
         
         override public function get height():Number
@@ -57,24 +84,32 @@ package sk.yoz.ycanvas.demo.starlingComponent
             return _height;
         }
         
-        private function get globalViewPort():Rectangle
+        private function get localViewPort():Rectangle
         {
-            var globalPoint:Point = localToGlobal(new Point(0, 0));
-            return new Rectangle(globalPoint.x, globalPoint.y, width, height);
+            if(!_localViewPort)
+            {
+                var starlingPoint:Point = localToGlobal(new Point(0, 0));
+                _localViewPort = new Rectangle(starlingPoint.x, starlingPoint.y, width, height);
+            }
+            
+            return _localViewPort;
         }
         
-        private function get controllerViewPort():Rectangle
+        private function get globalViewPort():Rectangle
         {
-            if(!_controllerViewPort)
-                _controllerViewPort = new Rectangle(0, 0, width, height);
-            return _controllerViewPort;
+            if(!_globalViewPort)
+                _globalViewPort = new Rectangle(
+                    Starling.current.viewPort.x + localViewPort.x, 
+                    Starling.current.viewPort.y + localViewPort.y, 
+                    width, height);
+            return _globalViewPort;
         }
         
         override public function render(support:RenderSupport, alpha:Number):void
         {
             support.finishQuadBatch()
             
-            Starling.context.setScissorRectangle(globalViewPort);
+            Starling.context.setScissorRectangle(localViewPort);
             super.render(support,alpha);
             support.finishQuadBatch();
             
@@ -83,52 +118,21 @@ package sk.yoz.ycanvas.demo.starlingComponent
         
         override public function hitTest(localPoint:Point, forTouch:Boolean=false):DisplayObject
         {
-            var globalPoint:Point = localToGlobal(localPoint);
-            return globalViewPort.contains(globalPoint.x, globalPoint.y) ? this : null;
+            var starlingPoint:Point = localToGlobal(localPoint);
+            return localViewPort.contains(starlingPoint.x, starlingPoint.y) ? this : null;
         }
         
-        private function updateViewPort():void
+        public function invalidateViewPort():void
         {
-            controller.viewPort = controllerViewPort;
+            _localViewPort = null;
+            _globalViewPort = null;
+        }
+        
+        public function validateViewPort():void
+        {
+            invalidateViewPort();
+            controller.viewPort = globalViewPort;
             controller.render();
-        }
-        
-        private function touchBegan(touch:Touch):void
-        {
-            position = controller.globalToCanvas(new Point(touch.globalX, touch.globalY));
-        }
-        
-        private function touchMoved(touch:Touch):void
-        {
-            var current:Point = controller.globalToCanvas(new Point(touch.globalX, touch.globalY));
-            var center:Point = new Point(
-                controller.center.x - current.x + position.x, 
-                controller.center.y - current.y + position.y);
-            TransformationUtils.moveTo(controller, center);
-            position = controller.globalToCanvas(new Point(touch.globalX, touch.globalY));
-            controller.render();
-        }
-        
-        private function touchEnded(touch:Touch):void
-        {
-            position = null;
-        }
-        
-        private function onTouch(event:TouchEvent):void
-        {
-            var touch:Touch;
-            
-            touch = event.getTouch(this, TouchPhase.BEGAN);
-            if(touch)
-                return touchBegan(touch);
-            
-            touch = event.getTouch(this, TouchPhase.MOVED);
-            if(touch)
-                return touchMoved(touch);
-            
-            touch = event.getTouch(this, TouchPhase.ENDED);
-            if(touch)
-                return touchEnded(touch);
         }
     }
 }

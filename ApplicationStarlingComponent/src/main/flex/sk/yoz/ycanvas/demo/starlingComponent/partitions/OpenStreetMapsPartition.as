@@ -1,12 +1,14 @@
 package sk.yoz.ycanvas.demo.starlingComponent.partitions
 {
-    import sk.yoz.ycanvas.interfaces.ILayer;
+    import flash.events.IEventDispatcher;
+    
+    import sk.yoz.ycanvas.demo.starlingComponent.Layer;
 
     public class OpenStreetMapsPartition extends AbstractPartition
     {
-        public function OpenStreetMapsPartition(layer:ILayer, x:int, y:int)
+        public function OpenStreetMapsPartition(layer:Layer, x:int, y:int, dispatcher:IEventDispatcher)
         {
-            super(layer, x, y);
+            super(layer, x, y, dispatcher);
         }
         
         override protected function get url():String
