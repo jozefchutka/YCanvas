@@ -7,10 +7,15 @@ package sk.yoz.ycanvas.demo.starlingComponent
     import flash.geom.Rectangle;
     import flash.utils.Timer;
     
+    import sk.yoz.net.URLRequestBuffer;
     import sk.yoz.ycanvas.AbstractYCanvas;
     import sk.yoz.ycanvas.demo.starlingComponent.events.CanvasEvent;
     import sk.yoz.ycanvas.demo.starlingComponent.events.PartitionEvent;
-    import sk.yoz.ycanvas.demo.starlingComponent.partitions.AbstractPartition;
+    import sk.yoz.ycanvas.demo.starlingComponent.layers.Layer;
+    import sk.yoz.ycanvas.demo.starlingComponent.layers.LayerFactory;
+    import sk.yoz.ycanvas.demo.starlingComponent.partitions.Partition;
+    import sk.yoz.ycanvas.demo.starlingComponent.partitions.PartitionFactory;
+    import sk.yoz.ycanvas.demo.starlingComponent.valueObjects.Mode;
     import sk.yoz.ycanvas.interfaces.IPartition;
     import sk.yoz.ycanvas.stage3D.YCanvasRootStage3D;
     import sk.yoz.ycanvas.utils.ILayerUtils;
@@ -22,14 +27,18 @@ package sk.yoz.ycanvas.demo.starlingComponent
         private var timer:Timer = new Timer(250, 1);
         private var dispatcher:IEventDispatcher;
         
-        public function YCanvasStarlingComponentController(viewPort:Rectangle, partitionConstructor:Class, dispatcher:IEventDispatcher)
+        private var _mode:Mode;
+        
+        public function YCanvasStarlingComponentController(viewPort:Rectangle, mode:Mode, dispatcher:IEventDispatcher)
         {
             _root = new YCanvasRootStage3D;
+            _mode = mode;
             
             super(viewPort);
             
+            var buffer:URLRequestBuffer = new URLRequestBuffer(6, 10000);
             marginOffset = 256;
-            partitionFactory = new PartitionFactory(partitionConstructor, dispatcher);
+            partitionFactory = new PartitionFactory(mode, dispatcher, buffer);
             layerFactory = new LayerFactory(partitionFactory);
             center = new Point(35e6, 25e6);
             scale = 1 / 16384;
@@ -39,13 +48,36 @@ package sk.yoz.ycanvas.demo.starlingComponent
             dispatcher.addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onCanvasTransformationFinished);
             dispatcher.addEventListener(PartitionEvent.LOADED, onPartitionLoaded);
             
-            
             timer.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerComplete);
         }
         
         public function get component():YCanvasRootStage3D
         {
             return root as YCanvasRootStage3D;
+        }
+        
+        public function set mode(value:Mode):void
+        {
+            if(mode == value)
+                return;
+            
+            _mode = value;
+            
+            if(partitionFactory)
+                (partitionFactory as PartitionFactory).mode = mode;
+            
+            while(layers.length > 1)
+                disposeLayer(layers[0]);
+            
+            var list:Vector.<IPartition> = layers[0].partitions;
+            list.sort(sortByDistanceFromCenter);
+            for(var i:uint = 0, length:uint = list.length; i < length; i++)
+                (list[i] as Partition).mode = mode;
+        }
+        
+        public function get mode():Mode
+        {
+            return _mode;
         }
         
         override public function render():void
@@ -61,11 +93,12 @@ package sk.yoz.ycanvas.demo.starlingComponent
         
         private function startLoading(layer:Layer):void
         {
-            var partition:AbstractPartition;
+            var partition:Partition;
             var list:Vector.<IPartition> = layer.partitions;
+            list.sort(sortByDistanceFromCenter);
             for(var i:uint = 0, length:uint = list.length; i < length; i++)
             {
-                partition = list[i] as AbstractPartition;
+                partition = list[i] as Partition;
                 if(!partition.loading && !partition.loaded)
                     partition.load();
             }
@@ -73,11 +106,11 @@ package sk.yoz.ycanvas.demo.starlingComponent
         
         private function stopLoading(layer:Layer):void
         {
-            var partition:AbstractPartition;
+            var partition:Partition;
             var list:Vector.<IPartition> = layer.partitions;
             for(var i:uint = 0, length:uint = list.length; i < length; i++)
             {
-                partition = list[i] as AbstractPartition;
+                partition = list[i] as Partition;
                 if(partition.loading)
                     partition.stopLoading();
             }
@@ -94,7 +127,7 @@ package sk.yoz.ycanvas.demo.starlingComponent
             resetTimer();
         }
         
-        private function sortByDistanceFromCenter(partition1:AbstractPartition, partition2:AbstractPartition):Number
+        private function sortByDistanceFromCenter(partition1:Partition, partition2:Partition):Number
         {
             var x1:Number = partition1.x + partition1.expectedWidth * .5 - center.x;
             var y1:Number = partition1.y + partition1.expectedHeight * .5 - center.y;
@@ -111,19 +144,19 @@ package sk.yoz.ycanvas.demo.starlingComponent
             timer.start();
         }
         
-        private function onCanvasTransformationFinished(event:CanvasEvent):void
-        {
-            render();
-        }
-        
         private function onCanvasTransformationStarted(event:CanvasEvent):void
         {
             resetTimer();
         }
         
+        private function onCanvasTransformationFinished(event:CanvasEvent):void
+        {
+            render();
+        }
+        
         private function onPartitionLoaded(event:PartitionEvent):void
         {
-            var partition:AbstractPartition = event.partition;
+            var partition:Partition = event.partition;
             var layer:Layer = partition.layer;
             if(mainLayer != layer)
                 return;

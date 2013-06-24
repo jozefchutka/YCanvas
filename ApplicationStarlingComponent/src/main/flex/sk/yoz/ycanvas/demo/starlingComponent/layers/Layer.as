@@ -1,4 +1,4 @@
-package sk.yoz.ycanvas.demo.starlingComponent
+package sk.yoz.ycanvas.demo.starlingComponent.layers
 {
     import flash.geom.Point;
     
@@ -23,6 +23,7 @@ package sk.yoz.ycanvas.demo.starlingComponent
         {
             _level = level;
             this.partitionFactory = partitionFactory;
+            content.touchable = false;
         }
         
         public function get content():DisplayObjectContainer
@@ -102,11 +103,6 @@ package sk.yoz.ycanvas.demo.starlingComponent
                 partitions.splice(index, 1);
         }
         
-        public function toString():String
-        {
-            return "Layer: [level:" + level + "]";
-        }
-        
         public function dispose():void
         {
             if(!partitions.length)
@@ -127,6 +123,11 @@ package sk.yoz.ycanvas.demo.starlingComponent
             var partitionStage3D:IPartitionStage3D = partition as IPartitionStage3D;
             partitionStage3D.content.x = (partition.x - center.x) / level;
             partitionStage3D.content.y = (partition.y - center.y) / level;
+        }
+        
+        public function toString():String
+        {
+            return "Layer: [level:" + level + "]";
         }
     }
 }

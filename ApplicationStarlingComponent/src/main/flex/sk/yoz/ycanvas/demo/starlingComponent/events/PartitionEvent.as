@@ -2,22 +2,22 @@ package sk.yoz.ycanvas.demo.starlingComponent.events
 {
     import flash.events.Event;
     
-    import sk.yoz.ycanvas.demo.starlingComponent.partitions.AbstractPartition;
+    import sk.yoz.ycanvas.demo.starlingComponent.partitions.Partition;
     
     public class PartitionEvent extends Event
     {
         public static const LOADED:String = "partitionLoaded";
         
-        private var _partition:AbstractPartition;
+        private var _partition:Partition;
         
-        public function PartitionEvent(type:String, partition:AbstractPartition)
+        public function PartitionEvent(type:String, partition:Partition)
         {
             super(type, false, true);
             
             _partition = partition;
         }
         
-        public function get partition():AbstractPartition
+        public function get partition():Partition
         {
             return _partition;
         }

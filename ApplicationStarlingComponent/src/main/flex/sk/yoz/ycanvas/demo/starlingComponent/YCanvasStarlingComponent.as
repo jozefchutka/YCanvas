@@ -5,7 +5,7 @@ package sk.yoz.ycanvas.demo.starlingComponent
     import flash.geom.Point;
     import flash.geom.Rectangle;
     
-    import sk.yoz.ycanvas.demo.starlingComponent.valueObjects.CanvasLimits;
+    import sk.yoz.ycanvas.demo.starlingComponent.valueObjects.Mode;
     
     import starling.core.RenderSupport;
     import starling.core.Starling;
@@ -14,7 +14,7 @@ package sk.yoz.ycanvas.demo.starlingComponent
     
     public class YCanvasStarlingComponent extends Sprite
     {
-        private var transformationDispatcher:EventDispatcher;
+        private var dispatcher:EventDispatcher;
         
         private var _controller:YCanvasStarlingComponentController;
         private var _transformationManager:TransformationManager;
@@ -23,21 +23,18 @@ package sk.yoz.ycanvas.demo.starlingComponent
         private var _localViewPort:Rectangle;
         private var _globalViewPort:Rectangle;
         
-        public function YCanvasStarlingComponent(partitionConstructor:Class, stage:flash.display.Stage)
+        public function YCanvasStarlingComponent(mode:Mode, stage:flash.display.Stage)
         {
             super();
             
-            transformationDispatcher = new EventDispatcher();
+            dispatcher = new EventDispatcher();
             
-            _controller = new YCanvasStarlingComponentController(globalViewPort, partitionConstructor, transformationDispatcher);
+            _controller = new YCanvasStarlingComponentController(globalViewPort, mode, dispatcher);
             addChild(controller.component);
             
-            _transformationManager = new TransformationManager(this, transformationDispatcher, stage);
-            
-            var limits:CanvasLimits = new CanvasLimits;
-            limits.scaleMin = 1;
-            limits.scaleMax = 1 / (2 << 15);
-            transformationManager.limits = limits;
+            _transformationManager = new TransformationManager(this, dispatcher, stage);
+            transformationManager.minScale = 1;
+            transformationManager.maxScale = 1 / (2 << 15);
         }
         
         public function get controller():YCanvasStarlingComponentController
@@ -82,6 +79,16 @@ package sk.yoz.ycanvas.demo.starlingComponent
         override public function get height():Number
         {
             return _height;
+        }
+        
+        public function set mode(value:Mode):void
+        {
+            controller.mode = value;
+        }
+        
+        public function get mode():Mode
+        {
+            return controller.mode;
         }
         
         private function get localViewPort():Rectangle

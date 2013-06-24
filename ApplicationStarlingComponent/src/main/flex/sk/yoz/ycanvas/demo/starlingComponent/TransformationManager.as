@@ -11,7 +11,6 @@ package sk.yoz.ycanvas.demo.starlingComponent
     
     import sk.yoz.ycanvas.AbstractYCanvas;
     import sk.yoz.ycanvas.demo.starlingComponent.events.CanvasEvent;
-    import sk.yoz.ycanvas.demo.starlingComponent.valueObjects.CanvasLimits;
     import sk.yoz.ycanvas.demo.starlingComponent.valueObjects.CanvasTransformation;
     import sk.yoz.ycanvas.utils.TransformationUtils;
     
@@ -24,8 +23,8 @@ package sk.yoz.ycanvas.demo.starlingComponent
     {
         public static const PI2:Number = Math.PI * 2;
         
-        private var minScale:Number = 1;
-        private var maxScale:Number = 1 / 12;
+        public var minScale:Number = 1;
+        public var maxScale:Number = 1 / 12;
         
         private var transformation:CanvasTransformation = new CanvasTransformation;
         private var transformationTarget:CanvasTransformation = new CanvasTransformation;
@@ -118,12 +117,6 @@ package sk.yoz.ycanvas.demo.starlingComponent
             return _allowInteractions;
         }
         
-        public function set limits(value:CanvasLimits):void
-        {
-            minScale = value.scaleMin;
-            maxScale = value.scaleMax;
-        }
-        
         private function get canvas():AbstractYCanvas
         {
             return component.controller;
@@ -169,7 +162,6 @@ package sk.yoz.ycanvas.demo.starlingComponent
             transformationTarget.centerY = transformation.centerY = canvas.center.y;
             transformationTarget.scale = transformation.scale = canvas.scale;
             transformationTarget.rotation = transformation.rotation = canvas.rotation;
-            
         }
         
         private function stop():void

@@ -1,4 +1,4 @@
-package sk.yoz.ycanvas.demo.starlingComponent
+package sk.yoz.ycanvas.demo.starlingComponent.layers
 {
     import flash.geom.Point;
     

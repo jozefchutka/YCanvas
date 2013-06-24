@@ -8,22 +8,36 @@
                click="onClick()">
     <fx:Script>
         <![CDATA[
+            import mx.collections.ArrayCollection;
             import mx.events.ResizeEvent;
             
-            import sk.yoz.ycanvas.demo.starlingComponent.partitions.ArcGisPartition;
-            import sk.yoz.ycanvas.demo.starlingComponent.partitions.MapQuestPartition;
-            import sk.yoz.ycanvas.demo.starlingComponent.partitions.OpenStreetMapsPartition;
+            import net.hires.debug.Stats;
+            
+            import sk.yoz.ycanvas.demo.starlingComponent.valueObjects.Mode;
             
             import starling.core.Starling;
             import starling.display.Sprite;
             import starling.events.Event;
             
             private var engine:Starling;
+            
             private var component1:YCanvasStarlingComponent;
             private var component2:YCanvasStarlingComponent;
             private var component3:YCanvasStarlingComponent;
             private var component4:YCanvasStarlingComponent;
             private var component5:YCanvasStarlingComponent;
+            
+            private var modeMapQuest:Mode;
+            private var modeOSM:Mode;
+            private var modeMapBox:Mode;
+            private var modeEsri:Mode;
+            private var modeCloudMade:Mode;
+            
+            [Bindable]
+            private var componentList:ArrayCollection;
+            
+            [Bindable]
+            private var modeList:ArrayCollection;
             
             private function onApplicationComplete():void
             {
@@ -31,6 +45,45 @@
                 engine = new Starling(starling.display.Sprite, stage, viewPort, stage.stage3Ds[0]);
                 engine.start();
                 engine.addEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
+                
+                modeMapQuest = new Mode;
+                modeMapQuest.templates = Vector.<String>([
+                    "http://otile1.mqcdn.com/tiles/1.0.0/osm/${level}/${x}/${y}.png",
+                    "http://otile2.mqcdn.com/tiles/1.0.0/osm/${level}/${x}/${y}.png",
+                    "http://otile3.mqcdn.com/tiles/1.0.0/osm/${level}/${x}/${y}.png",
+                    "http://otile4.mqcdn.com/tiles/1.0.0/osm/${level}/${x}/${y}.png"]);
+                
+                modeOSM = new Mode;
+                modeOSM.templates = Vector.<String>([
+                    "http://a.tile.openstreetmap.org/${level}/${x}/${y}.png",
+                    "http://b.tile.openstreetmap.org/${level}/${x}/${y}.png",
+                    "http://c.tile.openstreetmap.org/${level}/${x}/${y}.png"]);
+                
+                modeMapBox = new Mode;
+                modeMapBox.templates = Vector.<String>([
+                    "http://a.tiles.mapbox.com/v3/examples.map-vyofok3q/${level}/${x}/${y}.png",
+                    "http://b.tiles.mapbox.com/v3/examples.map-vyofok3q/${level}/${x}/${y}.png",
+                    "http://c.tiles.mapbox.com/v3/examples.map-vyofok3q/${level}/${x}/${y}.png",
+                    "http://d.tiles.mapbox.com/v3/examples.map-vyofok3q/${level}/${x}/${y}.png"]);
+                
+                modeCloudMade = new Mode;
+                modeCloudMade.templates = Vector.<String>([
+                    "http://a.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/998/256/${level}/${x}/${y}.png",
+                    "http://b.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/998/256/${level}/${x}/${y}.png",
+                    "http://c.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/998/256/${level}/${x}/${y}.png"]);
+                
+                modeEsri = new Mode;
+                modeEsri.templates = Vector.<String>([
+                    "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${level}/${y}/${x}.png"]);
+                
+                modeList = new ArrayCollection;
+                modeList.addItem({label: "Map Quest", data: modeMapQuest});
+                modeList.addItem({label: "OSM", data: modeOSM});
+                modeList.addItem({label: "MapBox", data: modeMapBox});
+                modeList.addItem({label: "CloudMade", data: modeCloudMade});
+                modeList.addItem({label: "ESRI", data: modeEsri});
+                
+                placeholder.addChild(new Stats());
             }
             
             private function get currentComponent():YCanvasStarlingComponent
@@ -55,24 +108,31 @@
                 //container.y = 200;
                 root.addChild(container);
                 
-                component1 = new YCanvasStarlingComponent(OpenStreetMapsPartition, stage);
+                component1 = new YCanvasStarlingComponent(modeMapQuest, stage);
                 container.addChild(component1);
                 
-                component2 = new YCanvasStarlingComponent(MapQuestPartition, stage);
+                component2 = new YCanvasStarlingComponent(modeOSM, stage);
                 container.addChild(component2);
                 
-                component3 = new YCanvasStarlingComponent(ArcGisPartition, stage);
+                component3 = new YCanvasStarlingComponent(modeMapBox, stage);
                 container.addChild(component3);
                 
-                component4 = new YCanvasStarlingComponent(OpenStreetMapsPartition, stage);
+                component4 = new YCanvasStarlingComponent(modeCloudMade, stage);
                 container.addChild(component4);
                 
-                component5 = new YCanvasStarlingComponent(OpenStreetMapsPartition, stage);
+                component5 = new YCanvasStarlingComponent(modeEsri, stage);
                 container.addChild(component5);
                 
                 resizeComponents();
                 
                 placeholder.addEventListener(ResizeEvent.RESIZE, onPlaceholderResize);
+                
+                componentList = new ArrayCollection;
+                componentList.addItem({label: "map 1", data: component1});
+                componentList.addItem({label: "map 2", data: component2});
+                componentList.addItem({label: "map 3", data: component3});
+                componentList.addItem({label: "map 4", data: component4});
+                componentList.addItem({label: "map 5", data: component5});
             }
             
             private function resizeComponents():void
@@ -110,6 +170,13 @@
                 component5.height = h / 2;
             }
             
+            private function updateComponent():void
+            {
+                var component:YCanvasStarlingComponent = componentSelector.selectedItem.data;
+                var mode:Mode = modeSelector.selectedItem.data;
+                component.mode = mode;
+            }
+            
             private function onPlaceholderResize(event:ResizeEvent):void
             {
                 resizeComponents();
@@ -118,11 +185,13 @@
     </fx:Script>
     
     <s:layout>
-        <s:HorizontalLayout />
+        <s:HorizontalLayout gap="0"/>
     </s:layout>
     
     <s:VGroup width="200">
-        <s:Label text="hello world"/>
+        <s:DropDownList id="componentSelector" dataProvider="{componentList}" requireSelection="true" width="100%"/>
+        <s:DropDownList id="modeSelector" dataProvider="{modeList}" requireSelection="true" width="100%"/>
+        <s:Button label="Update" click="updateComponent()"/>
     </s:VGroup>
     
     <mx:UIComponent id="placeholder" width="100%" height="100%"/>
