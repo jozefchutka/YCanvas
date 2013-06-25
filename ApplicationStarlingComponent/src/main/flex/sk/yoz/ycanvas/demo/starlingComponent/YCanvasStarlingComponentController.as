@@ -33,6 +33,7 @@ package sk.yoz.ycanvas.demo.starlingComponent
         {
             _root = new YCanvasRootStage3D;
             _mode = mode;
+            this.dispatcher = dispatcher;
             
             super(viewPort);
             
@@ -40,8 +41,8 @@ package sk.yoz.ycanvas.demo.starlingComponent
             marginOffset = 256;
             partitionFactory = new PartitionFactory(mode, dispatcher, buffer);
             layerFactory = new LayerFactory(partitionFactory);
-            center = new Point(35e6, 25e6);
-            scale = 1 / 16384;
+            center = new Point(35e6, 24e6);
+            scale = 1 / 4096;
             render();
             
             dispatcher.addEventListener(CanvasEvent.TRANSFORMATION_STARTED, onCanvasTransformationStarted);
@@ -80,6 +81,24 @@ package sk.yoz.ycanvas.demo.starlingComponent
             return _mode;
         }
         
+        override public function set center(value:Point):void
+        {
+            super.center = value;
+            dispatcher.dispatchEvent(new CanvasEvent(CanvasEvent.CENTER_CHANGED));
+        }
+        
+        override public function set scale(value:Number):void
+        {
+            super.scale = value;
+            dispatcher.dispatchEvent(new CanvasEvent(CanvasEvent.SCALE_CHANGED));
+        }
+        
+        override public function set rotation(value:Number):void
+        {
+            super.rotation = value;
+            dispatcher.dispatchEvent(new CanvasEvent(CanvasEvent.ROTATION_CHANGED));
+        }
+        
         override public function render():void
         {
             super.render();
@@ -89,6 +108,8 @@ package sk.yoz.ycanvas.demo.starlingComponent
             var main:Layer = layers[layers.length - 1] as Layer;
             for each(var layer:Layer in layers)
                 (layer == main) ? startLoading(layer) : stopLoading(layer);
+                
+            dispatcher.dispatchEvent(new CanvasEvent(CanvasEvent.RENDERED));
         }
         
         private function startLoading(layer:Layer):void

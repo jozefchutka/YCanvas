@@ -2,6 +2,7 @@ package sk.yoz.ycanvas.demo.starlingComponent
 {
     import flash.display.Stage;
     import flash.events.EventDispatcher;
+    import flash.events.IEventDispatcher;
     import flash.geom.Point;
     import flash.geom.Rectangle;
     
@@ -14,8 +15,7 @@ package sk.yoz.ycanvas.demo.starlingComponent
     
     public class YCanvasStarlingComponent extends Sprite
     {
-        private var dispatcher:EventDispatcher;
-        
+        private var _dispatcher:EventDispatcher;
         private var _controller:YCanvasStarlingComponentController;
         private var _transformationManager:TransformationManager;
         private var _width:Number = 200;
@@ -27,7 +27,7 @@ package sk.yoz.ycanvas.demo.starlingComponent
         {
             super();
             
-            dispatcher = new EventDispatcher();
+            _dispatcher = new EventDispatcher();
             
             _controller = new YCanvasStarlingComponentController(globalViewPort, mode, dispatcher);
             addChild(controller.component);
@@ -35,6 +35,11 @@ package sk.yoz.ycanvas.demo.starlingComponent
             _transformationManager = new TransformationManager(this, dispatcher, stage);
             transformationManager.minScale = 1;
             transformationManager.maxScale = 1 / (2 << 15);
+        }
+        
+        public function get dispatcher():IEventDispatcher
+        {
+            return _dispatcher;
         }
         
         public function get controller():YCanvasStarlingComponentController

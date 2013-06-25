@@ -13,7 +13,9 @@
             
             import net.hires.debug.Stats;
             
+            import sk.yoz.ycanvas.demo.starlingComponent.events.CanvasEvent;
             import sk.yoz.ycanvas.demo.starlingComponent.valueObjects.Mode;
+            import sk.yoz.ycanvas.utils.TransformationUtils;
             
             import starling.core.Starling;
             import starling.display.Sprite;
@@ -21,11 +23,8 @@
             
             private var engine:Starling;
             
-            private var component1:YCanvasStarlingComponent;
-            private var component2:YCanvasStarlingComponent;
-            private var component3:YCanvasStarlingComponent;
-            private var component4:YCanvasStarlingComponent;
-            private var component5:YCanvasStarlingComponent;
+            private var mapBig:YCanvasStarlingComponent;
+            private var mapSmall:YCanvasStarlingComponent;
             
             private var modeMapQuest:Mode;
             private var modeOSM:Mode;
@@ -74,7 +73,8 @@
                 
                 modeEsri = new Mode;
                 modeEsri.templates = Vector.<String>([
-                    "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${level}/${y}/${x}.png"]);
+                    "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${level}/${y}/${x}.png",
+                    "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${level}/${y}/${x}.png"]);
                 
                 modeList = new ArrayCollection;
                 modeList.addItem({label: "Map Quest", data: modeMapQuest});
@@ -108,69 +108,68 @@
                 //container.y = 200;
                 root.addChild(container);
                 
-                component1 = new YCanvasStarlingComponent(modeMapQuest, stage);
-                container.addChild(component1);
+                mapBig = new YCanvasStarlingComponent(modeEsri, stage);
+                mapBig.dispatcher.addEventListener(CanvasEvent.CENTER_CHANGED, onMapBigCenterChanged);
+                mapBig.dispatcher.addEventListener(CanvasEvent.SCALE_CHANGED, onMapBigScaleChanged);
+                mapBig.dispatcher.addEventListener(CanvasEvent.ROTATION_CHANGED, onMapBigRotationChanged);
+                mapBig.dispatcher.addEventListener(CanvasEvent.RENDERED, onMapBigRendered);
+                container.addChild(mapBig);
                 
-                component2 = new YCanvasStarlingComponent(modeOSM, stage);
-                container.addChild(component2);
-                
-                component3 = new YCanvasStarlingComponent(modeMapBox, stage);
-                container.addChild(component3);
-                
-                component4 = new YCanvasStarlingComponent(modeCloudMade, stage);
-                container.addChild(component4);
-                
-                component5 = new YCanvasStarlingComponent(modeEsri, stage);
-                container.addChild(component5);
+                mapSmall = new YCanvasStarlingComponent(modeOSM, stage);
+                container.addChild(mapSmall);
                 
                 resizeComponents();
                 
                 placeholder.addEventListener(ResizeEvent.RESIZE, onPlaceholderResize);
                 
                 componentList = new ArrayCollection;
-                componentList.addItem({label: "map 1", data: component1});
-                componentList.addItem({label: "map 2", data: component2});
-                componentList.addItem({label: "map 3", data: component3});
-                componentList.addItem({label: "map 4", data: component4});
-                componentList.addItem({label: "map 5", data: component5});
+                componentList.addItem({label: "Big Map", data: mapBig});
+                componentList.addItem({label: "Small Map", data: mapSmall});
+                
+                stage.addEventListener(MouseEvent.MOUSE_UP, enableMapInteradtion);
             }
             
             private function resizeComponents():void
             {
+                var global:Point = placeholder.localToGlobal(new Point(0, 0));
                 var w:uint = placeholder.width;
                 var h:uint = placeholder.height;
-                engine.viewPort = new Rectangle(placeholder.x, placeholder.y, w, h);
+                engine.viewPort = new Rectangle(global.x, global.y, w, h);
                 
-                component1.stage.stageWidth = w;
-                component1.stage.stageHeight = h;
+                mapBig.stage.stageWidth = w;
+                mapBig.stage.stageHeight = h;
                 
-                component1.x = 0;
-                component1.y = 0;
-                component1.width = w / 2;
-                component1.height = h / 2;
+                mapBig.x = 0;
+                mapBig.y = 0;
+                mapBig.width = w;
+                mapBig.height = h;
                 
-                component2.x = w / 2;
-                component2.y = 0;
-                component2.width = w / 2;
-                component2.height = h / 2;
+                mapSmall.x = 20;
+                mapSmall.y = h- h / 6 - 20;
+                mapSmall.width = w / 6;
+                mapSmall.height = h / 6;
                 
-                component3.x = 0;
-                component3.y = h / 2;
-                component3.width = w / 2;
-                component3.height = h / 2;
-                
-                component4.x = w / 2;
-                component4.y = h / 2;
-                component4.width = w / 2;
-                component4.height = h / 2;
-                
-                component5.x = w / 4;
-                component5.y = h / 4;
-                component5.width = w / 2;
-                component5.height = h / 2;
+                syncSmallMap();
+                if(syncCheckBox.selected)
+                    syncSmallMap();
             }
             
-            private function updateComponent():void
+            private function syncSmallMap():void
+            {
+                var globalPoint:Point = mapSmall.controller.canvasToGlobal(mapSmall.controller.center);
+                mapSmall.controller.center = mapBig.controller.globalToCanvas(globalPoint);
+                mapSmall.controller.scale = mapBig.controller.scale;
+                mapSmall.controller.rotation = mapBig.controller.rotation;
+                mapSmall.controller.render();
+            }
+            
+            private function syncLatLon():void
+            {
+                latInput.value = GeoUtils.y2lat(mapBig.controller.center.y);
+                lonInput.value = GeoUtils.x2lon(mapBig.controller.center.x);
+            }
+            
+            private function onUpdateComponentClick():void
             {
                 var component:YCanvasStarlingComponent = componentSelector.selectedItem.data;
                 var mode:Mode = modeSelector.selectedItem.data;
@@ -180,6 +179,71 @@
             private function onPlaceholderResize(event:ResizeEvent):void
             {
                 resizeComponents();
+            }
+            
+            private function onSyncCheckBoxChange():void
+            {
+                if(syncCheckBox.selected)
+                    syncSmallMap();
+            }
+            
+            private function onMapBigCenterChanged(event:CanvasEvent):void
+            {
+                if(syncCheckBox.selected)
+                    syncSmallMap();
+                syncLatLon();
+            }
+            
+            private function onMapBigScaleChanged(event:CanvasEvent):void
+            {
+                if(syncCheckBox.selected)
+                    syncSmallMap();
+            }
+            
+            private function onMapBigRotationChanged(event:CanvasEvent):void
+            {
+                if(syncCheckBox.selected)
+                    syncSmallMap();
+            }
+            
+            private function onMapBigRendered(event:CanvasEvent):void
+            {
+                if(syncCheckBox.selected)
+                    mapSmall.dispatcher.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_FINISHED));
+            }
+            
+            private function onZoomInClick():void
+            {
+                mapBig.transformationManager.scaleByTween(1.5);
+            }
+            
+            private function onZoomOutClick():void
+            {
+                mapBig.transformationManager.scaleByTween(1 / 1.5);
+            }
+            
+            private function onNavigateClick():void
+            {
+                mapBig.transformationManager.moveToTween(GeoUtils.lon2x(lonInput.value), GeoUtils.lat2y(latInput.value));
+            }
+            
+            private function onRotationSliderChange(event:flash.events.Event):void
+            {
+                //pBig.transformationManager.allowMove = false;
+                
+                var rotation:Number = rotationInput.value * 0.0174532925;
+                //TransformationUtils.rotateTo(mapBig.controller, rotation);
+                mapBig.transformationManager.rotateToTween(rotation);
+            }
+            
+            private function disableMapInteraction():void
+            {
+                mapBig.transformationManager.allowMove = false;
+            }
+            
+            private function enableMapInteradtion(...rest):void
+            {
+                mapBig.transformationManager.allowMove = true;
             }
         ]]>
     </fx:Script>
@@ -191,8 +255,28 @@
     <s:VGroup width="200">
         <s:DropDownList id="componentSelector" dataProvider="{componentList}" requireSelection="true" width="100%"/>
         <s:DropDownList id="modeSelector" dataProvider="{modeList}" requireSelection="true" width="100%"/>
-        <s:Button label="Update" click="updateComponent()"/>
+        <s:Button label="Update Tile Provider" click="onUpdateComponentClick()"/>
+        <mx:HRule width="100%"/>
+        <s:CheckBox id="syncCheckBox" change="onSyncCheckBoxChange()" label="sync small and big map" selected="true"/>
+        <mx:HRule width="100%"/>
+        <s:HGroup width="100%">
+            <s:NumericStepper id="latInput" minimum="-90" maximum="90" snapInterval="0.001" width="100%"/>
+            <s:NumericStepper id="lonInput" minimum="-180" maximum="180" snapInterval="0.001" width="100%"/>
+        </s:HGroup>
+        
+        <s:Button label="Navigate" click="onNavigateClick()"/>
     </s:VGroup>
     
-    <mx:UIComponent id="placeholder" width="100%" height="100%"/>
+    <s:Group width="100%" height="100%">
+        <mx:UIComponent id="placeholder" width="100%" height="100%"/>
+        
+        <s:HSlider id="rotationInput" minimum="-180" maximum="180" bottom="20" right="80" snapInterval="10"
+                   focusEnabled="false" change="onRotationSliderChange(event)"
+                   mouseDown="disableMapInteraction()"/>
+        
+        <s:VGroup bottom="20" right="20" gap="0" mouseDown="disableMapInteraction()">
+            <s:Button label="+" width="30" click="onZoomInClick()"/>
+            <s:Button label="-" width="30" click="onZoomOutClick()"/>
+        </s:VGroup>
+    </s:Group>
 </s:Application>

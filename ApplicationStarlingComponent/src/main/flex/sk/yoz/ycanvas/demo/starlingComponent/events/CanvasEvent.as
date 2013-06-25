@@ -7,6 +7,11 @@ package sk.yoz.ycanvas.demo.starlingComponent.events
         public static const TRANSFORMATION_STARTED:String = "canvasTransformationStarted";
         public static const TRANSFORMATION_FINISHED:String = "canvasTransformationFinished";
         
+        public static const CENTER_CHANGED:String = "canvasCenterChanged";
+        public static const SCALE_CHANGED:String = "canvasScaleChanged";
+        public static const ROTATION_CHANGED:String = "canvasRotationChanged";
+        public static const RENDERED:String = "canvasRendered";
+        
         public function CanvasEvent(type:String)
         {
             super(type, false, true);

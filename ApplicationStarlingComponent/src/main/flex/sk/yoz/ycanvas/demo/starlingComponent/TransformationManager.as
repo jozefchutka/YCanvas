@@ -15,9 +15,6 @@ package sk.yoz.ycanvas.demo.starlingComponent
     import sk.yoz.ycanvas.utils.TransformationUtils;
     
     import starling.core.Starling;
-    import starling.events.Touch;
-    import starling.events.TouchEvent;
-    import starling.events.TouchPhase;
     
     public class TransformationManager
     {
@@ -71,9 +68,9 @@ package sk.yoz.ycanvas.demo.starlingComponent
             validateInteractions();
             
             if(allowMove)
-                component.addEventListener(TouchEvent.TOUCH, onTouch);
+                stage.addEventListener(MouseEvent.MOUSE_DOWN, onStageMouseDown);
             else
-                component.removeEventListener(TouchEvent.TOUCH, onTouch);
+                stage.removeEventListener(MouseEvent.MOUSE_DOWN, onStageMouseDown);
         }
         
         public function get allowMove():Boolean
@@ -166,55 +163,40 @@ package sk.yoz.ycanvas.demo.starlingComponent
         
         private function stop():void
         {
+            stage.removeEventListener(MouseEvent.MOUSE_UP, onStageMouseUp);
+            stage.removeEventListener(MouseEvent.MOUSE_MOVE, onStageMouseMove);
         }
         
-        private function touchBegan(touch:Touch):void
-        {
-            last = globalPointInTweenTarget;
-        }
-        
-        private function touchMoved(touch:Touch):void
-        {
-            var current:Point = globalPointInTweenTarget;
-            moveByTween(last.x - current.x, last.y - current.y);
-            last = globalPointInTweenTarget;
-        }
-        
-        private function touchEnded(touch:Touch):void
-        {
-            stop();
-        }
-        
-        private function moveByTween(deltaX:Number, deltaY:Number):void
+        public function moveByTween(deltaX:Number, deltaY:Number):void
         {
             moveToTween(
                 transformationTarget.centerX + deltaX, 
                 transformationTarget.centerY + deltaY);
         }
         
-        private function moveToTween(centerX:Number, centerY:Number):void
+        public function moveToTween(centerX:Number, centerY:Number):void
         {
             doTween(centerX, centerY, NaN, NaN, onMoveToTweenUpdate);
         }
         
-        private function rotateByTween(delta:Number, lock:Point=null):void
+        public function rotateByTween(delta:Number, lock:Point=null):void
         {
             rotateToTween(transformationTarget.rotation + delta);
         }
         
-        private function rotateToTween(rotation:Number, lock:Point=null):void
+        public function rotateToTween(rotation:Number, lock:Point=null):void
         {
             var delta:Number = normalizeRadians(rotation - transformationTarget.rotation);
             rotation = transformationTarget.rotation + delta;
             doTween(NaN, NaN, NaN, rotation, onRotateToTweenUpdate(lock));
         }
         
-        private function scaleByTween(delta:Number, lock:Point=null):void
+        public function scaleByTween(delta:Number, lock:Point=null):void
         {
             scaleToTween(transformationTarget.scale * delta, lock);
         }
         
-        private function scaleToTween(scale:Number, lock:Point=null):void
+        public function scaleToTween(scale:Number, lock:Point=null):void
         {
             scale = Math.max(maxScale, Math.min(minScale, scale));
             doTween(NaN, NaN, scale, NaN, onScaleToTweenUpdate(lock));
@@ -247,6 +229,13 @@ package sk.yoz.ycanvas.demo.starlingComponent
             tween && tween.kill();
             tween = TweenMax.to(transformation, .5, data);
             dispatcher.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_STARTED));
+        }
+        
+        private function mouseEventIsValid(event:MouseEvent):Boolean
+        {
+            var engine:Starling = Starling.current;
+            var starlingPoint:Point = new Point(stage.mouseX - engine.viewPort.x, stage.mouseY - engine.viewPort.y);
+            return component.stage.hitTest(starlingPoint) == component;
         }
         
         private function onTweenComplete():void
@@ -307,28 +296,31 @@ package sk.yoz.ycanvas.demo.starlingComponent
             updateTransformation();
         }
         
-        private function onTouch(event:TouchEvent):void
+        private function onStageMouseDown(event:MouseEvent):void
         {
-            var touch:Touch;
+            if(!mouseEventIsValid(event))
+                return;
             
-            touch = event.getTouch(component, TouchPhase.BEGAN);
-            if(touch)
-                return touchBegan(touch);
-            
-            touch = event.getTouch(component, TouchPhase.MOVED);
-            if(touch)
-                return touchMoved(touch);
-            
-            touch = event.getTouch(component, TouchPhase.ENDED);
-            if(touch)
-                return touchEnded(touch);
+            last = globalPointInTweenTarget;
+            stage.addEventListener(MouseEvent.MOUSE_UP, onStageMouseUp);
+            stage.addEventListener(MouseEvent.MOUSE_MOVE, onStageMouseMove);
+        }
+        
+        private function onStageMouseMove(event:MouseEvent):void
+        {
+            var current:Point = globalPointInTweenTarget;
+            moveByTween(last.x - current.x, last.y - current.y);
+            last = globalPointInTweenTarget;
+        }
+        
+        private function onStageMouseUp(event:MouseEvent):void
+        {
+            stop();
         }
         
         private function onStageMouseWheel(event:MouseEvent):void
         {
-            var engine:Starling = Starling.current;
-            var starlingPoint:Point = new Point(stage.mouseX - engine.viewPort.x, stage.mouseY - engine.viewPort.y);
-            if(engine.stage.hitTest(starlingPoint) != component)
+            if(!mouseEventIsValid(event))
                 return;
             
             const step:Number = 1.25;
