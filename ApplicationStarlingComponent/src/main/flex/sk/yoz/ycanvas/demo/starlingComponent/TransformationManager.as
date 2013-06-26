@@ -9,19 +9,20 @@ package sk.yoz.ycanvas.demo.starlingComponent
     import flash.geom.Matrix;
     import flash.geom.Point;
     
-    import sk.yoz.ycanvas.AbstractYCanvas;
     import sk.yoz.ycanvas.demo.starlingComponent.events.CanvasEvent;
     import sk.yoz.ycanvas.demo.starlingComponent.valueObjects.CanvasTransformation;
     import sk.yoz.ycanvas.utils.TransformationUtils;
-    
-    import starling.core.Starling;
     
     public class TransformationManager
     {
         public static const PI2:Number = Math.PI * 2;
         
-        public var minScale:Number = 1;
-        public var maxScale:Number = 1 / 12;
+        public var minScale:Number;
+        public var maxScale:Number;
+        public var minCenterX:Number;
+        public var maxCenterX:Number;
+        public var minCenterY:Number;
+        public var maxCenterY:Number;
         
         private var transformation:CanvasTransformation = new CanvasTransformation;
         private var transformationTarget:CanvasTransformation = new CanvasTransformation;
@@ -30,17 +31,17 @@ package sk.yoz.ycanvas.demo.starlingComponent
         
         private var tween:TweenMax;
         private var dispatcher:IEventDispatcher;
-        private var component:YCanvasStarlingComponent;
+        private var canvas:YCanvasStarlingComponentController;
         private var stage:Stage;
         
         private var _allowMove:Boolean;
         private var _allowZoom:Boolean;
         private var _allowInteractions:Boolean;
         
-        public function TransformationManager(component:YCanvasStarlingComponent, 
+        public function TransformationManager(canvas:YCanvasStarlingComponentController, 
             dispatcher:IEventDispatcher, stage:Stage):void
         {
-            this.component = component;
+            this.canvas = canvas;
             this.dispatcher = dispatcher;
             this.stage = stage;
             
@@ -54,9 +55,15 @@ package sk.yoz.ycanvas.demo.starlingComponent
         
         public function dispose():void
         {
+            stop();
+            
+            allowMove = false;
+            allowZoom = false;
+            allowInteractions = false;
+            
             dispatcher.removeEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onCanvasTransformationFinished);
             
-            component = null;
+            canvas = null;
         }
         
         public function set allowMove(value:Boolean):void
@@ -114,11 +121,6 @@ package sk.yoz.ycanvas.demo.starlingComponent
             return _allowInteractions;
         }
         
-        private function get canvas():AbstractYCanvas
-        {
-            return component.controller;
-        }
-        
         private function get globalPointInTweenTarget():Point
         {
             var targetCenter:Point =
@@ -151,6 +153,33 @@ package sk.yoz.ycanvas.demo.starlingComponent
             else if(radians < -Math.PI)
                 radians += PI2;
             return radians;
+        }
+        
+        protected function limitScale(scale:Number):Number
+        {
+            if(scale > minScale)
+                return minScale;
+            if(scale < maxScale)
+                return maxScale;
+            return scale;
+        }
+        
+        protected function limitCenterX(centerX:Number):Number
+        {
+            if(centerX < minCenterX)
+                return minCenterY;
+            if(centerX > maxCenterX)
+                return maxCenterX;
+            return centerX;
+        }
+        
+        protected function limitCenterY(centerY:Number):Number
+        {
+            if(centerY < minCenterY)
+                return minCenterY;
+            if(centerY > maxCenterY)
+                return maxCenterY;
+            return centerY;
         }
         
         private function updateTransformation():void
@@ -209,17 +238,17 @@ package sk.yoz.ycanvas.demo.starlingComponent
             if(isNaN(centerX))
                 transformationTarget.centerX = transformation.centerX = canvas.center.x;
             else
-                transformationTarget.centerX = data.centerX = centerX;
+                transformationTarget.centerX = data.centerX = limitCenterX(centerX);
             
             if(isNaN(centerY))
                 transformationTarget.centerY = transformation.centerY = canvas.center.y;
             else
-                transformationTarget.centerY = data.centerY = centerY;
+                transformationTarget.centerY = data.centerY = limitCenterY(centerY);
             
             if(isNaN(scale))
                 transformationTarget.scale = transformation.scale = canvas.scale;
             else
-                transformationTarget.scale = data.scale = scale;
+                transformationTarget.scale = data.scale = limitScale(scale);
             
             if(isNaN(rotation))
                 transformationTarget.rotation = transformation.rotation = canvas.rotation;
@@ -229,13 +258,6 @@ package sk.yoz.ycanvas.demo.starlingComponent
             tween && tween.kill();
             tween = TweenMax.to(transformation, .5, data);
             dispatcher.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_STARTED));
-        }
-        
-        private function mouseEventIsValid(event:MouseEvent):Boolean
-        {
-            var engine:Starling = Starling.current;
-            var starlingPoint:Point = new Point(stage.mouseX - engine.viewPort.x, stage.mouseY - engine.viewPort.y);
-            return component.stage.hitTest(starlingPoint) == component;
         }
         
         private function onTweenComplete():void
@@ -298,7 +320,7 @@ package sk.yoz.ycanvas.demo.starlingComponent
         
         private function onStageMouseDown(event:MouseEvent):void
         {
-            if(!mouseEventIsValid(event))
+            if(!canvas.hitTest(event.stageX, event.stageY))
                 return;
             
             last = globalPointInTweenTarget;
@@ -320,12 +342,15 @@ package sk.yoz.ycanvas.demo.starlingComponent
         
         private function onStageMouseWheel(event:MouseEvent):void
         {
-            if(!mouseEventIsValid(event))
+            if(!canvas.hitTest(event.stageX, event.stageY))
                 return;
             
             const step:Number = 1.25;
             var delta:Number = event.delta < 0 ? 1 / step : step;
-            scaleByTween(delta, globalPointOnCanvas);
+            var point:Point = globalPointOnCanvas;
+            point.x = limitCenterX(point.x);
+            point.y = limitCenterY(point.y);
+            scaleByTween(delta, point);
         }
         
         private function onStageMouseLeave(event:Event):void

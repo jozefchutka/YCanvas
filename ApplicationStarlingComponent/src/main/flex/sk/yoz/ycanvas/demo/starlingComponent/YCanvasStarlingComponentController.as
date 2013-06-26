@@ -1,6 +1,8 @@
 package sk.yoz.ycanvas.demo.starlingComponent
 {
+    import flash.display.Stage;
     import flash.events.Event;
+    import flash.events.EventDispatcher;
     import flash.events.IEventDispatcher;
     import flash.events.TimerEvent;
     import flash.geom.Point;
@@ -22,39 +24,74 @@ package sk.yoz.ycanvas.demo.starlingComponent
     import sk.yoz.ycanvas.utils.IPartitionUtils;
     import sk.yoz.ycanvas.valueObjects.LayerPartitions;
     
+    import starling.core.Starling;
+    import starling.display.Sprite;
+    
     public class YCanvasStarlingComponentController extends AbstractYCanvas
     {
+        private var _markers:Vector.<Marker> = new Vector.<Marker>;
+        
         private var timer:Timer = new Timer(250, 1);
-        private var dispatcher:IEventDispatcher;
+        private var _component:YCanvasStarlingComponent;
+        private var _transformationManager:TransformationManager;
+        private var _dispatcher:IEventDispatcher;
+        
+        private var markersContainer:Sprite = new Sprite;
         
         private var _mode:Mode;
         
-        public function YCanvasStarlingComponentController(viewPort:Rectangle, mode:Mode, dispatcher:IEventDispatcher)
+        public function YCanvasStarlingComponentController(mode:Mode, stage:Stage)
         {
-            _root = new YCanvasRootStage3D;
             _mode = mode;
-            this.dispatcher = dispatcher;
             
-            super(viewPort);
+            _dispatcher = new EventDispatcher();
+            dispatcher.addEventListener(CanvasEvent.TRANSFORMATION_STARTED, onCanvasTransformationStarted);
+            dispatcher.addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onCanvasTransformationFinished);
+            dispatcher.addEventListener(PartitionEvent.LOADED, onPartitionLoaded);
+            
+            _root = new YCanvasRootStage3D;
+            
+            _component = new YCanvasStarlingComponent(dispatcher);
+            component.addChild(root as YCanvasRootStage3D);
+            component.addEventListener(YCanvasStarlingComponent.VIEWPORT_UPDATED, onWrapperViewPortUpdated);
+            
+            component.addChild(markersContainer);
+            
+            super(getViewPort());
             
             var buffer:URLRequestBuffer = new URLRequestBuffer(6, 10000);
             marginOffset = 256;
             partitionFactory = new PartitionFactory(mode, dispatcher, buffer);
             layerFactory = new LayerFactory(partitionFactory);
-            center = new Point(35e6, 24e6);
-            scale = 1 / 4096;
+            center = new Point(mode.initCenterX, mode.initCenterY);
+            scale = mode.initScale;
+            rotation = mode.initRotaton;
             render();
             
-            dispatcher.addEventListener(CanvasEvent.TRANSFORMATION_STARTED, onCanvasTransformationStarted);
-            dispatcher.addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onCanvasTransformationFinished);
-            dispatcher.addEventListener(PartitionEvent.LOADED, onPartitionLoaded);
+            _transformationManager = new TransformationManager(this, dispatcher, stage);
+            transformationManager.minScale = mode.minScale;
+            transformationManager.maxScale = mode.maxScale;
+            transformationManager.minCenterX = mode.minCenterX;
+            transformationManager.maxCenterX = mode.maxCenterX;
+            transformationManager.minCenterY = mode.minCenterY;
+            transformationManager.maxCenterY = mode.maxCenterY;
             
             timer.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerComplete);
         }
         
-        public function get component():YCanvasRootStage3D
+        public function get transformationManager():TransformationManager
         {
-            return root as YCanvasRootStage3D;
+            return _transformationManager;
+        }
+        
+        public function get dispatcher():IEventDispatcher
+        {
+            return _dispatcher;
+        }
+        
+        public function get component():YCanvasStarlingComponent
+        {
+            return _component;
         }
         
         public function set mode(value:Mode):void
@@ -84,19 +121,36 @@ package sk.yoz.ycanvas.demo.starlingComponent
         override public function set center(value:Point):void
         {
             super.center = value;
+            
+            for(var i:uint = markers.length; i--;)
+                markers[i].canvasCenter = value;
+            
             dispatcher.dispatchEvent(new CanvasEvent(CanvasEvent.CENTER_CHANGED));
         }
         
         override public function set scale(value:Number):void
         {
             super.scale = value;
+            
+            for(var i:uint = markers.length; i--;)
+                markers[i].canvasScale = value;
+            
             dispatcher.dispatchEvent(new CanvasEvent(CanvasEvent.SCALE_CHANGED));
         }
         
         override public function set rotation(value:Number):void
         {
             super.rotation = value;
+            
+            for(var i:uint = markers.length; i--;)
+                markers[i].canvasRotation = value;
+            
             dispatcher.dispatchEvent(new CanvasEvent(CanvasEvent.ROTATION_CHANGED));
+        }
+        
+        public function get markers():Vector.<Marker>
+        {
+            return _markers;
         }
         
         override public function render():void
@@ -110,6 +164,29 @@ package sk.yoz.ycanvas.demo.starlingComponent
                 (layer == main) ? startLoading(layer) : stopLoading(layer);
                 
             dispatcher.dispatchEvent(new CanvasEvent(CanvasEvent.RENDERED));
+        }
+        public function hitTest(x:Number, y:Number):Boolean
+        {
+            var engine:Starling = Starling.current;
+            var starlingPoint:Point = new Point(x - engine.viewPort.x, y - engine.viewPort.y);
+            return component.stage.hitTest(starlingPoint) == component;
+        }
+        
+        public function addMarker(marker:Marker):void
+        {
+            markersContainer.addChild(marker);
+            marker.canvasCenter = center;
+            marker.canvasScale = scale;
+            marker.canvasRotation = rotation;
+            markers.push(marker);
+            
+            trace(marker.localToGlobal(new Point(0, 0)));
+        }
+        
+        public function removeMarker(marker:Marker):void
+        {
+            markersContainer.removeChild(marker);
+            markers.splice(markers.indexOf(marker), 1);
         }
         
         private function startLoading(layer:Layer):void
@@ -146,6 +223,15 @@ package sk.yoz.ycanvas.demo.starlingComponent
         {
             super.viewPort = value;
             resetTimer();
+        }
+        
+        private function getViewPort():Rectangle
+        {
+            var starlingPoint:Point = component.localToGlobal(new Point(0, 0));
+            return new Rectangle(
+                    Starling.current.viewPort.x + starlingPoint.x, 
+                    Starling.current.viewPort.y + starlingPoint.y, 
+                    component.width, component.height);
         }
         
         private function sortByDistanceFromCenter(partition1:Partition, partition2:Partition):Number
@@ -190,6 +276,12 @@ package sk.yoz.ycanvas.demo.starlingComponent
         
         private function onTimerComplete(event:Event):void
         {
+            render();
+        }
+        
+        private function onWrapperViewPortUpdated():void
+        {
+            viewPort = getViewPort();
             render();
         }
     }

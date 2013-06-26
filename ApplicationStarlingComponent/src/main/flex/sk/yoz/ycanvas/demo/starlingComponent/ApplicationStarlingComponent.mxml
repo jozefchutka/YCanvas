@@ -15,16 +15,16 @@
             
             import sk.yoz.ycanvas.demo.starlingComponent.events.CanvasEvent;
             import sk.yoz.ycanvas.demo.starlingComponent.valueObjects.Mode;
-            import sk.yoz.ycanvas.utils.TransformationUtils;
             
             import starling.core.Starling;
             import starling.display.Sprite;
             import starling.events.Event;
+            import starling.textures.Texture;
             
             private var engine:Starling;
             
-            private var mapBig:YCanvasStarlingComponent;
-            private var mapSmall:YCanvasStarlingComponent;
+            private var mapBig:YCanvasStarlingComponentController;
+            private var mapSmall:YCanvasStarlingComponentController;
             
             private var modeMapQuest:Mode;
             private var modeOSM:Mode;
@@ -45,34 +45,29 @@
                 engine.start();
                 engine.addEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
                 
-                modeMapQuest = new Mode;
-                modeMapQuest.templates = Vector.<String>([
+                modeMapQuest = createMode([
                     "http://otile1.mqcdn.com/tiles/1.0.0/osm/${level}/${x}/${y}.png",
                     "http://otile2.mqcdn.com/tiles/1.0.0/osm/${level}/${x}/${y}.png",
                     "http://otile3.mqcdn.com/tiles/1.0.0/osm/${level}/${x}/${y}.png",
                     "http://otile4.mqcdn.com/tiles/1.0.0/osm/${level}/${x}/${y}.png"]);
                 
-                modeOSM = new Mode;
-                modeOSM.templates = Vector.<String>([
+                modeOSM = createMode([
                     "http://a.tile.openstreetmap.org/${level}/${x}/${y}.png",
                     "http://b.tile.openstreetmap.org/${level}/${x}/${y}.png",
                     "http://c.tile.openstreetmap.org/${level}/${x}/${y}.png"]);
                 
-                modeMapBox = new Mode;
-                modeMapBox.templates = Vector.<String>([
+                modeMapBox = createMode([
                     "http://a.tiles.mapbox.com/v3/examples.map-vyofok3q/${level}/${x}/${y}.png",
                     "http://b.tiles.mapbox.com/v3/examples.map-vyofok3q/${level}/${x}/${y}.png",
                     "http://c.tiles.mapbox.com/v3/examples.map-vyofok3q/${level}/${x}/${y}.png",
                     "http://d.tiles.mapbox.com/v3/examples.map-vyofok3q/${level}/${x}/${y}.png"]);
                 
-                modeCloudMade = new Mode;
-                modeCloudMade.templates = Vector.<String>([
+                modeCloudMade = createMode([
                     "http://a.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/998/256/${level}/${x}/${y}.png",
                     "http://b.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/998/256/${level}/${x}/${y}.png",
                     "http://c.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/998/256/${level}/${x}/${y}.png"]);
                 
-                modeEsri = new Mode;
-                modeEsri.templates = Vector.<String>([
+                modeEsri = createMode([
                     "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${level}/${y}/${x}.png",
                     "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${level}/${y}/${x}.png"]);
                 
@@ -83,22 +78,42 @@
                 modeList.addItem({label: "CloudMade", data: modeCloudMade});
                 modeList.addItem({label: "ESRI", data: modeEsri});
                 
-                placeholder.addChild(new Stats());
+                //placeholder.addChild(new Stats());
             }
             
-            private function get currentComponent():YCanvasStarlingComponent
+            private function get currentController():YCanvasStarlingComponentController
             {
-                var starlingPoint:Point = new Point(stage.mouseX - engine.viewPort.x, stage.mouseY - engine.viewPort.y);
-                return engine.stage.hitTest(starlingPoint) as YCanvasStarlingComponent;
+                if(mapBig.hitTest(stage.mouseX, stage.mouseY))
+                    return mapBig;
+                if(mapSmall.hitTest(stage.mouseX, stage.mouseY))
+                    return mapSmall;
+                return null;
+            }
+            
+            private function createMode(templates:Array):Mode
+            {
+                var result:Mode = new Mode;
+                result.templates = Vector.<String>(templates);
+                result.minScale = 1;
+                result.maxScale = 1 / 65536;
+                result.minCenterX = 0;
+                result.maxCenterX = GeoUtils.lon2x(180);
+                result.minCenterY = GeoUtils.lat2y(85);
+                result.maxCenterY = GeoUtils.lat2y(-85);
+                result.initCenterX = GeoUtils.lon2x(7.75);
+                result.initCenterY = GeoUtils.lat2y(45.53);
+                result.initRotaton = 0;
+                result.initScale = 1 / 4096;
+                return result;
             }
             
             private function onClick():void
             {
-                if(!currentComponent)
+                if(!currentController)
                     return;
                 
                 var globalPoint:Point = new Point(mouseX, mouseY);
-                var ycanvasPoint:Point = currentComponent.controller.globalToViewPort(globalPoint);
+                var ycanvasPoint:Point = currentController.globalToViewPort(globalPoint);
             }
             
             private function onRootCreated(event:starling.events.Event, root:starling.display.Sprite):void
@@ -108,15 +123,15 @@
                 //container.y = 200;
                 root.addChild(container);
                 
-                mapBig = new YCanvasStarlingComponent(modeEsri, stage);
+                mapBig = new YCanvasStarlingComponentController(modeEsri, stage);
                 mapBig.dispatcher.addEventListener(CanvasEvent.CENTER_CHANGED, onMapBigCenterChanged);
                 mapBig.dispatcher.addEventListener(CanvasEvent.SCALE_CHANGED, onMapBigScaleChanged);
                 mapBig.dispatcher.addEventListener(CanvasEvent.ROTATION_CHANGED, onMapBigRotationChanged);
                 mapBig.dispatcher.addEventListener(CanvasEvent.RENDERED, onMapBigRendered);
-                container.addChild(mapBig);
+                container.addChild(mapBig.component);
                 
-                mapSmall = new YCanvasStarlingComponent(modeOSM, stage);
-                container.addChild(mapSmall);
+                mapSmall = new YCanvasStarlingComponentController(modeOSM, stage);
+                container.addChild(mapSmall.component);
                 
                 resizeComponents();
                 
@@ -136,18 +151,18 @@
                 var h:uint = placeholder.height;
                 engine.viewPort = new Rectangle(global.x, global.y, w, h);
                 
-                mapBig.stage.stageWidth = w;
-                mapBig.stage.stageHeight = h;
+                mapBig.component.stage.stageWidth = w;
+                mapBig.component.stage.stageHeight = h;
                 
-                mapBig.x = 0;
-                mapBig.y = 0;
-                mapBig.width = w;
-                mapBig.height = h;
+                mapBig.component.x = 0;
+                mapBig.component.y = 0;
+                mapBig.component.width = w;
+                mapBig.component.height = h;
                 
-                mapSmall.x = 20;
-                mapSmall.y = h- h / 6 - 20;
-                mapSmall.width = w / 6;
-                mapSmall.height = h / 6;
+                mapSmall.component.x = 20;
+                mapSmall.component.y = h- h / 6 - 20;
+                mapSmall.component.width = w / 6;
+                mapSmall.component.height = h / 6;
                 
                 syncSmallMap();
                 if(syncCheckBox.selected)
@@ -156,22 +171,22 @@
             
             private function syncSmallMap():void
             {
-                var globalPoint:Point = mapSmall.controller.canvasToGlobal(mapSmall.controller.center);
-                mapSmall.controller.center = mapBig.controller.globalToCanvas(globalPoint);
-                mapSmall.controller.scale = mapBig.controller.scale;
-                mapSmall.controller.rotation = mapBig.controller.rotation;
-                mapSmall.controller.render();
+                var globalPoint:Point = mapSmall.canvasToGlobal(mapSmall.center);
+                mapSmall.center = mapBig.globalToCanvas(globalPoint);
+                mapSmall.scale = mapBig.scale;
+                mapSmall.rotation = mapBig.rotation;
+                mapSmall.render();
             }
             
             private function syncLatLon():void
             {
-                latInput.value = GeoUtils.y2lat(mapBig.controller.center.y);
-                lonInput.value = GeoUtils.x2lon(mapBig.controller.center.x);
+                latInput.value = GeoUtils.y2lat(mapBig.center.y);
+                lonInput.value = GeoUtils.x2lon(mapBig.center.x);
             }
             
             private function onUpdateComponentClick():void
             {
-                var component:YCanvasStarlingComponent = componentSelector.selectedItem.data;
+                var component:YCanvasStarlingComponentController = componentSelector.selectedItem.data;
                 var mode:Mode = modeSelector.selectedItem.data;
                 component.mode = mode;
             }
@@ -245,6 +260,13 @@
             {
                 mapBig.transformationManager.allowMove = true;
             }
+            
+            private function onAddMarkerClick():void
+            {
+                var location:Point = new Point(GeoUtils.lon2x(lonInput.value), GeoUtils.lat2y(latInput.value));
+                var texture:Texture = Texture.fromBitmap(new Assets.MARKER_GREEN_CLASS);
+                mapBig.addMarker(new Marker(location, texture/*, texture.width / 2, texture.height*/));
+            }
         ]]>
     </fx:Script>
     
@@ -257,14 +279,16 @@
         <s:DropDownList id="modeSelector" dataProvider="{modeList}" requireSelection="true" width="100%"/>
         <s:Button label="Update Tile Provider" click="onUpdateComponentClick()"/>
         <mx:HRule width="100%"/>
+        
         <s:CheckBox id="syncCheckBox" change="onSyncCheckBoxChange()" label="sync small and big map" selected="true"/>
         <mx:HRule width="100%"/>
+        
         <s:HGroup width="100%">
             <s:NumericStepper id="latInput" minimum="-90" maximum="90" snapInterval="0.001" width="100%"/>
             <s:NumericStepper id="lonInput" minimum="-180" maximum="180" snapInterval="0.001" width="100%"/>
         </s:HGroup>
-        
         <s:Button label="Navigate" click="onNavigateClick()"/>
+        <s:Button label="Add Marker" click="onAddMarkerClick()"/>
     </s:VGroup>
     
     <s:Group width="100%" height="100%">

@@ -1,12 +1,8 @@
 package sk.yoz.ycanvas.demo.starlingComponent
 {
-    import flash.display.Stage;
-    import flash.events.EventDispatcher;
     import flash.events.IEventDispatcher;
     import flash.geom.Point;
     import flash.geom.Rectangle;
-    
-    import sk.yoz.ycanvas.demo.starlingComponent.valueObjects.Mode;
     
     import starling.core.RenderSupport;
     import starling.core.Starling;
@@ -15,53 +11,31 @@ package sk.yoz.ycanvas.demo.starlingComponent
     
     public class YCanvasStarlingComponent extends Sprite
     {
-        private var _dispatcher:EventDispatcher;
-        private var _controller:YCanvasStarlingComponentController;
-        private var _transformationManager:TransformationManager;
+        public static const VIEWPORT_UPDATED:String = "viewPortUpdated";
+        
+        private var dispatcher:IEventDispatcher;
+        
         private var _width:Number = 200;
         private var _height:Number = 200;
         private var _localViewPort:Rectangle;
-        private var _globalViewPort:Rectangle;
         
-        public function YCanvasStarlingComponent(mode:Mode, stage:flash.display.Stage)
+        public function YCanvasStarlingComponent(dispatcher:IEventDispatcher)
         {
             super();
             
-            _dispatcher = new EventDispatcher();
-            
-            _controller = new YCanvasStarlingComponentController(globalViewPort, mode, dispatcher);
-            addChild(controller.component);
-            
-            _transformationManager = new TransformationManager(this, dispatcher, stage);
-            transformationManager.minScale = 1;
-            transformationManager.maxScale = 1 / (2 << 15);
-        }
-        
-        public function get dispatcher():IEventDispatcher
-        {
-            return _dispatcher;
-        }
-        
-        public function get controller():YCanvasStarlingComponentController
-        {
-            return _controller;
-        }
-        
-        public function get transformationManager():TransformationManager
-        {
-            return _transformationManager;
+            this.dispatcher = dispatcher;
         }
         
         override public function set x(value:Number):void
         {
             super.x = value;
-            invalidateViewPort();
+            validateViewPort();
         }
         
         override public function set y(value:Number):void
         {
             super.y = value;
-            invalidateViewPort();
+            validateViewPort();
         }
         
         override public function set width(value:Number):void
@@ -86,16 +60,6 @@ package sk.yoz.ycanvas.demo.starlingComponent
             return _height;
         }
         
-        public function set mode(value:Mode):void
-        {
-            controller.mode = value;
-        }
-        
-        public function get mode():Mode
-        {
-            return controller.mode;
-        }
-        
         private function get localViewPort():Rectangle
         {
             if(!_localViewPort)
@@ -105,16 +69,6 @@ package sk.yoz.ycanvas.demo.starlingComponent
             }
             
             return _localViewPort;
-        }
-        
-        private function get globalViewPort():Rectangle
-        {
-            if(!_globalViewPort)
-                _globalViewPort = new Rectangle(
-                    Starling.current.viewPort.x + localViewPort.x, 
-                    Starling.current.viewPort.y + localViewPort.y, 
-                    width, height);
-            return _globalViewPort;
         }
         
         override public function render(support:RenderSupport, alpha:Number):void
@@ -134,17 +88,10 @@ package sk.yoz.ycanvas.demo.starlingComponent
             return localViewPort.contains(starlingPoint.x, starlingPoint.y) ? this : null;
         }
         
-        public function invalidateViewPort():void
-        {
-            _localViewPort = null;
-            _globalViewPort = null;
-        }
-        
         public function validateViewPort():void
         {
-            invalidateViewPort();
-            controller.viewPort = globalViewPort;
-            controller.render();
+            _localViewPort = null;
+            dispatchEventWith(VIEWPORT_UPDATED);
         }
     }
 }
