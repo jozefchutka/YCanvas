@@ -78,7 +78,7 @@
                 modeList.addItem({label: "CloudMade", data: modeCloudMade});
                 modeList.addItem({label: "ESRI", data: modeEsri});
                 
-                //placeholder.addChild(new Stats());
+                placeholder.addChild(new Stats());
             }
             
             private function get currentController():YCanvasStarlingComponentController
@@ -120,7 +120,7 @@
             {
                 var container:starling.display.Sprite = new starling.display.Sprite();
                 //container.x = 300;
-                //container.y = 200;
+                //container.y = -200;
                 root.addChild(container);
                 
                 mapBig = new YCanvasStarlingComponentController(modeEsri, stage);
@@ -164,6 +164,7 @@
                 mapSmall.component.width = w / 6;
                 mapSmall.component.height = h / 6;
                 
+                syncLatLon();
                 syncSmallMap();
                 if(syncCheckBox.selected)
                     syncSmallMap();
@@ -244,10 +245,7 @@
             
             private function onRotationSliderChange(event:flash.events.Event):void
             {
-                //pBig.transformationManager.allowMove = false;
-                
                 var rotation:Number = rotationInput.value * 0.0174532925;
-                //TransformationUtils.rotateTo(mapBig.controller, rotation);
                 mapBig.transformationManager.rotateToTween(rotation);
             }
             
@@ -263,9 +261,25 @@
             
             private function onAddMarkerClick():void
             {
-                var location:Point = new Point(GeoUtils.lon2x(lonInput.value), GeoUtils.lat2y(latInput.value));
+                addMarkerAt(GeoUtils.lon2x(lonInput.value), GeoUtils.lat2y(latInput.value));
+            }
+            
+            private function onPlaceholderMouseDown():void
+            {
+                if(!addMarkerOnClick.selected)
+                    return;
+                
+                var position:Point = mapBig.globalToCanvas(new Point(mouseX, mouseY));
+                addMarkerAt(position.x, position.y);
+            }
+            
+            private function addMarkerAt(x:Number, y:Number):void
+            {
                 var texture:Texture = Texture.fromBitmap(new Assets.MARKER_GREEN_CLASS);
-                mapBig.addMarker(new Marker(location, texture/*, texture.width / 2, texture.height*/));
+                var marker:Marker = new Marker(new Point(x, y), texture);
+                marker.pivotX = texture.width / 2;
+                marker.pivotY = texture.height;
+                mapBig.addMarker(marker);
             }
         ]]>
     </fx:Script>
@@ -289,9 +303,12 @@
         </s:HGroup>
         <s:Button label="Navigate" click="onNavigateClick()"/>
         <s:Button label="Add Marker" click="onAddMarkerClick()"/>
+        <mx:HRule width="100%"/>
+        
+        <s:CheckBox id="addMarkerOnClick" change="onSyncCheckBoxChange()" label="Add Marker on click" selected="false"/>
     </s:VGroup>
     
-    <s:Group width="100%" height="100%">
+    <s:Group width="100%" height="100%" mouseDown="onPlaceholderMouseDown()">
         <mx:UIComponent id="placeholder" width="100%" height="100%"/>
         
         <s:HSlider id="rotationInput" minimum="-180" maximum="180" bottom="20" right="80" snapInterval="10"

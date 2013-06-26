@@ -39,6 +39,7 @@ package sk.yoz.ycanvas.demo.starlingComponent
         private var markersContainer:Sprite = new Sprite;
         
         private var _mode:Mode;
+        private var canvasRoot:YCanvasRootStage3D;
         
         public function YCanvasStarlingComponentController(mode:Mode, stage:Stage)
         {
@@ -49,10 +50,10 @@ package sk.yoz.ycanvas.demo.starlingComponent
             dispatcher.addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onCanvasTransformationFinished);
             dispatcher.addEventListener(PartitionEvent.LOADED, onPartitionLoaded);
             
-            _root = new YCanvasRootStage3D;
+            _root = canvasRoot = new YCanvasRootStage3D;
             
             _component = new YCanvasStarlingComponent(dispatcher);
-            component.addChild(root as YCanvasRootStage3D);
+            component.addChild(canvasRoot);
             component.addEventListener(YCanvasStarlingComponent.VIEWPORT_UPDATED, onWrapperViewPortUpdated);
             
             component.addChild(markersContainer);
@@ -121,30 +122,21 @@ package sk.yoz.ycanvas.demo.starlingComponent
         override public function set center(value:Point):void
         {
             super.center = value;
-            
-            for(var i:uint = markers.length; i--;)
-                markers[i].canvasCenter = value;
-            
+            updateMarkers();
             dispatcher.dispatchEvent(new CanvasEvent(CanvasEvent.CENTER_CHANGED));
         }
         
         override public function set scale(value:Number):void
         {
             super.scale = value;
-            
-            for(var i:uint = markers.length; i--;)
-                markers[i].canvasScale = value;
-            
+            updateMarkers();
             dispatcher.dispatchEvent(new CanvasEvent(CanvasEvent.SCALE_CHANGED));
         }
         
         override public function set rotation(value:Number):void
         {
             super.rotation = value;
-            
-            for(var i:uint = markers.length; i--;)
-                markers[i].canvasRotation = value;
-            
+            updateMarkers();
             dispatcher.dispatchEvent(new CanvasEvent(CanvasEvent.ROTATION_CHANGED));
         }
         
@@ -175,12 +167,8 @@ package sk.yoz.ycanvas.demo.starlingComponent
         public function addMarker(marker:Marker):void
         {
             markersContainer.addChild(marker);
-            marker.canvasCenter = center;
-            marker.canvasScale = scale;
-            marker.canvasRotation = rotation;
             markers.push(marker);
-            
-            trace(marker.localToGlobal(new Point(0, 0)));
+            updateMarkers();
         }
         
         public function removeMarker(marker:Marker):void
@@ -283,6 +271,19 @@ package sk.yoz.ycanvas.demo.starlingComponent
         {
             viewPort = getViewPort();
             render();
+        }
+        
+        private function updateMarkers():void
+        {
+            for(var i:uint = markers.length; i--;)
+                updateMarker(markers[i])
+        }
+    
+        private function updateMarker(marker:Marker):void
+        {
+            var position:Point = canvasToViewPort(marker.location);
+            marker.x = position.x;
+            marker.y = position.y
         }
     }
 }
