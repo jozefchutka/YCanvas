@@ -130,7 +130,7 @@
                 mapBig.dispatcher.addEventListener(CanvasEvent.RENDERED, onMapBigRendered);
                 container.addChild(mapBig.component);
                 
-                mapBig.graphics.lineStyle(10, 0xff0000, .5);
+                mapBig.graphics.lineStyle(20, 0xff0000, .5);
                 mapBig.graphics.moveTo(GeoUtils.lon2x(14), GeoUtils.lat2y(45));
                 mapBig.graphics.lineTo(GeoUtils.lon2x(12.907), GeoUtils.lat2y(42.416));
                 mapBig.graphics.lineTo(GeoUtils.lon2x(13.5), GeoUtils.lat2y(42.416));
