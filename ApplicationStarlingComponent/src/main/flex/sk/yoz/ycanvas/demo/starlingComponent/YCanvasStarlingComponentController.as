@@ -37,6 +37,7 @@ package sk.yoz.ycanvas.demo.starlingComponent
         private var _dispatcher:IEventDispatcher;
         
         private var markersContainer:Sprite = new Sprite;
+        private var _graphics:Graphics = new Graphics;
         
         private var _mode:Mode;
         private var canvasRoot:YCanvasRootStage3D;
@@ -57,6 +58,9 @@ package sk.yoz.ycanvas.demo.starlingComponent
             component.addEventListener(YCanvasStarlingComponent.VIEWPORT_UPDATED, onWrapperViewPortUpdated);
             
             component.addChild(markersContainer);
+            component.addChild(graphics);
+            
+            graphics.canvasToViewPort = canvasToViewPort;
             
             super(getViewPort());
             
@@ -78,6 +82,11 @@ package sk.yoz.ycanvas.demo.starlingComponent
             transformationManager.maxCenterY = mode.maxCenterY;
             
             timer.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerComplete);
+        }
+        
+        public function get graphics():Graphics
+        {
+            return _graphics;
         }
         
         public function get transformationManager():TransformationManager
@@ -271,14 +280,18 @@ package sk.yoz.ycanvas.demo.starlingComponent
         {
             viewPort = getViewPort();
             render();
+            
+            updateMarkers();
         }
         
         private function updateMarkers():void
         {
             for(var i:uint = markers.length; i--;)
                 updateMarker(markers[i])
+            
+            graphics.draw(); 
         }
-    
+        
         private function updateMarker(marker:Marker):void
         {
             var position:Point = canvasToViewPort(marker.location);
