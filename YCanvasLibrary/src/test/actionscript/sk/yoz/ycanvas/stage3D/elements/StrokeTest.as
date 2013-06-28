@@ -126,7 +126,7 @@ package sk.yoz.ycanvas.stage3D.elements
         public function customVertexData_vertexDataToIndexData_equalsExpected():void
         {
             var vertexData:VertexData = Stroke.pointsToVertexData(Vector.<Number>([0, 0, 10, 0, 10, 10, 0, 10]), 10);
-            var indexData:Vector.<uint> = Stroke.vertexDataToIndexData(vertexData);
+            var indexData:Vector.<uint> = Stroke.vertexDataToIndexData(vertexData, true);
             
             Assert.assertEquals(30, indexData.length);
             

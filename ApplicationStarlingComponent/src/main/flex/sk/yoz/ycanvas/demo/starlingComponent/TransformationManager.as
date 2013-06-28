@@ -13,6 +13,8 @@ package sk.yoz.ycanvas.demo.starlingComponent
     import sk.yoz.ycanvas.demo.starlingComponent.valueObjects.CanvasTransformation;
     import sk.yoz.ycanvas.utils.TransformationUtils;
     
+    import starling.display.Stage;
+    
     public class TransformationManager
     {
         public static const PI2:Number = Math.PI * 2;
@@ -32,14 +34,14 @@ package sk.yoz.ycanvas.demo.starlingComponent
         private var tween:TweenMax;
         private var dispatcher:IEventDispatcher;
         private var canvas:YCanvasStarlingComponentController;
-        private var stage:Stage;
+        private var stage:flash.display.Stage;
         
         private var _allowMove:Boolean;
         private var _allowZoom:Boolean;
         private var _allowInteractions:Boolean;
         
         public function TransformationManager(canvas:YCanvasStarlingComponentController, 
-            dispatcher:IEventDispatcher, stage:Stage):void
+            dispatcher:IEventDispatcher, stage:flash.display.Stage):void
         {
             this.canvas = canvas;
             this.dispatcher = dispatcher;
@@ -153,6 +155,11 @@ package sk.yoz.ycanvas.demo.starlingComponent
             else if(radians < -Math.PI)
                 radians += PI2;
             return radians;
+        }
+        
+        private function hitTest(x:Number, y:Number):Boolean
+        {
+            return canvas.hitTestComponent(x, y);
         }
         
         protected function limitScale(scale:Number):Number
@@ -320,7 +327,7 @@ package sk.yoz.ycanvas.demo.starlingComponent
         
         private function onStageMouseDown(event:MouseEvent):void
         {
-            if(!canvas.hitTest(event.stageX, event.stageY))
+            if(!hitTest(event.stageX, event.stageY))
                 return;
             
             last = globalPointInTweenTarget;
@@ -342,7 +349,7 @@ package sk.yoz.ycanvas.demo.starlingComponent
         
         private function onStageMouseWheel(event:MouseEvent):void
         {
-            if(!canvas.hitTest(event.stageX, event.stageY))
+            if(!hitTest(event.stageX, event.stageY))
                 return;
             
             const step:Number = 1.25;

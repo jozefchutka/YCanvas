@@ -227,8 +227,6 @@ package sk.yoz.ycanvas.demo.starlingComponent.partitions
         {
         }
         
-        
-        
         public function dispose():void
         {
             stopLoading(true);

@@ -143,5 +143,22 @@ package sk.yoz.math
             if(x < (r2x < r3x ? r2x : r3x)) return false;
             return true;
         }
+        
+        public static function pointInTriangle(px:Number, py:Number, 
+            r1x:Number, r1y:Number, r2x:Number, r2y:Number, 
+            r3x:Number, r3y:Number):Boolean
+        {
+            var dx:Number = px - r1x;
+            var dy:Number = py - r1y;
+            var b:Boolean = (r2x - r1x) * dy - (r2y - r1y) * dx > 0;
+            
+            if((r3x - r1x) * dy - (r3y - r1y) * dx > 0 == b)
+                return false;
+            
+            if((r3x - r2x) * (py - r2y) - (r3y - r2y) * (px - r2x) > 0 != b)
+                return false;
+            
+            return true;
+        }
     }
 }

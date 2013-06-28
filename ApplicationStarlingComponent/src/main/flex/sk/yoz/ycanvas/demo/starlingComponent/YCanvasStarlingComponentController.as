@@ -19,7 +19,6 @@ package sk.yoz.ycanvas.demo.starlingComponent
     import sk.yoz.ycanvas.demo.starlingComponent.partitions.PartitionFactory;
     import sk.yoz.ycanvas.demo.starlingComponent.valueObjects.Mode;
     import sk.yoz.ycanvas.interfaces.IPartition;
-    import sk.yoz.ycanvas.stage3D.elements.Stroke;
     import sk.yoz.ycanvas.utils.ILayerUtils;
     import sk.yoz.ycanvas.utils.IPartitionUtils;
     import sk.yoz.ycanvas.valueObjects.LayerPartitions;
@@ -33,9 +32,6 @@ package sk.yoz.ycanvas.demo.starlingComponent
         private var _component:YCanvasStarlingComponent;
         private var _transformationManager:TransformationManager;
         private var _dispatcher:IEventDispatcher;
-        
-        //private var markersContainer:Sprite = new Sprite;
-        private var _graphics:Graphics = new Graphics;
         
         private var _mode:Mode;
         private var canvasRoot:CanvasRoot;
@@ -54,11 +50,6 @@ package sk.yoz.ycanvas.demo.starlingComponent
             _component = new YCanvasStarlingComponent(dispatcher);
             component.addChild(canvasRoot);
             component.addEventListener(YCanvasStarlingComponent.VIEWPORT_UPDATED, onWrapperViewPortUpdated);
-            
-            //component.addChild(markersContainer);
-            component.addChild(graphics);
-            
-            graphics.canvasToViewPort = canvasToViewPort;
             
             super(getViewPort());
             
@@ -80,11 +71,6 @@ package sk.yoz.ycanvas.demo.starlingComponent
             transformationManager.maxCenterY = mode.maxCenterY;
             
             timer.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerComplete);
-        }
-        
-        public function get graphics():Graphics
-        {
-            return _graphics;
         }
         
         public function get transformationManager():TransformationManager
@@ -157,11 +143,12 @@ package sk.yoz.ycanvas.demo.starlingComponent
                 
             dispatcher.dispatchEvent(new CanvasEvent(CanvasEvent.RENDERED));
         }
-        public function hitTest(x:Number, y:Number):Boolean
+        
+        public function hitTestComponent(x:Number, y:Number):Boolean
         {
             var engine:Starling = Starling.current;
             var starlingPoint:Point = new Point(x - engine.viewPort.x, y - engine.viewPort.y);
-            return component.stage.hitTest(starlingPoint) == component;
+            return component.stage.hitTest(starlingPoint, true) == component;
         }
         
         public function addMarker(marker:DisplayObject):void

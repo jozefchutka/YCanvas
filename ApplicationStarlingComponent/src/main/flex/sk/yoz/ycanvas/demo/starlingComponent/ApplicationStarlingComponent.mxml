@@ -20,7 +20,6 @@
             import starling.display.Image;
             import starling.display.Sprite;
             import starling.events.Event;
-            import starling.textures.Texture;
             
             private var engine:Starling;
             
@@ -84,9 +83,9 @@
             
             private function get currentController():YCanvasStarlingComponentController
             {
-                if(mapBig.hitTest(stage.mouseX, stage.mouseY))
+                if(mapBig.hitTestComponent(stage.mouseX, stage.mouseY))
                     return mapBig;
-                if(mapSmall.hitTest(stage.mouseX, stage.mouseY))
+                if(mapSmall.hitTestComponent(stage.mouseX, stage.mouseY))
                     return mapSmall;
                 return null;
             }
@@ -131,15 +130,12 @@
                 mapBig.dispatcher.addEventListener(CanvasEvent.RENDERED, onMapBigRendered);
                 container.addChild(mapBig.component);
                 
-                
-                var points:Vector.<Number> = Vector.<Number>([
-                    GeoUtils.lon2x(14), GeoUtils.lat2y(45),
-                    GeoUtils.lon2x(12.907), GeoUtils.lat2y(42.416),
-                    GeoUtils.lon2x(13.5), GeoUtils.lat2y(42.416),
-                    GeoUtils.lon2x(14), GeoUtils.lat2y(45)
-                ]);
-                
-                mapBig.addStroke(new YStroke(points, 10, 0xff0000, .5));
+                mapBig.addStroke(new YStroke(Mock.EUR_TRIANGLE, 10, 0x00ff00, .5));
+                mapBig.addStroke(new YStroke(Mock.WORLD_TRIANGLE, 10, 0x00ff00, .5));
+                mapBig.addStroke(new YStroke(Mock.RAIL1, 10, 0xff0000, 1));
+                mapBig.addStroke(new YStroke(Mock.RAIL2, 10, 0x0000ff, 1));
+                mapBig.addStroke(new YStroke(Mock.RAIL3, 10, 0xff00ff, 1));
+                mapBig.addStroke(new YStroke(Mock.RAIL4, 10, 0xffff00, 1));
                 
                 mapSmall = new YCanvasStarlingComponentController(modeOSM, stage);
                 container.addChild(mapSmall.component);
@@ -286,12 +282,11 @@
             
             private function addMarkerAt(x:Number, y:Number):void
             {
-                var texture:Texture = Texture.fromBitmap(new Assets.MARKER_GREEN_CLASS);
-                var marker:Image = new Image(texture);
+                var marker:Image = new Image(Mock.MARKER_TEXTURE);
                 marker.x = x;
                 marker.y = y;
-                marker.pivotX = texture.width / 2;
-                marker.pivotY = texture.height;
+                marker.pivotX = Mock.MARKER_TEXTURE.width / 2;
+                marker.pivotY = Mock.MARKER_TEXTURE.height;
                 mapBig.addMarker(marker);
             }
         ]]>

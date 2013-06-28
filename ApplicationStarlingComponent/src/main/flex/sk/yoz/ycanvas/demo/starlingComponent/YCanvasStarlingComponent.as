@@ -84,7 +84,13 @@ package sk.yoz.ycanvas.demo.starlingComponent
         
         override public function hitTest(localPoint:Point, forTouch:Boolean=false):DisplayObject
         {
-            var starlingPoint:Point = localToGlobal(localPoint);
+            var localX:Number = localPoint.x;
+            var localY:Number = localPoint.y;
+            var object:DisplayObject = super.hitTest(localPoint, forTouch);
+            if(object)
+                return object;
+            
+            var starlingPoint:Point = localToGlobal(new Point(localX, localY));
             return localViewPort.contains(starlingPoint.x, starlingPoint.y) ? this : null;
         }
         
