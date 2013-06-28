@@ -17,6 +17,7 @@
             import sk.yoz.ycanvas.demo.starlingComponent.valueObjects.Mode;
             
             import starling.core.Starling;
+            import starling.display.Image;
             import starling.display.Sprite;
             import starling.events.Event;
             import starling.textures.Texture;
@@ -130,14 +131,15 @@
                 mapBig.dispatcher.addEventListener(CanvasEvent.RENDERED, onMapBigRendered);
                 container.addChild(mapBig.component);
                 
-                mapBig.graphics.lineStyle(20, 0xff0000, .5);
-                mapBig.graphics.moveTo(GeoUtils.lon2x(14), GeoUtils.lat2y(45));
-                mapBig.graphics.lineTo(GeoUtils.lon2x(12.907), GeoUtils.lat2y(42.416));
-                mapBig.graphics.lineTo(GeoUtils.lon2x(13.5), GeoUtils.lat2y(42.416));
-                mapBig.graphics.lineTo(GeoUtils.lon2x(14), GeoUtils.lat2y(45));
-                mapBig.graphics.moveTo(GeoUtils.lon2x(15), GeoUtils.lat2y(47));
-                mapBig.graphics.lineTo(GeoUtils.lon2x(11), GeoUtils.lat2y(43));
-                mapBig.graphics.draw();
+                
+                var points:Vector.<Number> = Vector.<Number>([
+                    GeoUtils.lon2x(14), GeoUtils.lat2y(45),
+                    GeoUtils.lon2x(12.907), GeoUtils.lat2y(42.416),
+                    GeoUtils.lon2x(13.5), GeoUtils.lat2y(42.416),
+                    GeoUtils.lon2x(14), GeoUtils.lat2y(45)
+                ]);
+                
+                mapBig.addStroke(new YStroke(points, 10, 0xff0000, .5));
                 
                 mapSmall = new YCanvasStarlingComponentController(modeOSM, stage);
                 container.addChild(mapSmall.component);
@@ -285,7 +287,9 @@
             private function addMarkerAt(x:Number, y:Number):void
             {
                 var texture:Texture = Texture.fromBitmap(new Assets.MARKER_GREEN_CLASS);
-                var marker:Marker = new Marker(new Point(x, y), texture);
+                var marker:Image = new Image(texture);
+                marker.x = x;
+                marker.y = y;
                 marker.pivotX = texture.width / 2;
                 marker.pivotY = texture.height;
                 mapBig.addMarker(marker);

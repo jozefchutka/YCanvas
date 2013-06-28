@@ -4,6 +4,7 @@
     <compilerSourcePath>
       <compilerSourcePathEntry kind="1" linkType="1" path="libs/src"/>
       <compilerSourcePathEntry kind="1" linkType="1" path="src/main/resources"/>
+      <compilerSourcePathEntry kind="1" linkType="1" path="src/test/flex"/>
     </compilerSourcePath>
     <libraryPath defaultLinkType="0">
       <libraryPathEntry kind="4" path="">
@@ -14,11 +15,17 @@
       </libraryPathEntry>
       <libraryPathEntry kind="3" linkType="1" path="/YCanvasLibrary/bin/YCanvasLibrary.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="1" linkType="1" path="libs/swc"/>
+      <libraryPathEntry kind="1" linkType="1" path="${FLEXUNIT_LIB_LOCATION}/version4libs/Common"/>
+      <libraryPathEntry kind="1" linkType="1" path="${FLEXUNIT_LIB_LOCATION}/version4libs/FlexProject"/>
+      <libraryPathEntry kind="1" linkType="1" path="${FLEXUNIT_LIB_LOCATION}/version4libs/FlexProject_Extended"/>
+      <libraryPathEntry kind="1" linkType="1" path="${FLEXUNIT_LOCALE_LOCATION}"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>
   <applications>
     <application path="sk/yoz/ycanvas/demo/starlingComponent/ApplicationStarlingComponent.mxml"/>
+    <application path="FlexUnitCompilerApplication.mxml"/>
+    <application path="FlexUnitApplication.mxml"/>
   </applications>
   <modules/>
   <workers/>

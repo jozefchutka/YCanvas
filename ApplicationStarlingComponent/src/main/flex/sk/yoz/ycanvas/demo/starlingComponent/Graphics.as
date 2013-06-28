@@ -97,12 +97,12 @@ package sk.yoz.ycanvas.demo.starlingComponent
                             var p4x:Number = p1.x - Math.sin(rotation) * thickness / 2;
                             var p4y:Number = p1.y + Math.cos(rotation) * thickness / 2;
                             
-                            if(createCircle)
-                                handleCircle(p0.x, p0.y, thickness / 2, color, alpha);
+                            //if(createCircle)
+                            //    handleCircle(p0.x, p0.y, thickness / 2, color, alpha);
                             
                             handlePolygon(p1x, p1y, p2x, p2y, p3x, p3y, color, alpha);
                             handlePolygon(p2x, p2y, p3x, p3y, p4x, p4y, color, alpha);
-                            handleCircle(p1.x, p1.y, thickness / 2, color, alpha);
+                            //handleCircle(p1.x, p1.y, thickness / 2, color, alpha);
                             
                             createCircle = false;
                         }
@@ -123,10 +123,10 @@ package sk.yoz.ycanvas.demo.starlingComponent
             polygon.alpha = alpha;
             addChild(polygon);
         }
-        
+        /*
         private function handleCircle(x:Number, y:Number, radius:Number, color:uint, alpha:Number):void
         {
-            var circle:Circle = new Circle(radius, 10, color);
+            var circle:Stroke = new Stroke(radius, 10, color);
             circle.x = x;
             circle.y = y;
             circle.alpha = alpha;
