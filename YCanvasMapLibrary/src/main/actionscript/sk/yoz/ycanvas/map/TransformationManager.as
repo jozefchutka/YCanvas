@@ -31,14 +31,14 @@ package sk.yoz.ycanvas.map
         
         private var tween:TweenMax;
         private var dispatcher:IEventDispatcher;
-        private var canvas:YCanvasStarlingComponentController;
+        private var canvas:MapController;
         private var stage:flash.display.Stage;
         
         private var _allowMove:Boolean;
         private var _allowZoom:Boolean;
         private var _allowInteractions:Boolean;
         
-        public function TransformationManager(canvas:YCanvasStarlingComponentController, 
+        public function TransformationManager(canvas:MapController, 
             dispatcher:IEventDispatcher, stage:flash.display.Stage):void
         {
             this.canvas = canvas;

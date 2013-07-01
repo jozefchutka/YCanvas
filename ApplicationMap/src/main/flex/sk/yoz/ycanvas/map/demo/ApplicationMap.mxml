@@ -8,16 +8,18 @@
                click="onClick()">
     <fx:Script>
         <![CDATA[
-            import sk.yoz.ycanvas.map.YCanvasStarlingComponentController;
-            import sk.yoz.ycanvas.map.utils.GeoUtils;
-            import sk.yoz.ycanvas.map.display.YStroke;
             import mx.collections.ArrayCollection;
             import mx.events.ResizeEvent;
             
             import net.hires.debug.Stats;
             
+            import sk.yoz.ycanvas.map.MapController;
+            import sk.yoz.ycanvas.map.display.MapStroke;
+            import sk.yoz.ycanvas.map.display.MarkerLayer;
+            import sk.yoz.ycanvas.map.display.StrokeLayer;
             import sk.yoz.ycanvas.map.events.CanvasEvent;
-            import sk.yoz.ycanvas.map.valueObjects.Mode;
+            import sk.yoz.ycanvas.map.utils.GeoUtils;
+            import sk.yoz.ycanvas.map.valueObjects.MapConfig;
             
             import starling.core.Starling;
             import starling.display.Image;
@@ -26,14 +28,16 @@
             
             private var engine:Starling;
             
-            private var mapBig:YCanvasStarlingComponentController;
-            private var mapSmall:YCanvasStarlingComponentController;
+            private var mapBig:MapController;
+            private var mapSmall:MapController;
+            private var markerLayer:MarkerLayer;
+            private var strokeLayer:StrokeLayer;
             
-            private var modeMapQuest:Mode;
-            private var modeOSM:Mode;
-            private var modeMapBox:Mode;
-            private var modeEsri:Mode;
-            private var modeCloudMade:Mode;
+            private var modeMapQuest:MapConfig;
+            private var modeOSM:MapConfig;
+            private var modeMapBox:MapConfig;
+            private var modeEsri:MapConfig;
+            private var modeCloudMade:MapConfig;
             
             [Bindable]
             private var componentList:ArrayCollection;
@@ -45,32 +49,33 @@
             {
                 var viewPort:Rectangle = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
                 engine = new Starling(starling.display.Sprite, stage, viewPort, stage.stage3Ds[0]);
+                engine.antiAliasing = 16;
                 engine.start();
                 engine.addEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
                 
-                modeMapQuest = createMode([
+                modeMapQuest = createMapConfig([
                     "http://otile1.mqcdn.com/tiles/1.0.0/osm/${level}/${x}/${y}.png",
                     "http://otile2.mqcdn.com/tiles/1.0.0/osm/${level}/${x}/${y}.png",
                     "http://otile3.mqcdn.com/tiles/1.0.0/osm/${level}/${x}/${y}.png",
                     "http://otile4.mqcdn.com/tiles/1.0.0/osm/${level}/${x}/${y}.png"]);
                 
-                modeOSM = createMode([
+                modeOSM = createMapConfig([
                     "http://a.tile.openstreetmap.org/${level}/${x}/${y}.png",
                     "http://b.tile.openstreetmap.org/${level}/${x}/${y}.png",
                     "http://c.tile.openstreetmap.org/${level}/${x}/${y}.png"]);
                 
-                modeMapBox = createMode([
+                modeMapBox = createMapConfig([
                     "http://a.tiles.mapbox.com/v3/examples.map-vyofok3q/${level}/${x}/${y}.png",
                     "http://b.tiles.mapbox.com/v3/examples.map-vyofok3q/${level}/${x}/${y}.png",
                     "http://c.tiles.mapbox.com/v3/examples.map-vyofok3q/${level}/${x}/${y}.png",
                     "http://d.tiles.mapbox.com/v3/examples.map-vyofok3q/${level}/${x}/${y}.png"]);
                 
-                modeCloudMade = createMode([
+                modeCloudMade = createMapConfig([
                     "http://a.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/998/256/${level}/${x}/${y}.png",
                     "http://b.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/998/256/${level}/${x}/${y}.png",
                     "http://c.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/998/256/${level}/${x}/${y}.png"]);
                 
-                modeEsri = createMode([
+                modeEsri = createMapConfig([
                     "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${level}/${y}/${x}.png",
                     "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${level}/${y}/${x}.png"]);
                 
@@ -84,7 +89,7 @@
                 placeholder.addChild(new Stats());
             }
             
-            private function get currentController():YCanvasStarlingComponentController
+            private function get currentController():MapController
             {
                 if(mapBig.hitTestComponent(stage.mouseX, stage.mouseY))
                     return mapBig;
@@ -93,10 +98,12 @@
                 return null;
             }
             
-            private function createMode(templates:Array):Mode
+            private function createMapConfig(templates:Array):MapConfig
             {
-                var result:Mode = new Mode;
+                var result:MapConfig = new MapConfig;
                 result.templates = Vector.<String>(templates);
+                result.tileWidth = 256;
+                result.tileHeight = 256;
                 result.minScale = 1;
                 result.maxScale = 1 / 65536;
                 result.minCenterX = 0;
@@ -126,21 +133,27 @@
                 //container.y = -200;
                 root.addChild(container);
                 
-                mapBig = new YCanvasStarlingComponentController(modeEsri, stage);
-                mapBig.dispatcher.addEventListener(CanvasEvent.CENTER_CHANGED, onMapBigCenterChanged);
-                mapBig.dispatcher.addEventListener(CanvasEvent.SCALE_CHANGED, onMapBigScaleChanged);
-                mapBig.dispatcher.addEventListener(CanvasEvent.ROTATION_CHANGED, onMapBigRotationChanged);
-                mapBig.dispatcher.addEventListener(CanvasEvent.RENDERED, onMapBigRendered);
+                mapBig = new MapController(modeEsri, stage);
+                mapBig.addEventListener(CanvasEvent.CENTER_CHANGED, onMapBigCenterChanged);
+                mapBig.addEventListener(CanvasEvent.SCALE_CHANGED, onMapBigScaleChanged);
+                mapBig.addEventListener(CanvasEvent.ROTATION_CHANGED, onMapBigRotationChanged);
+                mapBig.addEventListener(CanvasEvent.RENDERED, onMapBigRendered);
                 container.addChild(mapBig.component);
                 
-                mapBig.addStroke(new YStroke(Mock.EUR_TRIANGLE, 10, 0x00ff00, .5));
-                mapBig.addStroke(new YStroke(Mock.WORLD_TRIANGLE, 10, 0x00ff00, .5));
-                mapBig.addStroke(new YStroke(Mock.RAIL1, 10, 0xff0000, 1));
-                mapBig.addStroke(new YStroke(Mock.RAIL2, 10, 0x0000ff, 1));
-                mapBig.addStroke(new YStroke(Mock.RAIL3, 10, 0xff00ff, 1));
-                mapBig.addStroke(new YStroke(Mock.RAIL4, 10, 0xffff00, 1));
+                strokeLayer = new StrokeLayer;
+                strokeLayer.autoUpdateThickness = false;
+                strokeLayer.add(new MapStroke(Mock.EUR_TRIANGLE, 10, 0x00ff00, .5));
+                strokeLayer.add(new MapStroke(Mock.WORLD_TRIANGLE, 10, 0x00ff00, .5));
+                strokeLayer.add(new MapStroke(Mock.RAIL1, 10, 0xff0000, 1));
+                strokeLayer.add(new MapStroke(Mock.RAIL2, 10, 0x0000ff, 1));
+                strokeLayer.add(new MapStroke(Mock.RAIL3, 10, 0xff00ff, 1));
+                strokeLayer.add(new MapStroke(Mock.RAIL4, 10, 0xffff00, 1));
+                mapBig.addMapLayer(strokeLayer);
                 
-                mapSmall = new YCanvasStarlingComponentController(modeOSM, stage);
+                markerLayer = new MarkerLayer;
+                mapBig.addMapLayer(markerLayer);
+                
+                mapSmall = new MapController(modeOSM, stage);
                 container.addChild(mapSmall.component);
                 
                 resizeComponents();
@@ -197,9 +210,8 @@
             
             private function onUpdateComponentClick():void
             {
-                var component:YCanvasStarlingComponentController = componentSelector.selectedItem.data;
-                var mode:Mode = modeSelector.selectedItem.data;
-                component.mode = mode;
+                var component:MapController = componentSelector.selectedItem.data;
+                component.config = modeSelector.selectedItem.data;
             }
             
             private function onPlaceholderResize(event:ResizeEvent):void
@@ -235,7 +247,10 @@
             private function onMapBigRendered(event:CanvasEvent):void
             {
                 if(syncCheckBox.selected)
-                    mapSmall.dispatcher.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_FINISHED));
+                    mapSmall.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_FINISHED));
+                
+                if(!strokeLayer.autoUpdateThickness)
+                    strokeLayer.updateThickness();
             }
             
             private function onZoomInClick():void
@@ -290,7 +305,7 @@
                 marker.y = y;
                 marker.pivotX = Mock.MARKER_TEXTURE.width / 2;
                 marker.pivotY = Mock.MARKER_TEXTURE.height;
-                mapBig.addMarker(marker);
+                markerLayer.add(marker);
             }
         ]]>
     </fx:Script>

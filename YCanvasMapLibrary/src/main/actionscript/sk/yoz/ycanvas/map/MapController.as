@@ -11,67 +11,65 @@ package sk.yoz.ycanvas.map
     
     import sk.yoz.net.URLRequestBuffer;
     import sk.yoz.ycanvas.AbstractYCanvas;
+    import sk.yoz.ycanvas.interfaces.IPartition;
+    import sk.yoz.ycanvas.map.display.MapComponent;
+    import sk.yoz.ycanvas.map.display.MapLayer;
     import sk.yoz.ycanvas.map.events.CanvasEvent;
     import sk.yoz.ycanvas.map.events.PartitionEvent;
     import sk.yoz.ycanvas.map.layers.Layer;
     import sk.yoz.ycanvas.map.layers.LayerFactory;
     import sk.yoz.ycanvas.map.partitions.Partition;
     import sk.yoz.ycanvas.map.partitions.PartitionFactory;
-    import sk.yoz.ycanvas.map.valueObjects.Mode;
-    import sk.yoz.ycanvas.interfaces.IPartition;
+    import sk.yoz.ycanvas.map.valueObjects.MapConfig;
+    import sk.yoz.ycanvas.stage3D.YCanvasRootStage3D;
     import sk.yoz.ycanvas.utils.ILayerUtils;
     import sk.yoz.ycanvas.utils.IPartitionUtils;
     import sk.yoz.ycanvas.valueObjects.LayerPartitions;
     
     import starling.core.Starling;
-    import starling.display.DisplayObject;
-    import sk.yoz.ycanvas.map.display.CanvasRoot;
-    import sk.yoz.ycanvas.map.display.YStroke;
-    import sk.yoz.ycanvas.map.display.YCanvasStarlingComponent;
     
-    public class YCanvasStarlingComponentController extends AbstractYCanvas
+    public class MapController extends AbstractYCanvas implements IEventDispatcher
     {
         private var timer:Timer = new Timer(250, 1);
-        private var _component:YCanvasStarlingComponent;
+        private var _component:MapComponent;
         private var _transformationManager:TransformationManager;
-        private var _dispatcher:IEventDispatcher;
+        private var _config:MapConfig;
         
-        private var _mode:Mode;
-        private var canvasRoot:CanvasRoot;
+        private var dispatcher:EventDispatcher = new EventDispatcher;
+        private var mapLayers:Vector.<MapLayer> = new Vector.<MapLayer>;
         
-        public function YCanvasStarlingComponentController(mode:Mode, stage:Stage)
+        public function MapController(config:MapConfig, stage:Stage)
         {
-            _mode = mode;
+            _config = config;
             
-            _dispatcher = new EventDispatcher();
-            dispatcher.addEventListener(CanvasEvent.TRANSFORMATION_STARTED, onCanvasTransformationStarted);
-            dispatcher.addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onCanvasTransformationFinished);
-            dispatcher.addEventListener(PartitionEvent.LOADED, onPartitionLoaded);
+            addEventListener(CanvasEvent.TRANSFORMATION_STARTED, onCanvasTransformationStarted);
+            addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onCanvasTransformationFinished);
+            (PartitionEvent.LOADED, onPartitionLoaded);
             
-            _root = canvasRoot = new CanvasRoot;
+            _root = new YCanvasRootStage3D;
             
-            _component = new YCanvasStarlingComponent(dispatcher);
-            component.addChild(canvasRoot);
-            component.addEventListener(YCanvasStarlingComponent.VIEWPORT_UPDATED, onWrapperViewPortUpdated);
+            _component = new MapComponent(this);
+            component.addChild(root as YCanvasRootStage3D);
+            component.addEventListener(MapComponent.VIEWPORT_UPDATED, onWrapperViewPortUpdated);
             
             super(getViewPort());
             
             var buffer:URLRequestBuffer = new URLRequestBuffer(6, 10000);
             marginOffset = 256;
-            partitionFactory = new PartitionFactory(mode, dispatcher, buffer);
-            layerFactory = new LayerFactory(partitionFactory);
-            center = new Point(mode.initCenterX, mode.initCenterY);
-            scale = mode.initScale;
-            rotation = mode.initRotaton;
+            partitionFactory = new PartitionFactory(config, this, buffer);
+            layerFactory = new LayerFactory(config, partitionFactory);
+            center = new Point(config.initCenterX, config.initCenterY);
+            scale = config.initScale;
+            rotation = config.initRotaton;
             render();
             
-            _transformationManager = new TransformationManager(this, dispatcher, stage);
-            transformationManager.minScale = mode.minScale;
-            transformationManager.maxScale = mode.maxScale;
-            transformationManager.minCenterX = mode.minCenterX;
-            transformationManager.maxCenterX = mode.maxCenterX;
-            transformationManager.minCenterY = mode.minCenterY;
-            transformationManager.maxCenterY = mode.maxCenterY;
+            _transformationManager = new TransformationManager(this, this, stage);
+            transformationManager.minScale = config.minScale;
+            transformationManager.maxScale = config.maxScale;
+            transformationManager.minCenterX = config.minCenterX;
+            transformationManager.maxCenterX = config.maxCenterX;
+            transformationManager.minCenterY = config.minCenterY;
+            transformationManager.maxCenterY = config.maxCenterY;
             
             timer.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerComplete);
         }
@@ -81,57 +79,65 @@ package sk.yoz.ycanvas.map
             return _transformationManager;
         }
         
-        public function get dispatcher():IEventDispatcher
-        {
-            return _dispatcher;
-        }
-        
-        public function get component():YCanvasStarlingComponent
+        public function get component():MapComponent
         {
             return _component;
         }
         
-        public function set mode(value:Mode):void
+        public function set config(value:MapConfig):void
         {
-            if(mode == value)
+            if(config == value)
                 return;
             
-            _mode = value;
+            _config = value;
             
             if(partitionFactory)
-                (partitionFactory as PartitionFactory).mode = mode;
+                (partitionFactory as PartitionFactory).config = config;
             
             while(layers.length > 1)
                 disposeLayer(layers[0]);
             
+            (layers[0] as Layer).config = config;
+            
             var list:Vector.<IPartition> = layers[0].partitions;
             list.sort(sortByDistanceFromCenter);
             for(var i:uint = 0, length:uint = list.length; i < length; i++)
-                (list[i] as Partition).mode = mode;
+                (list[i] as Partition).config = config;
         }
         
-        public function get mode():Mode
+        public function get config():MapConfig
         {
-            return _mode;
+            return _config;
         }
         
         override public function set center(value:Point):void
         {
             super.center = value;
-            canvasRoot.setCanvasCenter(value);
-            dispatcher.dispatchEvent(new CanvasEvent(CanvasEvent.CENTER_CHANGED));
+            
+            for(var i:uint = mapLayers.length; i--;)
+                mapLayers[i].center = value;
+            
+            dispatchEvent(new CanvasEvent(CanvasEvent.CENTER_CHANGED));
         }
         
         override public function set scale(value:Number):void
         {
             super.scale = value;
-            dispatcher.dispatchEvent(new CanvasEvent(CanvasEvent.SCALE_CHANGED));
+            
+            for(var i:uint = mapLayers.length; i--;)
+                mapLayers[i].scale = value;
+            
+            dispatchEvent(new CanvasEvent(CanvasEvent.SCALE_CHANGED));
         }
         
         override public function set rotation(value:Number):void
         {
             super.rotation = value;
-            dispatcher.dispatchEvent(new CanvasEvent(CanvasEvent.ROTATION_CHANGED));
+            
+            for(var i:uint = mapLayers.length; i--;)
+                mapLayers[i].rotation = rotation;
+            
+            dispatchEvent(new CanvasEvent(CanvasEvent.ROTATION_CHANGED));
         }
         
         override public function render():void
@@ -144,9 +150,7 @@ package sk.yoz.ycanvas.map
             for each(var layer:Layer in layers)
                 (layer == main) ? startLoading(layer) : stopLoading(layer);
             
-            canvasRoot.renderStrokes();
-            
-            dispatcher.dispatchEvent(new CanvasEvent(CanvasEvent.RENDERED));
+            dispatchEvent(new CanvasEvent(CanvasEvent.RENDERED));
         }
         
         public function hitTestComponent(x:Number, y:Number):Boolean
@@ -156,19 +160,32 @@ package sk.yoz.ycanvas.map
             return component.stage.hitTest(starlingPoint, true) == component;
         }
         
-        public function addMarker(marker:DisplayObject):void
+        public function addEventListener(type:String, listener:Function, 
+            useCapture:Boolean=false, priority:int=0, 
+            useWeakReference:Boolean=false):void
         {
-            canvasRoot.addMarker(marker);
+            dispatcher.addEventListener(type, listener, useCapture, priority, useWeakReference);
         }
         
-        public function removeMarker(marker:DisplayObject):void
+        public function removeEventListener(type:String, listener:Function, 
+            useCapture:Boolean=false):void
         {
-            canvasRoot.removeMarker(marker);
+            dispatcher.removeEventListener(type, listener, useCapture);
         }
         
-        public function addStroke(stroke:YStroke):void
+        public function dispatchEvent(event:Event):Boolean
         {
-            canvasRoot.addStroke(stroke);
+            return dispatcher.dispatchEvent(event);
+        }
+        
+        public function hasEventListener(type:String):Boolean
+        {
+            return dispatcher.hasEventListener(type);
+        }
+        
+        public function willTrigger(type:String):Boolean
+        {
+            return dispatcher.willTrigger(type);
         }
         
         private function startLoading(layer:Layer):void
@@ -204,7 +221,31 @@ package sk.yoz.ycanvas.map
         override public function set viewPort(value:Rectangle):void
         {
             super.viewPort = value;
+            
+            for(var i:uint = mapLayers.length; i--;)
+            {
+                mapLayers[i].width = value.width;
+                mapLayers[i].height = value.height;
+            }
+            
             resetTimer();
+        }
+        
+        public function addMapLayer(mapLayer:MapLayer):void
+        {
+            mapLayer.width = viewPort.width;
+            mapLayer.height = viewPort.height;
+            mapLayer.center = center;
+            mapLayer.scale = scale;
+            mapLayer.rotation = rotation;
+            mapLayers.push(mapLayer);
+            component.addChild(mapLayer);
+        }
+        
+        public function removeMapLayer(mapLayer:MapLayer):void
+        {
+            mapLayers.splice(mapLayers.indexOf(mapLayer), 1);
+            component.removeChild(mapLayer);
         }
         
         private function getViewPort():Rectangle

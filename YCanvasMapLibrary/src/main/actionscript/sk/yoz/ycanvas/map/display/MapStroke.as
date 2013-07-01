@@ -2,11 +2,11 @@ package sk.yoz.ycanvas.map.display
 {
     import sk.yoz.ycanvas.stage3D.elements.Stroke;
     
-    public class YStroke extends Stroke
+    public class MapStroke extends Stroke
     {
         private var _originalThickness:Number;
         
-        public function YStroke(points:Vector.<Number>, thickness:Number=1, 
+        public function MapStroke(points:Vector.<Number>, thickness:Number=1, 
             color:uint=16777215, alpha:Number=1)
         {
             _originalThickness = thickness;

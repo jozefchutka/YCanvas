@@ -18,7 +18,7 @@ package sk.yoz.ycanvas.map.partitions
     import sk.yoz.net.URLRequestBufferItem;
     import sk.yoz.ycanvas.map.events.PartitionEvent;
     import sk.yoz.ycanvas.map.layers.Layer;
-    import sk.yoz.ycanvas.map.valueObjects.Mode;
+    import sk.yoz.ycanvas.map.valueObjects.MapConfig;
     import sk.yoz.ycanvas.stage3D.interfaces.IPartitionStage3D;
     
     import starling.display.DisplayObject;
@@ -32,7 +32,7 @@ package sk.yoz.ycanvas.map.partitions
         private var _x:int;
         private var _y:int;
         private var _layer:Layer;
-        private var _mode:Mode;
+        private var _config:MapConfig;
         private var _content:Image;
         private var _bitmapData:BitmapData;
         
@@ -42,13 +42,13 @@ package sk.yoz.ycanvas.map.partitions
         private var loader:Loader;
         private var tweener:TweenMax;
         
-        public function Partition(x:int, y:int, layer:Layer, mode:Mode,
+        public function Partition(x:int, y:int, layer:Layer, config:MapConfig,
             dispatcher:IEventDispatcher, buffer:URLRequestBuffer)
         {
             _x = x;
             _y = y;
             _layer = layer;
-            _mode = mode;
+            _config = config;
             this.dispatcher = dispatcher;
             this.buffer = buffer;
             
@@ -79,12 +79,12 @@ package sk.yoz.ycanvas.map.partitions
         
         public function get expectedWidth():uint
         {
-            return 256;
+            return config.tileWidth;
         }
         
         public function get expectedHeight():uint
         {
-            return 256;
+            return config.tileHeight;
         }
         
         public function get concatenatedMatrix():Matrix
@@ -112,7 +112,7 @@ package sk.yoz.ycanvas.map.partitions
             var level:uint = 18 - getLevel(layer.level);
             var x:int = this.x / expectedWidth / layer.level;
             var y:int = this.y / expectedHeight / layer.level;
-            var templates:Vector.<String> = mode.templates;
+            var templates:Vector.<String> = config.templates;
             var url:String = templates[Math.abs(x + y) % templates.length];
             url = url.replace("${level}", level);
             url = url.replace("${x}", x);
@@ -120,18 +120,18 @@ package sk.yoz.ycanvas.map.partitions
             return url;
         }   
         
-        public function set mode(value:Mode):void
+        public function set config(value:MapConfig):void
         {
-            if(mode == value)
+            if(config == value)
                 return;
             
-            _mode = value;
+            _config = value;
             load();
         }
         
-        public function get mode():Mode
+        public function get config():MapConfig
         {
-            return _mode;
+            return _config;
         }
         
         private function set bitmapData(value:BitmapData):void

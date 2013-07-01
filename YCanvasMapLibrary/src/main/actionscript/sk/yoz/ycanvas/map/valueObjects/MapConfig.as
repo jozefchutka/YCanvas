@@ -1,8 +1,10 @@
 package sk.yoz.ycanvas.map.valueObjects
 {
-    public class Mode
+    public class MapConfig
     {
         public var templates:Vector.<String>;
+        public var tileWidth:uint;
+        public var tileHeight:uint;
         
         public var minScale:Number;
         public var maxScale:Number;

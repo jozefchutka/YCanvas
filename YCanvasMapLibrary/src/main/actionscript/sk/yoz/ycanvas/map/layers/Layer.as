@@ -4,6 +4,7 @@ package sk.yoz.ycanvas.map.layers
     
     import sk.yoz.ycanvas.interfaces.IPartition;
     import sk.yoz.ycanvas.interfaces.IPartitionFactory;
+    import sk.yoz.ycanvas.map.valueObjects.MapConfig;
     import sk.yoz.ycanvas.stage3D.interfaces.ILayerStage3D;
     import sk.yoz.ycanvas.stage3D.interfaces.IPartitionStage3D;
     
@@ -12,6 +13,8 @@ package sk.yoz.ycanvas.map.layers
     
     public class Layer implements ILayerStage3D
     {
+        public var config:MapConfig;
+        
         private var partitionFactory:IPartitionFactory;
         
         private var _level:uint;
@@ -19,9 +22,10 @@ package sk.yoz.ycanvas.map.layers
         private var _partitions:Vector.<IPartition> = new Vector.<IPartition>;
         private var _content:Sprite = new Sprite;
         
-        public function Layer(level:uint, partitionFactory:IPartitionFactory)
+        public function Layer(level:uint, config:MapConfig, partitionFactory:IPartitionFactory)
         {
             _level = level;
+            this.config = config;
             this.partitionFactory = partitionFactory;
             content.touchable = false;
         }
@@ -61,12 +65,12 @@ package sk.yoz.ycanvas.map.layers
         
         public function get partitionWidth():uint
         {
-            return 256;
+            return config.tileWidth;
         }
         
         public function get partitionHeight():uint
         {
-            return 256;
+            return config.tileHeight;
         }
         
         public function addPartition(partition:IPartition):void

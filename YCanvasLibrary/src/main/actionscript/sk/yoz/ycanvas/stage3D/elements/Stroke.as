@@ -7,7 +7,6 @@ package sk.yoz.ycanvas.stage3D.elements
     import flash.display3D.Context3DVertexBufferFormat;
     import flash.display3D.IndexBuffer3D;
     import flash.display3D.VertexBuffer3D;
-    import flash.geom.Matrix;
     import flash.geom.Point;
     import flash.geom.Rectangle;
     
@@ -23,9 +22,7 @@ package sk.yoz.ycanvas.stage3D.elements
     
     public class Stroke extends DisplayObject
     {
-        private static var PROGRAM_NAME:String = "YStroke";
-        private static var HELPER_MATRIX:Matrix = new Matrix();
-        private static var RENDER_ALPHA:Vector.<Number> = new <Number>[1.0, 1.0, 1.0, 1.0];
+        private static const PROGRAM_NAME:String = "YStroke";
         
         public var autoUpdate:Boolean = true;
         
@@ -37,9 +34,10 @@ package sk.yoz.ycanvas.stage3D.elements
         
         private var vertexData:VertexData;
         private var vertexBuffer:VertexBuffer3D;
-        
         private var indexData:Vector.<uint>;
         private var indexBuffer:IndexBuffer3D;
+        
+        private var renderAlpha:Vector.<Number> = new <Number>[1.0, 1.0, 1.0, 1.0];
         
         public function Stroke(points:Vector.<Number>, thickness:Number = 1, 
             color:uint=0xffffff, alpha:Number=1, joints:Boolean=true,
@@ -202,8 +200,7 @@ package sk.yoz.ycanvas.stage3D.elements
             support.finishQuadBatch();
             support.raiseDrawCount();
             
-            RENDER_ALPHA[0] = RENDER_ALPHA[1] = RENDER_ALPHA[2] = 1.0;
-            RENDER_ALPHA[3] = alpha * this.alpha;
+            renderAlpha[3] = alpha * this.alpha;
             
             var context:Context3D = Starling.context;
             if(context == null)
@@ -215,7 +212,7 @@ package sk.yoz.ycanvas.stage3D.elements
             context.setVertexBufferAt(0, vertexBuffer, VertexData.POSITION_OFFSET, Context3DVertexBufferFormat.FLOAT_2); 
             context.setVertexBufferAt(1, vertexBuffer, VertexData.COLOR_OFFSET, Context3DVertexBufferFormat.FLOAT_4);
             context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, support.mvpMatrix3D, true);
-            context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 4, RENDER_ALPHA, 1);
+            context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 4, renderAlpha, 1);
             
             context.drawTriangles(indexBuffer, 0, indexData.length / 3);
             

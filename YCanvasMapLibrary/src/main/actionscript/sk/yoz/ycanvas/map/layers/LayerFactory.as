@@ -5,15 +5,16 @@ package sk.yoz.ycanvas.map.layers
     import sk.yoz.ycanvas.interfaces.ILayer;
     import sk.yoz.ycanvas.interfaces.ILayerFactory;
     import sk.yoz.ycanvas.interfaces.IPartitionFactory;
+    import sk.yoz.ycanvas.map.valueObjects.MapConfig;
     
     public class LayerFactory implements ILayerFactory
     {
         private var layers:Vector.<Layer> = new Vector.<Layer>();
         
-        public function LayerFactory(partitionFactory:IPartitionFactory)
+        public function LayerFactory(config:MapConfig, partitionFactory:IPartitionFactory)
         {
             for(var level:uint = 1; level <= 32768; level *= 2)
-                layers.push(new Layer(level, partitionFactory));
+                layers.push(new Layer(level, config, partitionFactory));
         }
         
         public function create(scale:Number, center:Point):ILayer
