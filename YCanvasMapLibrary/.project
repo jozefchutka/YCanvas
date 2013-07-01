@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>YCanvasLibrary</name>
+	<name>YCanvasMapLibrary</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -12,11 +12,11 @@
 		</buildCommand>
 		<buildCommand>
 			<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
-			<triggers>auto,full,incremental,</triggers>
+			<triggers>full,incremental,</triggers>
 			<arguments>
 				<dictionary>
 					<key>LaunchConfigHandle</key>
-					<value>&lt;project&gt;/.externalToolBuilders/Copy YCanvasLibrary.swc.launch</value>
+					<value>&lt;project&gt;/.externalToolBuilders/Copy YCanvasMapLibrary.swc.launch</value>
 				</dictionary>
 			</arguments>
 		</buildCommand>

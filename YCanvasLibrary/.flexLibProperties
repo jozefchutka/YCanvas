@@ -2,7 +2,8 @@
 <flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
   <includeClasses>
     <classEntry path="sk.yoz.ycanvas.stage3D.elements.Stroke"/>
-    <classEntry path="sk.yoz.ycanvas.stage3D.elements.StrokeTest"/>
+    <classEntry path="sk.yoz.ycanvas.utils.StrokeUtilsTest"/>
+    <classEntry path="sk.yoz.ycanvas.utils.StrokeUtils"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

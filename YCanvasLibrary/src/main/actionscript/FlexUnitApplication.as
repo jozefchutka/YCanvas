@@ -6,7 +6,7 @@ package
     
     import flexunit.flexui.FlexUnitTestRunnerUIAS;
     
-    import sk.yoz.ycanvas.stage3D.elements.StrokeTest;
+    import sk.yoz.ycanvas.utils.StrokeUtilsTest;
     
     public class FlexUnitApplication extends Sprite
     {
@@ -26,7 +26,7 @@ package
         public function currentRunTestSuite():Array
         {
             var testsToRun:Array = new Array();
-            testsToRun.push(sk.yoz.ycanvas.stage3D.elements.StrokeTest);
+            testsToRun.push(sk.yoz.ycanvas.utils.StrokeUtilsTest);
             return testsToRun;
         }
     }
