@@ -4,25 +4,22 @@ package sk.yoz.ycanvas.map
     
     import flash.display.Stage;
     import flash.events.Event;
-    import flash.events.IEventDispatcher;
     import flash.events.MouseEvent;
     import flash.geom.Matrix;
     import flash.geom.Point;
     
     import sk.yoz.ycanvas.map.events.CanvasEvent;
+    import sk.yoz.ycanvas.map.valueObjects.CanvasLimit;
     import sk.yoz.ycanvas.map.valueObjects.CanvasTransformation;
     import sk.yoz.ycanvas.utils.TransformationUtils;
+    
+    import starling.core.Starling;
     
     public class TransformationManager
     {
         public static const PI2:Number = Math.PI * 2;
         
-        public var minScale:Number;
-        public var maxScale:Number;
-        public var minCenterX:Number;
-        public var maxCenterX:Number;
-        public var minCenterY:Number;
-        public var maxCenterY:Number;
+        private var limit:CanvasLimit;
         
         private var transformation:CanvasTransformation = new CanvasTransformation;
         private var transformationTarget:CanvasTransformation = new CanvasTransformation;
@@ -30,27 +27,23 @@ package sk.yoz.ycanvas.map
         private var last:Point;
         
         private var tween:TweenMax;
-        private var dispatcher:IEventDispatcher;
         private var canvas:MapController;
-        private var stage:flash.display.Stage;
         
         private var _allowMove:Boolean;
         private var _allowZoom:Boolean;
         private var _allowInteractions:Boolean;
         
-        public function TransformationManager(canvas:MapController, 
-            dispatcher:IEventDispatcher, stage:flash.display.Stage):void
+        public function TransformationManager(canvas:MapController, limit:CanvasLimit):void
         {
             this.canvas = canvas;
-            this.dispatcher = dispatcher;
-            this.stage = stage;
+            this.limit = limit;
             
             allowMove = true;
             allowZoom = true;
             
             updateTransformation();
             
-            dispatcher.addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onCanvasTransformationFinished);
+            canvas.addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onCanvasTransformationFinished);
         }
         
         public function dispose():void
@@ -61,7 +54,7 @@ package sk.yoz.ycanvas.map
             allowZoom = false;
             allowInteractions = false;
             
-            dispatcher.removeEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onCanvasTransformationFinished);
+            canvas.removeEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onCanvasTransformationFinished);
             
             canvas = null;
         }
@@ -140,6 +133,11 @@ package sk.yoz.ycanvas.map
             return canvas.globalToCanvas(new Point(stage.mouseX, stage.mouseY));
         }
         
+        private function get stage():Stage
+        {
+            return Starling.current.nativeStage;
+        }
+        
         private function validateInteractions():void
         {
             allowInteractions = allowMove || allowZoom;
@@ -162,28 +160,28 @@ package sk.yoz.ycanvas.map
         
         protected function limitScale(scale:Number):Number
         {
-            if(scale > minScale)
-                return minScale;
-            if(scale < maxScale)
-                return maxScale;
+            if(scale > limit.minScale)
+                return limit.minScale;
+            if(scale < limit.maxScale)
+                return limit.maxScale;
             return scale;
         }
         
         protected function limitCenterX(centerX:Number):Number
         {
-            if(centerX < minCenterX)
-                return minCenterY;
-            if(centerX > maxCenterX)
-                return maxCenterX;
+            if(centerX < limit.minCenterX)
+                return limit.minCenterY;
+            if(centerX > limit.maxCenterX)
+                return limit.maxCenterX;
             return centerX;
         }
         
         protected function limitCenterY(centerY:Number):Number
         {
-            if(centerY < minCenterY)
-                return minCenterY;
-            if(centerY > maxCenterY)
-                return maxCenterY;
+            if(centerY < limit.minCenterY)
+                return limit.minCenterY;
+            if(centerY > limit.maxCenterY)
+                return limit.maxCenterY;
             return centerY;
         }
         
@@ -232,7 +230,6 @@ package sk.yoz.ycanvas.map
         
         public function scaleToTween(scale:Number, lock:Point=null):void
         {
-            scale = Math.max(maxScale, Math.min(minScale, scale));
             doTween(NaN, NaN, scale, NaN, onScaleToTweenUpdate(lock));
         }
         
@@ -262,12 +259,12 @@ package sk.yoz.ycanvas.map
             
             tween && tween.kill();
             tween = TweenMax.to(transformation, .5, data);
-            dispatcher.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_STARTED));
+            canvas.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_STARTED));
         }
         
         private function onTweenComplete():void
         {
-            dispatcher.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_FINISHED));
+            canvas.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_FINISHED));
         }
         
         private function onMoveToTweenUpdate():void

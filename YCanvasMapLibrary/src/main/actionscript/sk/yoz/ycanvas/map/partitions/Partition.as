@@ -112,7 +112,7 @@ package sk.yoz.ycanvas.map.partitions
             var level:uint = 18 - getLevel(layer.level);
             var x:int = this.x / expectedWidth / layer.level;
             var y:int = this.y / expectedHeight / layer.level;
-            var templates:Vector.<String> = config.templates;
+            var templates:Vector.<String> = config.urlTemplates;
             var url:String = templates[Math.abs(x + y) % templates.length];
             url = url.replace("${level}", level);
             url = url.replace("${x}", x);

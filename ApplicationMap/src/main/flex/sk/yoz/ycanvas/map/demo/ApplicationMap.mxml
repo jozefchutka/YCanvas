@@ -4,8 +4,7 @@
                xmlns:mx="library://ns.adobe.com/flex/mx"
                minWidth="955" minHeight="600" backgroundAlpha="0"
                frameRate="60"
-               applicationComplete="onApplicationComplete()"
-               click="onClick()">
+               applicationComplete="onApplicationComplete()">
     <fx:Script>
         <![CDATA[
             import mx.collections.ArrayCollection;
@@ -14,30 +13,15 @@
             import net.hires.debug.Stats;
             
             import sk.yoz.ycanvas.map.MapController;
-            import sk.yoz.ycanvas.map.display.MapStroke;
-            import sk.yoz.ycanvas.map.display.MarkerLayer;
-            import sk.yoz.ycanvas.map.display.StrokeLayer;
-            import sk.yoz.ycanvas.map.events.CanvasEvent;
             import sk.yoz.ycanvas.map.utils.GeoUtils;
-            import sk.yoz.ycanvas.map.valueObjects.MapConfig;
             
             import starling.core.Starling;
-            import starling.display.Image;
             import starling.display.Sprite;
             import starling.events.Event;
             
             private var engine:Starling;
             
-            private var mapBig:MapController;
-            private var mapSmall:MapController;
-            private var markerLayer:MarkerLayer;
-            private var strokeLayer:StrokeLayer;
-            
-            private var modeMapQuest:MapConfig;
-            private var modeOSM:MapConfig;
-            private var modeMapBox:MapConfig;
-            private var modeEsri:MapConfig;
-            private var modeCloudMade:MapConfig;
+            private var myMap:MyMap;
             
             [Bindable]
             private var componentList:ArrayCollection;
@@ -49,163 +33,50 @@
             {
                 var viewPort:Rectangle = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
                 engine = new Starling(starling.display.Sprite, stage, viewPort, stage.stage3Ds[0]);
-                engine.antiAliasing = 16;
                 engine.start();
-                engine.addEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
-                
-                modeMapQuest = createMapConfig([
-                    "http://otile1.mqcdn.com/tiles/1.0.0/osm/${level}/${x}/${y}.png",
-                    "http://otile2.mqcdn.com/tiles/1.0.0/osm/${level}/${x}/${y}.png",
-                    "http://otile3.mqcdn.com/tiles/1.0.0/osm/${level}/${x}/${y}.png",
-                    "http://otile4.mqcdn.com/tiles/1.0.0/osm/${level}/${x}/${y}.png"]);
-                
-                modeOSM = createMapConfig([
-                    "http://a.tile.openstreetmap.org/${level}/${x}/${y}.png",
-                    "http://b.tile.openstreetmap.org/${level}/${x}/${y}.png",
-                    "http://c.tile.openstreetmap.org/${level}/${x}/${y}.png"]);
-                
-                modeMapBox = createMapConfig([
-                    "http://a.tiles.mapbox.com/v3/examples.map-vyofok3q/${level}/${x}/${y}.png",
-                    "http://b.tiles.mapbox.com/v3/examples.map-vyofok3q/${level}/${x}/${y}.png",
-                    "http://c.tiles.mapbox.com/v3/examples.map-vyofok3q/${level}/${x}/${y}.png",
-                    "http://d.tiles.mapbox.com/v3/examples.map-vyofok3q/${level}/${x}/${y}.png"]);
-                
-                modeCloudMade = createMapConfig([
-                    "http://a.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/998/256/${level}/${x}/${y}.png",
-                    "http://b.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/998/256/${level}/${x}/${y}.png",
-                    "http://c.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/998/256/${level}/${x}/${y}.png"]);
-                
-                modeEsri = createMapConfig([
-                    "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${level}/${y}/${x}.png",
-                    "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${level}/${y}/${x}.png"]);
+                engine.addEventListener(starling.events.Event.ROOT_CREATED, onStarlingRootCreated);
                 
                 modeList = new ArrayCollection;
-                modeList.addItem({label: "Map Quest", data: modeMapQuest});
-                modeList.addItem({label: "OSM", data: modeOSM});
-                modeList.addItem({label: "MapBox", data: modeMapBox});
-                modeList.addItem({label: "CloudMade", data: modeCloudMade});
-                modeList.addItem({label: "ESRI", data: modeEsri});
-                
-                placeholder.addChild(new Stats());
+                modeList.addItem({label: "Map Quest", data: Maps.MAP_CONFIG_MAPQUEST});
+                modeList.addItem({label: "OSM", data: Maps.MAP_CONFIG_OSM});
+                modeList.addItem({label: "MapBox", data: Maps.MAP_CONFIG_MAPBOX});
+                modeList.addItem({label: "CloudMade", data: Maps.MAP_CONFIG_CLOUDMADE});
+                modeList.addItem({label: "ESRI", data: Maps.MAP_CONFIG_ESRI});
             }
             
-            private function get currentController():MapController
-            {
-                if(mapBig.hitTestComponent(stage.mouseX, stage.mouseY))
-                    return mapBig;
-                if(mapSmall.hitTestComponent(stage.mouseX, stage.mouseY))
-                    return mapSmall;
-                return null;
-            }
-            
-            private function createMapConfig(templates:Array):MapConfig
-            {
-                var result:MapConfig = new MapConfig;
-                result.templates = Vector.<String>(templates);
-                result.tileWidth = 256;
-                result.tileHeight = 256;
-                result.minScale = 1;
-                result.maxScale = 1 / 65536;
-                result.minCenterX = 0;
-                result.maxCenterX = GeoUtils.lon2x(180);
-                result.minCenterY = GeoUtils.lat2y(85);
-                result.maxCenterY = GeoUtils.lat2y(-85);
-                result.initCenterX = GeoUtils.lon2x(7.75);
-                result.initCenterY = GeoUtils.lat2y(45.53);
-                result.initRotaton = 0;
-                result.initScale = 1 / 4096;
-                return result;
-            }
-            
-            private function onClick():void
-            {
-                if(!currentController)
-                    return;
-                
-                var globalPoint:Point = new Point(mouseX, mouseY);
-                var ycanvasPoint:Point = currentController.globalToViewPort(globalPoint);
-            }
-            
-            private function onRootCreated(event:starling.events.Event, root:starling.display.Sprite):void
-            {
-                var container:starling.display.Sprite = new starling.display.Sprite();
-                //container.x = 300;
-                //container.y = -200;
-                root.addChild(container);
-                
-                mapBig = new MapController(modeEsri, stage);
-                mapBig.addEventListener(CanvasEvent.CENTER_CHANGED, onMapBigCenterChanged);
-                mapBig.addEventListener(CanvasEvent.SCALE_CHANGED, onMapBigScaleChanged);
-                mapBig.addEventListener(CanvasEvent.ROTATION_CHANGED, onMapBigRotationChanged);
-                mapBig.addEventListener(CanvasEvent.RENDERED, onMapBigRendered);
-                container.addChild(mapBig.component);
-                
-                strokeLayer = new StrokeLayer;
-                strokeLayer.autoUpdateThickness = false;
-                strokeLayer.add(new MapStroke(Mock.EUR_TRIANGLE, 10, 0x00ff00, .5));
-                strokeLayer.add(new MapStroke(Mock.WORLD_TRIANGLE, 10, 0x00ff00, .5));
-                strokeLayer.add(new MapStroke(Mock.RAIL1, 10, 0xff0000, 1));
-                strokeLayer.add(new MapStroke(Mock.RAIL2, 10, 0x0000ff, 1));
-                strokeLayer.add(new MapStroke(Mock.RAIL3, 10, 0xff00ff, 1));
-                strokeLayer.add(new MapStroke(Mock.RAIL4, 10, 0xffff00, 1));
-                mapBig.addMapLayer(strokeLayer);
-                
-                markerLayer = new MarkerLayer;
-                mapBig.addMapLayer(markerLayer);
-                
-                mapSmall = new MapController(modeOSM, stage);
-                container.addChild(mapSmall.component);
-                
-                resizeComponents();
-                
-                placeholder.addEventListener(ResizeEvent.RESIZE, onPlaceholderResize);
-                
-                componentList = new ArrayCollection;
-                componentList.addItem({label: "Big Map", data: mapBig});
-                componentList.addItem({label: "Small Map", data: mapSmall});
-                
-                stage.addEventListener(MouseEvent.MOUSE_UP, enableMapInteradtion);
-            }
-            
-            private function resizeComponents():void
+            private function resizeComponents(...rest):void
             {
                 var global:Point = placeholder.localToGlobal(new Point(0, 0));
-                var w:uint = placeholder.width;
-                var h:uint = placeholder.height;
-                engine.viewPort = new Rectangle(global.x, global.y, w, h);
+                var width:uint = placeholder.width;
+                var height:uint = placeholder.height;
+                engine.viewPort = new Rectangle(global.x, global.y, width, height);
+                engine.stage.stageWidth = width;
+                engine.stage.stageHeight = height;
                 
-                mapBig.component.stage.stageWidth = w;
-                mapBig.component.stage.stageHeight = h;
-                
-                mapBig.component.x = 0;
-                mapBig.component.y = 0;
-                mapBig.component.width = w;
-                mapBig.component.height = h;
-                
-                mapSmall.component.x = 20;
-                mapSmall.component.y = h- h / 6 - 20;
-                mapSmall.component.width = w / 6;
-                mapSmall.component.height = h / 6;
+                myMap.resizeComponents();
                 
                 syncLatLon();
-                syncSmallMap();
-                if(syncCheckBox.selected)
-                    syncSmallMap();
-            }
-            
-            private function syncSmallMap():void
-            {
-                var globalPoint:Point = mapSmall.canvasToGlobal(mapSmall.center);
-                mapSmall.center = mapBig.globalToCanvas(globalPoint);
-                mapSmall.scale = mapBig.scale;
-                mapSmall.rotation = mapBig.rotation;
-                mapSmall.render();
             }
             
             private function syncLatLon():void
             {
-                latInput.value = GeoUtils.y2lat(mapBig.center.y);
-                lonInput.value = GeoUtils.x2lon(mapBig.center.x);
+                latInput.value = GeoUtils.y2lat(myMap.mapBig.center.y);
+                lonInput.value = GeoUtils.x2lon(myMap.mapBig.center.x);
+            }
+            
+            private function onStarlingRootCreated(event:starling.events.Event, root:starling.display.Sprite):void
+            {
+                myMap = new MyMap(root);
+                resizeComponents();
+                
+                placeholder.addChild(new Stats());
+                placeholder.addEventListener(ResizeEvent.RESIZE, resizeComponents);
+                
+                componentList = new ArrayCollection;
+                componentList.addItem({label: "Big Map", data: myMap.mapBig});
+                componentList.addItem({label: "Small Map", data: myMap.mapSmall});
+                
+                stage.addEventListener(MouseEvent.MOUSE_UP, onStageMouseUp);
             }
             
             private function onUpdateComponentClick():void
@@ -214,79 +85,37 @@
                 component.config = modeSelector.selectedItem.data;
             }
             
-            private function onPlaceholderResize(event:ResizeEvent):void
-            {
-                resizeComponents();
-            }
-            
             private function onSyncCheckBoxChange():void
             {
-                if(syncCheckBox.selected)
-                    syncSmallMap();
-            }
-            
-            private function onMapBigCenterChanged(event:CanvasEvent):void
-            {
-                if(syncCheckBox.selected)
-                    syncSmallMap();
-                syncLatLon();
-            }
-            
-            private function onMapBigScaleChanged(event:CanvasEvent):void
-            {
-                if(syncCheckBox.selected)
-                    syncSmallMap();
-            }
-            
-            private function onMapBigRotationChanged(event:CanvasEvent):void
-            {
-                if(syncCheckBox.selected)
-                    syncSmallMap();
-            }
-            
-            private function onMapBigRendered(event:CanvasEvent):void
-            {
-                if(syncCheckBox.selected)
-                    mapSmall.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_FINISHED));
-                
-                if(!strokeLayer.autoUpdateThickness)
-                    strokeLayer.updateThickness();
+                myMap.syncCheckBoxSelected = syncCheckBox.selected;
+                if(myMap.syncCheckBoxSelected)
+                    myMap.syncSmallMap();
             }
             
             private function onZoomInClick():void
             {
-                mapBig.transformationManager.scaleByTween(1.5);
+                myMap.transformationManager.scaleByTween(1.5);
             }
             
             private function onZoomOutClick():void
             {
-                mapBig.transformationManager.scaleByTween(1 / 1.5);
+                myMap.transformationManager.scaleByTween(1 / 1.5);
             }
             
             private function onNavigateClick():void
             {
-                mapBig.transformationManager.moveToTween(GeoUtils.lon2x(lonInput.value), GeoUtils.lat2y(latInput.value));
+                myMap.transformationManager.moveToTween(GeoUtils.lon2x(lonInput.value), GeoUtils.lat2y(latInput.value));
             }
             
             private function onRotationSliderChange(event:flash.events.Event):void
             {
                 var rotation:Number = rotationInput.value * 0.0174532925;
-                mapBig.transformationManager.rotateToTween(rotation);
-            }
-            
-            private function disableMapInteraction():void
-            {
-                mapBig.transformationManager.allowMove = false;
-            }
-            
-            private function enableMapInteradtion(...rest):void
-            {
-                mapBig.transformationManager.allowMove = true;
+                myMap.transformationManager.rotateToTween(rotation);
             }
             
             private function onAddMarkerClick():void
             {
-                addMarkerAt(GeoUtils.lon2x(lonInput.value), GeoUtils.lat2y(latInput.value));
+                myMap.addMarkerAt(GeoUtils.lon2x(lonInput.value), GeoUtils.lat2y(latInput.value));
             }
             
             private function onPlaceholderMouseDown():void
@@ -294,18 +123,23 @@
                 if(!addMarkerOnClick.selected)
                     return;
                 
-                var position:Point = mapBig.globalToCanvas(new Point(mouseX, mouseY));
-                addMarkerAt(position.x, position.y);
+                var position:Point = myMap.mapBig.globalToCanvas(new Point(mouseX, mouseY));
+                myMap.addMarkerAt(position.x, position.y);
             }
             
-            private function addMarkerAt(x:Number, y:Number):void
+            private function onRotationSliderMouseDown():void
             {
-                var marker:Image = new Image(Mock.MARKER_TEXTURE);
-                marker.x = x;
-                marker.y = y;
-                marker.pivotX = Mock.MARKER_TEXTURE.width / 2;
-                marker.pivotY = Mock.MARKER_TEXTURE.height;
-                markerLayer.add(marker);
+                myMap.interactive = false;
+            }
+            
+            private function onZoomingButtonsMouseDown():void
+            {
+                myMap.interactive = false;
+            }
+            
+            private function onStageMouseUp(event:MouseEvent):void
+            {
+                myMap.interactive = true;
             }
         ]]>
     </fx:Script>
@@ -339,9 +173,9 @@
         
         <s:HSlider id="rotationInput" minimum="-180" maximum="180" bottom="20" right="80" snapInterval="10"
                    focusEnabled="false" change="onRotationSliderChange(event)"
-                   mouseDown="disableMapInteraction()"/>
+                   mouseDown="onRotationSliderMouseDown()"/>
         
-        <s:VGroup bottom="20" right="20" gap="0" mouseDown="disableMapInteraction()">
+        <s:VGroup bottom="20" right="20" gap="0" mouseDown="onZoomingButtonsMouseDown()">
             <s:Button label="+" width="30" click="onZoomInClick()"/>
             <s:Button label="-" width="30" click="onZoomOutClick()"/>
         </s:VGroup>

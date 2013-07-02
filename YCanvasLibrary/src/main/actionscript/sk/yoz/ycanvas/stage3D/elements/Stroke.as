@@ -223,7 +223,7 @@ package sk.yoz.ycanvas.stage3D.elements
         private static function registerPrograms():void
         {
             var target:Starling = Starling.current;
-            if (target.hasProgram(PROGRAM_NAME))
+            if(target.hasProgram(PROGRAM_NAME))
                 return; // already registered
             
             // va0 -> position

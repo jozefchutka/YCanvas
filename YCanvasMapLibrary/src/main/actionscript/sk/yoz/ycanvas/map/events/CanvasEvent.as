@@ -10,6 +10,7 @@ package sk.yoz.ycanvas.map.events
         public static const CENTER_CHANGED:String = "canvasCenterChanged";
         public static const SCALE_CHANGED:String = "canvasScaleChanged";
         public static const ROTATION_CHANGED:String = "canvasRotationChanged";
+        
         public static const RENDERED:String = "canvasRendered";
         
         public function CanvasEvent(type:String)

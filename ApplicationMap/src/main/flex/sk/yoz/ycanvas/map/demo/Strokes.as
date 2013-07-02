@@ -1,19 +1,9 @@
 package sk.yoz.ycanvas.map.demo
 {
-    import starling.textures.Texture;
     import sk.yoz.ycanvas.map.utils.GeoUtils;
     
-    public class Mock
+    public class Strokes
     {
-        private static var _MARKER_TEXTURE:Texture;
-        
-        public static function get MARKER_TEXTURE():Texture
-        {
-            if(!_MARKER_TEXTURE)
-                _MARKER_TEXTURE = Texture.fromBitmap(new Assets.MARKER_GREEN_CLASS);
-            return _MARKER_TEXTURE;
-        }
-        
         public static function get EUR_TRIANGLE():Vector.<Number>
         {
             return new <Number>[
