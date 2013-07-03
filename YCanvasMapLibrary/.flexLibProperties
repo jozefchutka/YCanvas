@@ -5,6 +5,8 @@
     <classEntry path="sk.yoz.ycanvas.map.display.MapLayer"/>
     <classEntry path="sk.yoz.ycanvas.map.display.MarkerLayer"/>
     <classEntry path="sk.yoz.ycanvas.map.valueObjects.CanvasLimit"/>
+    <classEntry path="sk.yoz.ycanvas.map.utils.PathSimplify"/>
+    <classEntry path="sk.yoz.ycanvas.map.utils.PathSimplifyTest"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

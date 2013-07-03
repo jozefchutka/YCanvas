@@ -211,6 +211,21 @@ package sk.yoz.ycanvas.map
             doTween(centerX, centerY, NaN, NaN, onMoveToTweenUpdate);
         }
         
+        public function moveRotateToTween(centerX:Number, centerY:Number, rotation:Number):void
+        {
+            var delta:Number = normalizeRadians(rotation - transformationTarget.rotation);
+            rotation = transformationTarget.rotation + delta;
+            doTween(centerX, centerY, NaN, rotation, onMoveRotateToTweenUpdate);
+        }
+        
+        public function moveRotateScaleToTween(centerX:Number, centerY:Number,
+            rotation:Number, scale:Number):void
+        {
+            var delta:Number = normalizeRadians(rotation - transformationTarget.rotation);
+            rotation = transformationTarget.rotation + delta;
+            doTween(centerX, centerY, scale, rotation, onMoveRotateScaleToTweenUpdate);
+        }
+        
         public function rotateByTween(delta:Number, lock:Point=null):void
         {
             rotateToTween(transformationTarget.rotation + delta);
@@ -221,6 +236,13 @@ package sk.yoz.ycanvas.map
             var delta:Number = normalizeRadians(rotation - transformationTarget.rotation);
             rotation = transformationTarget.rotation + delta;
             doTween(NaN, NaN, NaN, rotation, onRotateToTweenUpdate(lock));
+        }
+        
+        public function rotateScaleToTween(rotation:Number, scale:Number):void
+        {
+            var delta:Number = normalizeRadians(rotation - transformationTarget.rotation);
+            rotation = transformationTarget.rotation + delta;
+            doTween(NaN, NaN, scale, rotation, onRotateScaleToTweenUpdate);
         }
         
         public function scaleByTween(delta:Number, lock:Point=null):void
@@ -296,6 +318,11 @@ package sk.yoz.ycanvas.map
                 transformationTarget.centerX = transformation.centerX = canvas.center.x;
                 transformationTarget.centerY = transformation.centerY = canvas.center.y;
             }
+        }
+        
+        private function onRotateScaleToTweenUpdate():void
+        {
+            TransformationUtils.rotateScaleTo(canvas, transformation.rotation, transformation.scale);
         }
         
         private function onScaleToTweenUpdate(lock:Point):Function

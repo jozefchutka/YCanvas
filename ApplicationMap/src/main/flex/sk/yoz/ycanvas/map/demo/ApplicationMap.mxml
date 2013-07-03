@@ -13,6 +13,7 @@
             import net.hires.debug.Stats;
             
             import sk.yoz.ycanvas.map.MapController;
+            import sk.yoz.ycanvas.map.display.MapStroke;
             import sk.yoz.ycanvas.map.utils.GeoUtils;
             
             import starling.core.Starling;
@@ -22,6 +23,8 @@
             private var engine:Starling;
             
             private var myMap:MyMap;
+            
+            private var strokeRail1:MapStroke;
             
             [Bindable]
             private var componentList:ArrayCollection;
@@ -141,6 +144,25 @@
             {
                 myMap.interactive = true;
             }
+            
+            private function onCheckBoxShowRail1(event:flash.events.Event):void
+            {
+                var checkBox:CheckBox = event.currentTarget as CheckBox;
+                if(checkBox.selected)
+                {
+                    strokeRail1 = new MapStroke(Strokes.RAIL1, 10, 0xff0000, 1);
+                    myMap.strokeLayer.add(strokeRail1);
+                    myMap.transformationManager.moveRotateScaleToTween(
+                        strokeRail1.originalPoints[strokeRail1.originalPoints.length / 2],
+                        strokeRail1.originalPoints[strokeRail1.originalPoints.length / 2 + 1], 0, 1 / 2000);
+                }
+                else if(strokeRail1)
+                {
+                    myMap.strokeLayer.remove(strokeRail1);
+                    strokeRail1.dispose();
+                    strokeRail1 = null;
+                }
+            }
         ]]>
     </fx:Script>
     
@@ -166,6 +188,10 @@
         <mx:HRule width="100%"/>
         
         <s:CheckBox id="addMarkerOnClick" change="onSyncCheckBoxChange()" label="Add Marker on click" selected="false"/>
+        
+        <mx:HRule width="100%"/>
+        <s:CheckBox label="Show Rail 1" change="onCheckBoxShowRail1(event)"/>
+        
     </s:VGroup>
     
     <s:Group width="100%" height="100%" mouseDown="onPlaceholderMouseDown()">

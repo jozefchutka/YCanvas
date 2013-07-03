@@ -30,7 +30,7 @@ package sk.yoz.ycanvas.map.demo
         public var transformationManager:TransformationManager;
         
         private var markerLayer:MarkerLayer;
-        private var strokeLayer:StrokeLayer;
+        public var strokeLayer:StrokeLayer;
         
         public function MyMap(root:Sprite):void
         {
@@ -58,19 +58,26 @@ package sk.yoz.ycanvas.map.demo
             mapBig.addEventListener(CanvasEvent.SCALE_CHANGED, onMapBigScaleChanged);
             mapBig.addEventListener(CanvasEvent.ROTATION_CHANGED, onMapBigRotationChanged);
             mapBig.addEventListener(CanvasEvent.RENDERED, onMapBigRendered);
+            mapBig.addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onMapBigTransformationFinished);
             container.addChild(mapBig.component);
             
             transformationManager = new TransformationManager(mapBig, limit);
             
             strokeLayer = new StrokeLayer;
             strokeLayer.autoUpdateThickness = false;
-            strokeLayer.add(new MapStroke(Strokes.EUR_TRIANGLE, 10, 0x00ff00, .5));
-            strokeLayer.add(new MapStroke(Strokes.WORLD_TRIANGLE, 10, 0x00ff00, .5));
-            strokeLayer.add(new MapStroke(Strokes.RAIL1, 10, 0xff0000, 1));
-            strokeLayer.add(new MapStroke(Strokes.RAIL2, 10, 0x0000ff, 1));
-            strokeLayer.add(new MapStroke(Strokes.RAIL3, 10, 0xff00ff, 1));
-            strokeLayer.add(new MapStroke(Strokes.RAIL4, 10, 0xffff00, 1));
             mapBig.addMapLayer(strokeLayer);
+            
+            //strokeLayer.add(new MapStroke(Strokes.EUR_TRIANGLE, 10, 0x00ff00, .5));
+            //strokeLayer.add(new MapStroke(Strokes.WORLD_TRIANGLE, 10, 0x00ff00, .5));
+            //strokeLayer.add(new MapStroke(Strokes.RAIL1, 10, 0xff0000, 1));
+            
+            var stroke:MapStroke = new MapStroke(Strokes.ROMEPARIS, 10, 0x0000ff, 1);
+            //stroke.touchable = false;
+            strokeLayer.add(stroke);
+            //strokeLayer.add(new MapStroke(Strokes.RAIL2, 10, 0x0000ff, 1));
+            //strokeLayer.add(new MapStroke(Strokes.RAIL3, 10, 0xff00ff, 1));
+            //strokeLayer.add(new MapStroke(Strokes.RAIL4, 10, 0xffff00, 1));
+            
             
             markerLayer = new MarkerLayer;
             mapBig.addMapLayer(markerLayer);
@@ -146,7 +153,10 @@ package sk.yoz.ycanvas.map.demo
         {
             if(syncCheckBoxSelected)
                 mapSmall.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_FINISHED));
-            
+        }
+        
+        private function onMapBigTransformationFinished(event:CanvasEvent):void
+        {
             if(!strokeLayer.autoUpdateThickness)
                 strokeLayer.updateThickness();
         }

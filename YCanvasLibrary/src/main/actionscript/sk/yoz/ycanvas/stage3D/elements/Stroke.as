@@ -12,6 +12,7 @@ package sk.yoz.ycanvas.stage3D.elements
     
     import sk.yoz.math.FastCollisions;
     import sk.yoz.ycanvas.utils.StrokeUtils;
+    import sk.yoz.ycanvas.utils.VertexDataUtils;
     
     import starling.core.RenderSupport;
     import starling.core.Starling;
@@ -23,6 +24,7 @@ package sk.yoz.ycanvas.stage3D.elements
     public class Stroke extends DisplayObject
     {
         private static const PROGRAM_NAME:String = "YStroke";
+        private static const QUICK_BUONDS_VERTICES:uint = 10;
         
         public var autoUpdate:Boolean = true;
         
@@ -31,6 +33,12 @@ package sk.yoz.ycanvas.stage3D.elements
         private var _color:Number;
         private var _joints:Boolean;
         private var _bounds:Rectangle;
+        private var quickBounds:Vector.<Rectangle>;
+        
+        private var pointsChanged:Boolean = true;
+        private var thicknessChanged:Boolean = true;
+        private var colorChanged:Boolean = true;
+        private var jointsChanged:Boolean = true;
         
         private var vertexData:VertexData;
         private var vertexBuffer:VertexBuffer3D;
@@ -76,7 +84,8 @@ package sk.yoz.ycanvas.stage3D.elements
             if(points == value)
                 return;
             
-            _points == value;
+            _points = value;
+            pointsChanged = true;
             if(autoUpdate)
                 update();
         }
@@ -92,6 +101,7 @@ package sk.yoz.ycanvas.stage3D.elements
                 return;
             
             _thickness = value;
+            thicknessChanged = true;
             if(autoUpdate)
                 update();
         }
@@ -107,6 +117,7 @@ package sk.yoz.ycanvas.stage3D.elements
                 return;
             
             _color = value;
+            colorChanged = true;
             if(autoUpdate)
                 update();
         }
@@ -122,6 +133,7 @@ package sk.yoz.ycanvas.stage3D.elements
                 return;
             
             _joints = value;
+            jointsChanged = true;
             if(autoUpdate)
                 update();
         }
@@ -138,13 +150,19 @@ package sk.yoz.ycanvas.stage3D.elements
         
         public function update():void
         {
+            if(!pointsChanged && !thicknessChanged && !jointsChanged && !colorChanged)
+                return;
+            
+            pointsChanged = false;
+            thicknessChanged = false;
+            jointsChanged = false;
+            colorChanged = false;
+            
             vertexData = StrokeUtils.pointsToVertexData(points, thickness);
             vertexData.setUniformColor(color);
-            
-            _bounds = vertexData.getBounds();
-            
+            updateBounds();
             indexData = StrokeUtils.vertexDataToIndexData(vertexData, joints);
-            
+        
             var context:Context3D = Starling.context;
             if(context == null)
                 throw new MissingContextError();
@@ -168,6 +186,22 @@ package sk.yoz.ycanvas.stage3D.elements
             
             if(!bounds.containsPoint(localPoint))
                 return null;
+            
+            //TODO quickBounds hit
+            /*
+            var quickBoundsHit:Boolean = false;
+            for(var q:uint = 0, ql:uint = quickBounds.length; q < ql; q++)
+                if(quickBounds[q].contains(localPoint.x, localPoint.y))
+                {
+                    quickBoundsHit = true;
+                    break;
+                }
+            
+            if(!quickBoundsHit)
+            {
+                trace("fail");
+                return null;
+            }*/
             
             var offset:uint;
             for(var i:uint = 0, length:uint = indexData.length; i < length; i += 3)
@@ -220,6 +254,15 @@ package sk.yoz.ycanvas.stage3D.elements
             context.setVertexBufferAt(1, null);
         }
         
+        private function updateBounds():void
+        {
+            _bounds = vertexData.getBounds();
+            /*TODO fix quick bounds 
+            quickBounds = new Vector.<Rectangle>;
+            for(var i:uint = 0, length:uint = vertexData.numVertices; i < length; i += QUICK_BUONDS_VERTICES)
+                quickBounds.push(VertexDataUtils.getBounds(vertexData, i, QUICK_BUONDS_VERTICES));*/
+        }
+        
         private static function registerPrograms():void
         {
             var target:Starling = Starling.current;
@@ -250,6 +293,10 @@ package sk.yoz.ycanvas.stage3D.elements
         
         private function onContextCreated(event:Event):void
         {
+            pointsChanged = true;
+            colorChanged = true;
+            thicknessChanged = true;
+            jointsChanged = true;
             update();
             registerPrograms();
         }
