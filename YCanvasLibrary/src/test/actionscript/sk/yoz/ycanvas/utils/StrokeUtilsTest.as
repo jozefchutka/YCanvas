@@ -128,7 +128,7 @@ package sk.yoz.ycanvas.utils
         public function customVertexData_vertexDataToIndexData_equalsExpected():void
         {
             var vertexData:VertexData = StrokeUtils.pointsToVertexData(Vector.<Number>([0, 0, 10, 0, 10, 10, 0, 10]), 10);
-            var indexData:Vector.<uint> = StrokeUtils.vertexDataToIndexData(vertexData, true);
+            var indexData:Vector.<uint> = StrokeUtils.vertexDataToIndexData(vertexData);
             
             Assert.assertEquals(30, indexData.length);
             

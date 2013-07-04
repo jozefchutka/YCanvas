@@ -11,8 +11,10 @@ package sk.yoz.ycanvas.stage3D.elements
     import flash.geom.Rectangle;
     
     import sk.yoz.math.FastCollisions;
+    import sk.yoz.ycanvas.utils.PartialBoundsUtils;
     import sk.yoz.ycanvas.utils.StrokeUtils;
     import sk.yoz.ycanvas.utils.VertexDataUtils;
+    import sk.yoz.ycanvas.valueObjects.PartialBounds;
     
     import starling.core.RenderSupport;
     import starling.core.Starling;
@@ -24,21 +26,19 @@ package sk.yoz.ycanvas.stage3D.elements
     public class Stroke extends DisplayObject
     {
         private static const PROGRAM_NAME:String = "YStroke";
-        private static const QUICK_BUONDS_VERTICES:uint = 10;
         
         public var autoUpdate:Boolean = true;
+        public var verticesPerPartialBounds:uint = 256;
         
         private var _points:Vector.<Number>;
         private var _thickness:Number;
         private var _color:Number;
-        private var _joints:Boolean;
         private var _bounds:Rectangle;
-        private var quickBounds:Vector.<Rectangle>;
+        private var partialBounds:Vector.<PartialBounds>;
         
         private var pointsChanged:Boolean = true;
         private var thicknessChanged:Boolean = true;
         private var colorChanged:Boolean = true;
-        private var jointsChanged:Boolean = true;
         
         private var vertexData:VertexData;
         private var vertexBuffer:VertexBuffer3D;
@@ -48,13 +48,12 @@ package sk.yoz.ycanvas.stage3D.elements
         private var renderAlpha:Vector.<Number> = new <Number>[1.0, 1.0, 1.0, 1.0];
         
         public function Stroke(points:Vector.<Number>, thickness:Number = 1, 
-            color:uint=0xffffff, alpha:Number=1, joints:Boolean=true,
+            color:uint=0xffffff, alpha:Number=1, 
             autoUpdate:Boolean=true)
         {
             _points = points;
             _thickness = thickness;
             _color = color;
-            _joints = joints;
             this.alpha = alpha;
             this.autoUpdate = autoUpdate;
             
@@ -127,22 +126,6 @@ package sk.yoz.ycanvas.stage3D.elements
             return _color;
         }
         
-        public function set joints(value:Boolean):void
-        {
-            if(joints == value)
-                return;
-            
-            _joints = value;
-            jointsChanged = true;
-            if(autoUpdate)
-                update();
-        }
-        
-        public function get joints():Boolean
-        {
-            return _joints;
-        }
-        
         override public function get bounds():Rectangle
         {
             return _bounds;
@@ -150,19 +133,18 @@ package sk.yoz.ycanvas.stage3D.elements
         
         public function update():void
         {
-            if(!pointsChanged && !thicknessChanged && !jointsChanged && !colorChanged)
+            if(!pointsChanged && !thicknessChanged && !colorChanged)
                 return;
             
             pointsChanged = false;
             thicknessChanged = false;
-            jointsChanged = false;
             colorChanged = false;
             
             vertexData = StrokeUtils.pointsToVertexData(points, thickness);
             vertexData.setUniformColor(color);
+            indexData = StrokeUtils.vertexDataToIndexData(vertexData);
             updateBounds();
-            indexData = StrokeUtils.vertexDataToIndexData(vertexData, joints);
-        
+            
             var context:Context3D = Starling.context;
             if(context == null)
                 throw new MissingContextError();
@@ -187,43 +169,34 @@ package sk.yoz.ycanvas.stage3D.elements
             if(!bounds.containsPoint(localPoint))
                 return null;
             
-            //TODO quickBounds hit
-            /*
-            var quickBoundsHit:Boolean = false;
-            for(var q:uint = 0, ql:uint = quickBounds.length; q < ql; q++)
-                if(quickBounds[q].contains(localPoint.x, localPoint.y))
+            for(var j:uint = 0, length:uint = partialBounds.length; j < length; j++)
+            {
+                var partialBound:PartialBounds = partialBounds[j];
+                if(!partialBound.rectangle.containsPoint(localPoint))
+                    continue;
+                
+                var offset:uint;
+                for(var i:uint = partialBound.indiceIndexMin; i <= partialBound.indiceIndexMax; i += 3)
                 {
-                    quickBoundsHit = true;
-                    break;
+                    var i0:uint = indexData[i];
+                    var i1:uint = indexData[uint(i + 1)];
+                    var i2:uint = indexData[uint(i + 2)];
+                    
+                    offset = i0 * VertexData.ELEMENTS_PER_VERTEX + VertexData.POSITION_OFFSET;
+                    var p1x:Number = vertexData.rawData[offset];
+                    var p1y:Number = vertexData.rawData[uint(offset + 1)];
+                    
+                    offset = i1 * VertexData.ELEMENTS_PER_VERTEX + VertexData.POSITION_OFFSET;
+                    var p2x:Number = vertexData.rawData[offset];
+                    var p2y:Number = vertexData.rawData[uint(offset + 1)];
+                    
+                    offset = i2 * VertexData.ELEMENTS_PER_VERTEX + VertexData.POSITION_OFFSET;
+                    var p3x:Number = vertexData.rawData[offset];
+                    var p3y:Number = vertexData.rawData[uint(offset + 1)];
+                    
+                    if(FastCollisions.pointInTriangle(localPoint.x, localPoint.y, p1x, p1y, p2x, p2y, p3x, p3y))
+                        return this;
                 }
-            
-            if(!quickBoundsHit)
-            {
-                trace("fail");
-                return null;
-            }*/
-            
-            var offset:uint;
-            for(var i:uint = 0, length:uint = indexData.length; i < length; i += 3)
-            {
-                var i1:uint = indexData[i];
-                var i2:uint = indexData[uint(i + 1)];
-                var i3:uint = indexData[uint(i + 2)];
-                
-                offset = i1 * VertexData.ELEMENTS_PER_VERTEX + VertexData.POSITION_OFFSET;
-                var p1x:Number = vertexData.rawData[offset];
-                var p1y:Number = vertexData.rawData[uint(offset + 1)];
-                
-                offset = i2 * VertexData.ELEMENTS_PER_VERTEX + VertexData.POSITION_OFFSET;
-                var p2x:Number = vertexData.rawData[offset];
-                var p2y:Number = vertexData.rawData[uint(offset + 1)];
-                
-                offset = i3 * VertexData.ELEMENTS_PER_VERTEX + VertexData.POSITION_OFFSET;
-                var p3x:Number = vertexData.rawData[offset];
-                var p3y:Number = vertexData.rawData[uint(offset + 1)];
-                
-                if(FastCollisions.pointInTriangle(localPoint.x, localPoint.y, p1x, p1y, p2x, p2y, p3x, p3y))
-                    return this;
             }
             
             return null;
@@ -256,11 +229,8 @@ package sk.yoz.ycanvas.stage3D.elements
         
         private function updateBounds():void
         {
-            _bounds = vertexData.getBounds();
-            /*TODO fix quick bounds 
-            quickBounds = new Vector.<Rectangle>;
-            for(var i:uint = 0, length:uint = vertexData.numVertices; i < length; i += QUICK_BUONDS_VERTICES)
-                quickBounds.push(VertexDataUtils.getBounds(vertexData, i, QUICK_BUONDS_VERTICES));*/
+            partialBounds = VertexDataUtils.getPartialBoundsList(vertexData, verticesPerPartialBounds);
+            _bounds = PartialBoundsUtils.mergeListToRectangle(partialBounds);
         }
         
         private static function registerPrograms():void
@@ -296,7 +266,6 @@ package sk.yoz.ycanvas.stage3D.elements
             pointsChanged = true;
             colorChanged = true;
             thicknessChanged = true;
-            jointsChanged = true;
             update();
             registerPrograms();
         }

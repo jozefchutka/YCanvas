@@ -17,15 +17,11 @@ package sk.yoz.ycanvas.utils
             return result;
         }
         
-        public static function vertexDataToIndexData(vertexData:VertexData, joints:Boolean):Vector.<uint>
+        public static function vertexDataToIndexData(vertexData:VertexData):Vector.<uint>
         {
             var result:Vector.<uint> = new Vector.<uint>;
             for(var i:uint = 0, length:uint = vertexData.numVertices - 2; i < length; i++)
-            {
                 result.push(i, i + 1, i + 2);
-                if(!joints && i%2)
-                    i += 2;
-            }
             return result;
         }
         

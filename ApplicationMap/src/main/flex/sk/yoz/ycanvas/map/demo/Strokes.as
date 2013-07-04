@@ -1251,7 +1251,7 @@ package sk.yoz.ycanvas.map.demo
                 GeoUtils.lon2x(-12.2939018), GeoUtils.lat2y(14.4150374)];
         }
         
-        public static function get ROMEPARIS():Vector.<Number>
+        public static function get ROUTE_ROME_PARIS():Vector.<Number>
         {
             return new <Number>[
                 GeoUtils.lon2x(12.4830619), GeoUtils.lat2y(41.8932575),

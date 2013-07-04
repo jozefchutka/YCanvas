@@ -21,10 +21,10 @@
             import starling.events.Event;
             
             private var engine:Starling;
-            
-            private var myMap:MyMap;
-            
             private var strokeRail1:MapStroke;
+            
+            private var bigMap:HelperBigMap;
+            private var smallMap:HelperSmallMap;
             
             [Bindable]
             private var componentList:ArrayCollection;
@@ -56,28 +56,39 @@
                 engine.stage.stageWidth = width;
                 engine.stage.stageHeight = height;
                 
-                myMap.resizeComponents();
+                bigMap.resize();
+                smallMap.resize();
                 
                 syncLatLon();
             }
             
             private function syncLatLon():void
             {
-                latInput.value = GeoUtils.y2lat(myMap.mapBig.center.y);
-                lonInput.value = GeoUtils.x2lon(myMap.mapBig.center.x);
+                latInput.value = GeoUtils.y2lat(bigMap.map.center.y);
+                lonInput.value = GeoUtils.x2lon(bigMap.map.center.x);
             }
             
             private function onStarlingRootCreated(event:starling.events.Event, root:starling.display.Sprite):void
             {
-                myMap = new MyMap(root);
+                var container:starling.display.Sprite = new starling.display.Sprite();
+                //container.x = 300;
+                //container.y = -200;
+                root.addChild(container);
+                
+                bigMap = new HelperBigMap();
+                container.addChild(bigMap.map.component);
+                
+                smallMap = new HelperSmallMap(bigMap.map);
+                container.addChild(smallMap.map.component);
+                
                 resizeComponents();
                 
                 placeholder.addChild(new Stats());
                 placeholder.addEventListener(ResizeEvent.RESIZE, resizeComponents);
                 
                 componentList = new ArrayCollection;
-                componentList.addItem({label: "Big Map", data: myMap.mapBig});
-                componentList.addItem({label: "Small Map", data: myMap.mapSmall});
+                componentList.addItem({label: "Big Map", data: bigMap.map});
+                componentList.addItem({label: "Small Map", data: smallMap.map});
                 
                 stage.addEventListener(MouseEvent.MOUSE_UP, onStageMouseUp);
             }
@@ -90,35 +101,33 @@
             
             private function onSyncCheckBoxChange():void
             {
-                myMap.syncCheckBoxSelected = syncCheckBox.selected;
-                if(myMap.syncCheckBoxSelected)
-                    myMap.syncSmallMap();
+                smallMap.autoSync = syncCheckBox.selected;
             }
             
             private function onZoomInClick():void
             {
-                myMap.transformationManager.scaleByTween(1.5);
+                bigMap.transformationManager.scaleByTween(1.5);
             }
             
             private function onZoomOutClick():void
             {
-                myMap.transformationManager.scaleByTween(1 / 1.5);
+                bigMap.transformationManager.scaleByTween(1 / 1.5);
             }
             
             private function onNavigateClick():void
             {
-                myMap.transformationManager.moveToTween(GeoUtils.lon2x(lonInput.value), GeoUtils.lat2y(latInput.value));
+                bigMap.transformationManager.moveToTween(GeoUtils.lon2x(lonInput.value), GeoUtils.lat2y(latInput.value));
             }
             
             private function onRotationSliderChange(event:flash.events.Event):void
             {
                 var rotation:Number = rotationInput.value * 0.0174532925;
-                myMap.transformationManager.rotateToTween(rotation);
+                bigMap.transformationManager.rotateToTween(rotation);
             }
             
             private function onAddMarkerClick():void
             {
-                myMap.addMarkerAt(GeoUtils.lon2x(lonInput.value), GeoUtils.lat2y(latInput.value));
+                bigMap.addMarkerAt(GeoUtils.lon2x(lonInput.value), GeoUtils.lat2y(latInput.value));
             }
             
             private function onPlaceholderMouseDown():void
@@ -126,23 +135,26 @@
                 if(!addMarkerOnClick.selected)
                     return;
                 
-                var position:Point = myMap.mapBig.globalToCanvas(new Point(mouseX, mouseY));
-                myMap.addMarkerAt(position.x, position.y);
+                var position:Point = bigMap.map.globalToCanvas(new Point(mouseX, mouseY));
+                bigMap.addMarkerAt(position.x, position.y);
             }
             
             private function onRotationSliderMouseDown():void
             {
-                myMap.interactive = false;
+                bigMap.transformationManager.allowMove = false;
+                bigMap.transformationManager.allowZoom = false;
             }
             
             private function onZoomingButtonsMouseDown():void
             {
-                myMap.interactive = false;
+                bigMap.transformationManager.allowMove = false;
+                bigMap.transformationManager.allowZoom = false;
             }
             
             private function onStageMouseUp(event:MouseEvent):void
             {
-                myMap.interactive = true;
+                bigMap.transformationManager.allowMove = true;
+                bigMap.transformationManager.allowZoom = true;
             }
             
             private function onCheckBoxShowRail1(event:flash.events.Event):void
@@ -151,14 +163,14 @@
                 if(checkBox.selected)
                 {
                     strokeRail1 = new MapStroke(Strokes.RAIL1, 10, 0xff0000, 1);
-                    myMap.strokeLayer.add(strokeRail1);
-                    myMap.transformationManager.moveRotateScaleToTween(
+                    bigMap.strokeLayer.add(strokeRail1);
+                    bigMap.transformationManager.moveRotateScaleToTween(
                         strokeRail1.originalPoints[strokeRail1.originalPoints.length / 2],
                         strokeRail1.originalPoints[strokeRail1.originalPoints.length / 2 + 1], 0, 1 / 2000);
                 }
                 else if(strokeRail1)
                 {
-                    myMap.strokeLayer.remove(strokeRail1);
+                    bigMap.strokeLayer.remove(strokeRail1);
                     strokeRail1.dispose();
                     strokeRail1 = null;
                 }

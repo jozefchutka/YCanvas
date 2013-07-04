@@ -6,7 +6,9 @@ package
     
     import flexunit.flexui.FlexUnitTestRunnerUIAS;
     
+    import sk.yoz.ycanvas.utils.PartialBoundsUtilsTest;
     import sk.yoz.ycanvas.utils.StrokeUtilsTest;
+    import sk.yoz.ycanvas.utils.VertexDataUtilsTest;
     
     public class FlexUnitApplication extends Sprite
     {
@@ -26,6 +28,8 @@ package
         public function currentRunTestSuite():Array
         {
             var testsToRun:Array = new Array();
+            testsToRun.push(sk.yoz.ycanvas.utils.PartialBoundsUtilsTest);
+            testsToRun.push(sk.yoz.ycanvas.utils.VertexDataUtilsTest);
             testsToRun.push(sk.yoz.ycanvas.utils.StrokeUtilsTest);
             return testsToRun;
         }

@@ -21,7 +21,7 @@ package sk.yoz.ycanvas.map.display
             for(var i:uint = list.length; i--;)
             {
                 var item:MapStroke = list[i];
-                item.thickness = item.originalThickness / scale;
+                item.layerScale = scale;
                 if(!item.autoUpdate)
                     item.update();
             }
@@ -29,7 +29,7 @@ package sk.yoz.ycanvas.map.display
         
         public function add(item:MapStroke):void
         {
-            item.thickness = item.originalThickness / scale;
+            item.layerScale = scale;
             if(!item.autoUpdate)
                 item.update();
             list.push(item);
