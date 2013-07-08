@@ -272,11 +272,13 @@ package sk.yoz.ycanvas.map
         private function onCanvasTransformationStarted(event:CanvasEvent):void
         {
             resetTimer();
+            component.touchable = false;
         }
         
         private function onCanvasTransformationFinished(event:CanvasEvent):void
         {
             render();
+            component.touchable = true;
         }
         
         private function onPartitionLoaded(event:PartitionEvent):void

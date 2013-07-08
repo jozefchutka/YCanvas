@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>ApplicationMapMobile</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>com.adobe.flexbuilder.project.flexbuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>com.adobe.flexbuilder.project.apollobuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>com.adobe.flexide.project.multiplatform.multiplatformnature</nature>
+		<nature>com.adobe.flexbuilder.project.apollonature</nature>
+		<nature>com.adobe.flexbuilder.project.flexnature</nature>
+		<nature>com.adobe.flexbuilder.project.actionscriptnature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>src/main/flex2</name>
+			<type>2</type>
+			<location>C:/Users/jozef.chutka/work/flex/YCanvas/ApplicationMap/src/main/flex</location>
+		</link>
+		<link>
+			<name>src/main/resources</name>
+			<type>2</type>
+			<location>C:/Users/jozef.chutka/work/flex/YCanvas/ApplicationMap/src/main/resources</location>
+		</link>
+	</linkedResources>
+</projectDescription>

@@ -7,6 +7,9 @@
     <classEntry path="sk.yoz.ycanvas.map.valueObjects.CanvasLimit"/>
     <classEntry path="sk.yoz.ycanvas.map.utils.PathSimplify"/>
     <classEntry path="sk.yoz.ycanvas.map.utils.PathSimplifyTest"/>
+    <classEntry path="sk.yoz.ycanvas.map.managers.AbstractTransformationManager"/>
+    <classEntry path="sk.yoz.ycanvas.map.managers.TouchTransformationManager"/>
+    <classEntry path="sk.yoz.ycanvas.map.events.TransitionMultitouchEvent"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

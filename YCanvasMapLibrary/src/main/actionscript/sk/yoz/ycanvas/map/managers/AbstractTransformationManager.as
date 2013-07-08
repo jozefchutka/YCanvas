@@ -1,39 +1,32 @@
-package sk.yoz.ycanvas.map
+package sk.yoz.ycanvas.map.managers
 {
     import com.greensock.TweenMax;
     
-    import flash.display.Stage;
-    import flash.events.Event;
-    import flash.events.MouseEvent;
-    import flash.geom.Matrix;
     import flash.geom.Point;
     
+    import sk.yoz.ycanvas.map.MapController;
     import sk.yoz.ycanvas.map.events.CanvasEvent;
     import sk.yoz.ycanvas.map.valueObjects.CanvasLimit;
     import sk.yoz.ycanvas.map.valueObjects.CanvasTransformation;
     import sk.yoz.ycanvas.utils.TransformationUtils;
-    
-    import starling.core.Starling;
-    
-    public class TransformationManager
+
+    public class AbstractTransformationManager
     {
         public static const PI2:Number = Math.PI * 2;
         
+        protected var canvas:MapController;
+        protected var transformation:CanvasTransformation = new CanvasTransformation;
+        protected var transformationTarget:CanvasTransformation = new CanvasTransformation;
+        
         private var limit:CanvasLimit;
-        
-        private var transformation:CanvasTransformation = new CanvasTransformation;
-        private var transformationTarget:CanvasTransformation = new CanvasTransformation;
-        
-        private var last:Point;
-        
         private var tween:TweenMax;
-        private var canvas:MapController;
         
         private var _allowMove:Boolean;
         private var _allowZoom:Boolean;
         private var _allowInteractions:Boolean;
+        private var _transforming:Boolean;
         
-        public function TransformationManager(canvas:MapController, limit:CanvasLimit):void
+        public function AbstractTransformationManager(canvas:MapController, limit:CanvasLimit)
         {
             this.canvas = canvas;
             this.limit = limit;
@@ -66,11 +59,6 @@ package sk.yoz.ycanvas.map
             
             _allowMove = value;
             validateInteractions();
-            
-            if(allowMove)
-                stage.addEventListener(MouseEvent.MOUSE_DOWN, onStageMouseDown);
-            else
-                stage.removeEventListener(MouseEvent.MOUSE_DOWN, onStageMouseDown);
         }
         
         public function get allowMove():Boolean
@@ -85,11 +73,6 @@ package sk.yoz.ycanvas.map
             
             _allowZoom = value;
             validateInteractions();
-            
-            if(allowZoom)
-                stage.addEventListener(MouseEvent.MOUSE_WHEEL, onStageMouseWheel);
-            else
-                stage.removeEventListener(MouseEvent.MOUSE_WHEEL, onStageMouseWheel);
         }
         
         public function get allowZoom():Boolean
@@ -97,53 +80,33 @@ package sk.yoz.ycanvas.map
             return _allowZoom;
         }
         
-        private function set allowInteractions(value:Boolean):void
+        protected function set allowInteractions(value:Boolean):void
         {
             if(allowInteractions == value)
                 return;
             
             _allowInteractions = value;
-            if(allowInteractions)
-                stage.addEventListener(Event.MOUSE_LEAVE, onStageMouseLeave);
-            else
-                stage.removeEventListener(Event.MOUSE_LEAVE, onStageMouseLeave);
         }
         
-        private function get allowInteractions():Boolean
+        protected function get allowInteractions():Boolean
         {
             return _allowInteractions;
         }
         
-        private function get globalPointInTweenTarget():Point
+        protected function set transforming(value:Boolean):void
         {
-            var targetCenter:Point =
-                new Point(transformationTarget.centerX, transformationTarget.centerY);
-            var globalPoint:Point = new Point(stage.mouseX, stage.mouseY);
-            var point:Point = canvas.globalToViewPort(globalPoint);
-            var matrix:Matrix = canvas.getConversionMatrix(
-                targetCenter, 
-                transformationTarget.scale, 
-                transformationTarget.rotation, canvas.viewPort);
-            matrix.invert();
-            return matrix.transformPoint(point);
+            if(transforming == value)
+                return;
+            
+            _transforming = value;
         }
         
-        private function get globalPointOnCanvas():Point
+        protected function get transforming():Boolean
         {
-            return canvas.globalToCanvas(new Point(stage.mouseX, stage.mouseY));
+            return _transforming;
         }
         
-        private function get stage():Stage
-        {
-            return Starling.current.nativeStage;
-        }
-        
-        private function validateInteractions():void
-        {
-            allowInteractions = allowMove || allowZoom;
-        }
-        
-        private static function normalizeRadians(radians:Number):Number
+        protected static function normalizeRadians(radians:Number):Number
         {
             radians %= PI2;
             if(radians > Math.PI)
@@ -151,11 +114,6 @@ package sk.yoz.ycanvas.map
             else if(radians < -Math.PI)
                 radians += PI2;
             return radians;
-        }
-        
-        private function hitTest(x:Number, y:Number):Boolean
-        {
-            return canvas.hitTestComponent(x, y);
         }
         
         protected function limitScale(scale:Number):Number
@@ -185,18 +143,21 @@ package sk.yoz.ycanvas.map
             return centerY;
         }
         
+        protected function stop():void
+        {
+        }
+        
+        private function validateInteractions():void
+        {
+            allowInteractions = allowMove || allowZoom;
+        }
+        
         private function updateTransformation():void
         {
             transformationTarget.centerX = transformation.centerX = canvas.center.x;
             transformationTarget.centerY = transformation.centerY = canvas.center.y;
             transformationTarget.scale = transformation.scale = canvas.scale;
             transformationTarget.rotation = transformation.rotation = canvas.rotation;
-        }
-        
-        private function stop():void
-        {
-            stage.removeEventListener(MouseEvent.MOUSE_UP, onStageMouseUp);
-            stage.removeEventListener(MouseEvent.MOUSE_MOVE, onStageMouseMove);
         }
         
         public function moveByTween(deltaX:Number, deltaY:Number):void
@@ -281,6 +242,7 @@ package sk.yoz.ycanvas.map
             
             tween && tween.kill();
             tween = TweenMax.to(transformation, .5, data);
+            transforming = true;
             canvas.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_STARTED));
         }
         
@@ -344,47 +306,8 @@ package sk.yoz.ycanvas.map
         
         private function onCanvasTransformationFinished(event:CanvasEvent):void
         {
+            transforming = false;
             updateTransformation();
-        }
-        
-        private function onStageMouseDown(event:MouseEvent):void
-        {
-            if(!hitTest(event.stageX, event.stageY))
-                return;
-            
-            last = globalPointInTweenTarget;
-            stage.addEventListener(MouseEvent.MOUSE_UP, onStageMouseUp);
-            stage.addEventListener(MouseEvent.MOUSE_MOVE, onStageMouseMove);
-        }
-        
-        private function onStageMouseMove(event:MouseEvent):void
-        {
-            var current:Point = globalPointInTweenTarget;
-            moveByTween(last.x - current.x, last.y - current.y);
-            last = globalPointInTweenTarget;
-        }
-        
-        private function onStageMouseUp(event:MouseEvent):void
-        {
-            stop();
-        }
-        
-        private function onStageMouseWheel(event:MouseEvent):void
-        {
-            if(!hitTest(event.stageX, event.stageY))
-                return;
-            
-            const step:Number = 1.25;
-            var delta:Number = event.delta < 0 ? 1 / step : step;
-            var point:Point = globalPointOnCanvas;
-            point.x = limitCenterX(point.x);
-            point.y = limitCenterY(point.y);
-            scaleByTween(delta, point);
-        }
-        
-        private function onStageMouseLeave(event:Event):void
-        {
-            stop();
         }
     }
 }
