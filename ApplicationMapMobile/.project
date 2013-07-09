@@ -17,21 +17,26 @@
 		</buildCommand>
 	</buildSpec>
 	<natures>
+		<nature>com.adobe.flexide.project.multiplatform.multiplatformasnature</nature>
 		<nature>com.adobe.flexide.project.multiplatform.multiplatformnature</nature>
 		<nature>com.adobe.flexbuilder.project.apollonature</nature>
-		<nature>com.adobe.flexbuilder.project.flexnature</nature>
 		<nature>com.adobe.flexbuilder.project.actionscriptnature</nature>
 	</natures>
 	<linkedResources>
 		<link>
-			<name>src/main/flex2</name>
+			<name>[source path] actionscript</name>
 			<type>2</type>
-			<location>C:/Users/jozef.chutka/work/flex/YCanvas/ApplicationMap/src/main/flex</location>
+			<locationURI>DOCUMENTS/ApplicationMap/src/main/actionscript</locationURI>
 		</link>
 		<link>
-			<name>src/main/resources</name>
+			<name>[source path] resources</name>
 			<type>2</type>
-			<location>C:/Users/jozef.chutka/work/flex/YCanvas/ApplicationMap/src/main/resources</location>
+			<locationURI>DOCUMENTS/ApplicationMap/src/main/resources</locationURI>
+		</link>
+		<link>
+			<name>[source path] src</name>
+			<type>2</type>
+			<locationURI>DOCUMENTS/ApplicationMap/libs/src</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
