@@ -63,17 +63,6 @@ package sk.yoz.ycanvas.map.demo
             map.render();
         }
         
-        public function resize():void
-        {
-            map.component.x = 20;
-            map.component.y = Starling.current.viewPort.height - 150 - 20;
-            map.component.width = 150;
-            map.component.height = 150;
-            
-            if(autoSync)
-                sync();
-        }
-        
         private function onMapTouch(event:TouchEvent):void
         {
             var touch:Touch = event.getTouch(map.component, TouchPhase.BEGAN);

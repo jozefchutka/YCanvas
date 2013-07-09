@@ -83,7 +83,7 @@ package sk.yoz.ycanvas.map.display
             Starling.context.setScissorRectangle(null);
         }
         
-        private function validateViewPort():void
+        public function validateViewPort():void
         {
             _localViewPort = null;
             dispatchEventWith(VIEWPORT_UPDATED);

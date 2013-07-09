@@ -37,7 +37,6 @@ package sk.yoz.ycanvas.map.managers
             
             stage.addEventListener(TwoFingerEvent.SCALE_AND_ROTATE, onScaleAndRotate);
             stage.addEventListener(TouchEvent.TOUCH_BEGIN, onTouchBegin);
-            stage.addEventListener(TouchEvent.TOUCH_MOVE, onTouchMove, false, 1);
             stage.addEventListener(TouchEvent.TOUCH_END, onTouchEnd);
             stage.addEventListener(TouchEvent.TOUCH_ROLL_OUT, onTouchRollOut);
         }
@@ -109,8 +108,16 @@ package sk.yoz.ycanvas.map.managers
             canvas.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_FINISHED));
         }
         
+        private function hitTest(x:Number, y:Number):Boolean
+        {
+            return canvas.hitTestComponent(x, y);
+        }
+        
         private function onScaleAndRotate(event:TwoFingerEvent):void
         {
+            if(!hitTest(event.source.stageX, event.source.stageY))
+                return;
+            
             if(event.scale == 1 && event.rotation == 0)
                 return;
             
@@ -138,9 +145,14 @@ package sk.yoz.ycanvas.map.managers
         
         private function onTouchBegin(event:TouchEvent):void
         {
+            if(!hitTest(event.stageX, event.stageY))
+                return;
+            
             killTween();
             resetTransformationTarget();
             previousPosition = getGlobalPointInTweenTarget(multitouch.getPoint(event));
+            
+            stage.addEventListener(TouchEvent.TOUCH_MOVE, onTouchMove, false, 1);
         }
         
         private function onTouchMove(event:TouchEvent):void
@@ -170,6 +182,8 @@ package sk.yoz.ycanvas.map.managers
         
         private function onTouchEnd(event:TouchEvent):void
         {
+            stage.removeEventListener(TouchEvent.TOUCH_MOVE, onTouchMove, false);
+            
             resetTransformationTarget();
             previousPosition = null;
             
