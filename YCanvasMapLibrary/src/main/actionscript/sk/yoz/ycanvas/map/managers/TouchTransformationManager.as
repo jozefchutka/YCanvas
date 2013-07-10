@@ -9,11 +9,11 @@ package sk.yoz.ycanvas.map.managers
     import flash.ui.Multitouch;
     import flash.ui.MultitouchInputMode;
     
-    import sk.yoz.ycanvas.map.utils.TransitionMultitouch;
-    import sk.yoz.ycanvas.map.events.TransitionMultitouchEvent;
     import sk.yoz.touch.events.TwoFingerEvent;
     import sk.yoz.ycanvas.map.MapController;
     import sk.yoz.ycanvas.map.events.CanvasEvent;
+    import sk.yoz.ycanvas.map.events.TransitionMultitouchEvent;
+    import sk.yoz.ycanvas.map.utils.TransitionMultitouch;
     import sk.yoz.ycanvas.map.valueObjects.CanvasLimit;
     import sk.yoz.ycanvas.utils.TransformationUtils;
     
@@ -126,16 +126,18 @@ package sk.yoz.ycanvas.map.managers
             
             dispatchTransformationStarted();
             
-            TransformationUtils.rotateScaleTo(canvas, 
-                canvas.rotation + normalizeRadians(event.rotation), 
-                limitScale(canvas.scale * event.scale), 
-                canvas.globalToCanvas(event.lock));
+            if(allowRotate)
+                TransformationUtils.rotateScaleTo(canvas, 
+                    canvas.rotation + normalizeRadians(event.rotation), 
+                    limitScale(canvas.scale * event.scale), 
+                    canvas.globalToCanvas(event.lock));
+            else
+                TransformationUtils.scaleTo(canvas,
+                    limitScale(canvas.scale * event.scale),
+                    canvas.globalToCanvas(event.lock));
             
             resetTransformation();
             resetTransformationTarget();
-            
-            //TODO ???
-            //signalUpdate.dispatch(transformation);
         }
         
         private function onMultitouchTransitionComplete(event:TransitionMultitouchEvent):void
@@ -199,8 +201,6 @@ package sk.yoz.ycanvas.map.managers
         {
             TransformationUtils.moveTo(canvas, 
                 new Point(transformation.centerX, transformation.centerY));
-            //TODO ???
-            //signalUpdate.dispatch(transformation);
         }
     }
 }

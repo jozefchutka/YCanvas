@@ -5,6 +5,7 @@ package sk.yoz.ycanvas.map.managers
     import flash.geom.Point;
     
     import sk.yoz.ycanvas.map.MapController;
+    import sk.yoz.ycanvas.map.display.MapStroke;
     import sk.yoz.ycanvas.map.events.CanvasEvent;
     import sk.yoz.ycanvas.map.valueObjects.CanvasLimit;
     import sk.yoz.ycanvas.map.valueObjects.CanvasTransformation;
@@ -23,6 +24,7 @@ package sk.yoz.ycanvas.map.managers
         
         private var _allowMove:Boolean;
         private var _allowZoom:Boolean;
+        private var _allowRotate:Boolean;
         private var _allowInteractions:Boolean;
         private var _transforming:Boolean;
         
@@ -33,6 +35,7 @@ package sk.yoz.ycanvas.map.managers
             
             allowMove = true;
             allowZoom = true;
+            allowRotate = true;
             
             updateTransformation();
             
@@ -45,6 +48,7 @@ package sk.yoz.ycanvas.map.managers
             
             allowMove = false;
             allowZoom = false;
+            allowRotate = false;
             allowInteractions = false;
             
             canvas.removeEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onCanvasTransformationFinished);
@@ -78,6 +82,20 @@ package sk.yoz.ycanvas.map.managers
         public function get allowZoom():Boolean
         {
             return _allowZoom;
+        }
+        
+        public function set allowRotate(value:Boolean):void
+        {
+            if(allowRotate == value)
+                return;
+            
+            _allowRotate = value;
+            validateInteractions();
+        }
+        
+        public function get allowRotate():Boolean
+        {
+            return _allowRotate;
         }
         
         protected function set allowInteractions(value:Boolean):void
@@ -149,7 +167,7 @@ package sk.yoz.ycanvas.map.managers
         
         private function validateInteractions():void
         {
-            allowInteractions = allowMove || allowZoom;
+            allowInteractions = allowMove || allowZoom || allowRotate;
         }
         
         private function updateTransformation():void
@@ -214,6 +232,41 @@ package sk.yoz.ycanvas.map.managers
         public function scaleToTween(scale:Number, lock:Point=null):void
         {
             doTween(NaN, NaN, scale, NaN, onScaleToTweenUpdate(lock));
+        }
+        
+        public function showBoundsTween(left:Number, right:Number, top:Number, bottom:Number):void
+        {
+            var centerX:Number = (left + right) / 2;
+            var centerY:Number = (top + bottom) / 2;
+            
+            var targetLeftTop:Point = canvas.canvasToViewPort(new Point(left, top));
+            var targetRightBottom:Point = canvas.canvasToViewPort(new Point(right, bottom));
+            var targetMinX:Number = Math.min(targetLeftTop.x, targetRightBottom.x);
+            var targetMaxX:Number = Math.max(targetLeftTop.x, targetRightBottom.x);
+            var targetMinY:Number = Math.min(targetLeftTop.y, targetRightBottom.y);
+            var targetMaxY:Number = Math.max(targetLeftTop.y, targetRightBottom.y);
+            
+            var deltaScaleX:Number = 
+                Math.abs(canvas.viewPort.width) /
+                Math.abs(targetMaxX - targetMinX);
+            
+            var deltaScaleY:Number = 
+                Math.abs(canvas.viewPort.height) /
+                Math.abs(targetMaxY - targetMinY);
+            
+            var deltaScale:Number = Math.min(deltaScaleX, deltaScaleY);
+            var scale:Number = canvas.scale * deltaScale;
+            
+            doTween(centerX, centerY, scale, canvas.rotation, onMoveScaleToTweenUpdate);
+        }
+        
+        public function showStrokeTween(stroke:MapStroke):void
+        {
+            showBoundsTween(
+                stroke.bounds.left - stroke.pivotX,
+                stroke.bounds.right - stroke.pivotX,
+                stroke.bounds.top - stroke.pivotY,
+                stroke.bounds.bottom - stroke.pivotY);
         }
         
         private function doTween(centerX:Number, centerY:Number, scale:Number, 

@@ -2,8 +2,11 @@ package sk.yoz.ycanvas.map.demo
 {
     import flash.ui.Multitouch;
     
+    import feathers.controls.Label;
+    import feathers.core.PopUpManager;
+    
     import sk.yoz.ycanvas.map.MapController;
-    import sk.yoz.ycanvas.map.display.MapStroke;
+    import sk.yoz.ycanvas.map.demo.routes.RouteNewYorkWashington;
     import sk.yoz.ycanvas.map.display.MarkerLayer;
     import sk.yoz.ycanvas.map.display.StrokeLayer;
     import sk.yoz.ycanvas.map.events.CanvasEvent;
@@ -14,7 +17,6 @@ package sk.yoz.ycanvas.map.demo
     import sk.yoz.ycanvas.map.valueObjects.CanvasLimit;
     import sk.yoz.ycanvas.map.valueObjects.CanvasTransformation;
     
-    import starling.core.Starling;
     import starling.display.Image;
     import starling.events.Touch;
     import starling.events.TouchEvent;
@@ -56,25 +58,9 @@ package sk.yoz.ycanvas.map.demo
             strokeLayer.addEventListener(TouchEvent.TOUCH, onStrokeLayerTouch);
             map.addMapLayer(strokeLayer);
             
-            strokeLayer.add(new MapStroke(Strokes.ROUTE_ROME_PARIS, 10, 0x0000ff, 1));
-            strokeLayer.add(new MapStroke(Strokes.EUR_TRIANGLE, 10, 0x00ff00, .5));
-            strokeLayer.add(new MapStroke(Strokes.WORLD_TRIANGLE, 10, 0x00ff00, .5));
-            strokeLayer.add(new MapStroke(Strokes.RAIL1, 10, 0xff0000, 1));
-            strokeLayer.add(new MapStroke(Strokes.RAIL2, 10, 0x0000ff, 1));
-            strokeLayer.add(new MapStroke(Strokes.RAIL3, 10, 0xff00ff, 1));
-            strokeLayer.add(new MapStroke(Strokes.RAIL4, 10, 0xffff00, 1));
-            
             markerLayer = new MarkerLayer;
             markerLayer.addEventListener(TouchEvent.TOUCH, onMarkerLayerTouch);
             map.addMapLayer(markerLayer);
-        }
-        
-        public function resize():void
-        {
-            map.component.x = 0;
-            map.component.y = 0;
-            map.component.width = Starling.current.viewPort.width;
-            map.component.height = Starling.current.viewPort.height;
         }
         
         public function addMarkerAt(x:Number, y:Number):void
@@ -87,6 +73,19 @@ package sk.yoz.ycanvas.map.demo
             markerLayer.add(marker);
         }
         
+        private function showLabelPopup(message:String):void
+        {
+            var label:Label = new Label;
+            label.text = message;
+            PopUpManager.addPopUp(label);
+            
+            label.addEventListener(TouchEvent.TOUCH, function(event:TouchEvent):void
+            {
+                if(PopUpManager.isPopUp(label) && event.getTouch(label, TouchPhase.BEGAN))
+                    PopUpManager.removePopUp(label);
+            });
+        }
+        
         private function onMapTransformationFinished(event:CanvasEvent):void
         {
             if(!strokeLayer.autoUpdateThickness)
@@ -97,14 +96,14 @@ package sk.yoz.ycanvas.map.demo
         {
             var touch:Touch = event.getTouch(map.component, TouchPhase.BEGAN);
             if(touch)
-                trace("Stroke selected.");
+                showLabelPopup("Stroke selected. Click here to close popup.");
         }
         
         private function onMarkerLayerTouch(event:TouchEvent):void
         {
             var touch:Touch = event.getTouch(map.component, TouchPhase.BEGAN);
             if(touch)
-                trace("Marker selected.");
+                showLabelPopup("Marker selected. Click here to close popup");
         }
     }
 }

@@ -10,7 +10,12 @@ package sk.yoz.ycanvas.map.demo
     import feathers.data.ListCollection;
     import feathers.themes.MetalWorksMobileTheme;
     
+    import fr.kouma.starling.utils.Stats;
+    
     import sk.yoz.ycanvas.map.MapController;
+    import sk.yoz.ycanvas.map.demo.routes.RouteNewYorkWashington;
+    import sk.yoz.ycanvas.map.demo.routes.RouteRomeParis;
+    import sk.yoz.ycanvas.map.display.MapStroke;
     import sk.yoz.ycanvas.map.utils.GeoUtils;
     
     import starling.core.Starling;
@@ -25,12 +30,18 @@ package sk.yoz.ycanvas.map.demo
         private var componentSelector:PickerList;
         private var mapsSelector:PickerList;
         private var bigMap:HelperBigMap;
+        private var allowRotate:Check;
         private var smallMap:HelperSmallMap;
         private var syncCheckBox:Check;
         private var latInput:TextInput;
         private var lonInput:TextInput;
         private var addMarkerOnClick:Check;
+        private var routeRomeParis:Check;
+        private var routeNewYorkWashington:Check;
         private var rotationInput:Slider;
+        
+        private var routeRomeParisStroke:MapStroke;
+        private var routeNewYorkWashingtonStroke:MapStroke;
         
         public function Main()
         {
@@ -39,8 +50,10 @@ package sk.yoz.ycanvas.map.demo
         
         private function syncLatLon():void
         {
-            latInput.text = GeoUtils.y2lat(bigMap.map.center.y).toString();
-            lonInput.text = GeoUtils.x2lon(bigMap.map.center.x).toString();
+            var lat:Number = GeoUtils.y2lat(bigMap.map.center.y);
+            var lon:Number = GeoUtils.x2lon(bigMap.map.center.x);
+            latInput.text = (Math.round(lat * 1000) / 1000).toString();
+            lonInput.text = (Math.round(lon * 1000) / 1000).toString();
         }
         
         private function onAddedToStage(event:Event):void
@@ -96,10 +109,19 @@ package sk.yoz.ycanvas.map.demo
             addChild(button);
             button.validate();
             
+            allowRotate = new Check;
+            allowRotate.isSelected = true;
+            allowRotate.label = "Allow 2 finger rotation";
+            allowRotate.isSelected = true;
+            allowRotate.y = button.y + button.height + 15;
+            allowRotate.addEventListener(Event.CHANGE, onAllowRotateChange);
+            addChild(allowRotate);
+            allowRotate.validate();
+            
             syncCheckBox = new Check;
             syncCheckBox.label = "Sync small and big map";
             syncCheckBox.isSelected = true;
-            syncCheckBox.y = button.y + button.height + 15;
+            syncCheckBox.y = allowRotate.y + allowRotate.height + 5;
             syncCheckBox.addEventListener(Event.CHANGE, onSyncCheckBoxChange);
             addChild(syncCheckBox);
             syncCheckBox.validate();
@@ -144,6 +166,20 @@ package sk.yoz.ycanvas.map.demo
             addChild(addMarkerOnClick);
             addMarkerOnClick.validate();
             
+            routeRomeParis = new Check;
+            routeRomeParis.label = "Show route Rome - Paris";
+            routeRomeParis.y = addMarkerOnClick.y + addMarkerOnClick.height + 15;
+            routeRomeParis.addEventListener(Event.CHANGE, onRouteRomeParisChange);
+            addChild(routeRomeParis);
+            routeRomeParis.validate();
+            
+            routeNewYorkWashington = new Check;
+            routeNewYorkWashington.label = "Show route New York - Washington";
+            routeNewYorkWashington.y = routeRomeParis.y + routeRomeParis.height + 5;
+            routeNewYorkWashington.addEventListener(Event.CHANGE, onRouteNewYorkWashingtonChange);
+            addChild(routeNewYorkWashington);
+            routeNewYorkWashington.validate();
+            
             rotationInput = new Slider;
             rotationInput.width = 200;
             rotationInput.minimum = -180;
@@ -169,12 +205,21 @@ package sk.yoz.ycanvas.map.demo
             button.x = stage.stageWidth - button.width - 20;
             button.y = stage.stageHeight - button.height * 2 - 20;
             button.addEventListener(Event.TRIGGERED, onZoomInClick);
+            
+            var stats:Stats = new Stats();
+            stats.x = stage.stageWidth - 70;
+            addChild(stats);
         }
         
         private function onUpdateTileProviderTriggered(event:Event):void
         {
             var component:MapController = componentSelector.selectedItem.data.map;
             component.config = mapsSelector.selectedItem.data;
+        }
+        
+        private function onAllowRotateChange(event:Event):void
+        {
+            bigMap.transformationManager.allowRotate = allowRotate.isSelected;
         }
         
         private function onSyncCheckBoxChange(event:Event):void
@@ -194,6 +239,34 @@ package sk.yoz.ycanvas.map.demo
             var lat:Number = parseFloat(latInput.text);
             var lon:Number = parseFloat(lonInput.text);
             bigMap.addMarkerAt(GeoUtils.lon2x(lon), GeoUtils.lat2y(lat));
+        }
+        
+        private function onRouteRomeParisChange():void
+        {
+            if(routeRomeParis.isSelected)
+            {
+                routeRomeParisStroke = new MapStroke(RouteRomeParis.DATA, 10, 0x0000ff, 1);
+                bigMap.strokeLayer.add(routeRomeParisStroke);
+                bigMap.transformationManager.showStrokeTween(routeRomeParisStroke);
+            }
+            else
+            {
+                bigMap.strokeLayer.remove(routeRomeParisStroke);
+            }
+        }
+        
+        private function onRouteNewYorkWashingtonChange():void
+        {
+            if(routeNewYorkWashington.isSelected)
+            {
+                routeNewYorkWashingtonStroke = new MapStroke(RouteNewYorkWashington.DATA, 10, 0x00ff00, 1);
+                bigMap.strokeLayer.add(routeNewYorkWashingtonStroke);
+                bigMap.transformationManager.showStrokeTween(routeNewYorkWashingtonStroke);
+            }
+            else
+            {
+                bigMap.strokeLayer.remove(routeNewYorkWashingtonStroke);
+            }
         }
         
         private function onBigMapTouch(event:TouchEvent):void

@@ -8,8 +8,6 @@ package
     
     import sk.yoz.ycanvas.map.demo.Main;
     
-    import net.hires.debug.Stats;
-    
     import starling.core.Starling;
     
     [SWF(width="960",height="640",frameRate="60",backgroundColor="#4a4137")]
@@ -31,10 +29,6 @@ package
             this._starling.start();
             this.stage.addEventListener(Event.RESIZE, stage_resizeHandler, false, int.MAX_VALUE, true);
             this.stage.addEventListener(Event.DEACTIVATE, stage_deactivateHandler, false, 0, true);
-            
-            var stats:Stats = new Stats;
-            stats.x = stage.stageWidth - 70;
-            addChild(stats);
         }
         
         private function stage_resizeHandler(event:Event):void

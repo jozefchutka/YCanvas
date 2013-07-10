@@ -7,6 +7,7 @@ package sk.yoz.ycanvas.stage3D.elements
     import flash.display3D.Context3DVertexBufferFormat;
     import flash.display3D.IndexBuffer3D;
     import flash.display3D.VertexBuffer3D;
+    import flash.geom.Matrix;
     import flash.geom.Point;
     import flash.geom.Rectangle;
     
@@ -21,6 +22,7 @@ package sk.yoz.ycanvas.stage3D.elements
     import starling.display.DisplayObject;
     import starling.errors.MissingContextError;
     import starling.events.Event;
+    import starling.utils.MatrixUtil;
     import starling.utils.VertexData;
     
     public class Stroke extends DisplayObject
@@ -129,6 +131,18 @@ package sk.yoz.ycanvas.stage3D.elements
         override public function get bounds():Rectangle
         {
             return _bounds;
+        }
+        
+        override public function getBounds(targetSpace:DisplayObject, resultRect:Rectangle=null):Rectangle
+        {
+            if(resultRect == null)
+                resultRect = new Rectangle();
+            
+            var matrix:Matrix = getTransformationMatrix(targetSpace);
+            var lt:Point = MatrixUtil.transformCoords(matrix, bounds.x, bounds.y);
+            var rb:Point = MatrixUtil.transformCoords(matrix, bounds.x + bounds.width, bounds.y + bounds.height);
+            resultRect.setTo(lt.x, lt.y, rb.x - lt.x, rb.y - lt.y);
+            return resultRect;
         }
         
         public function update():void
