@@ -21,32 +21,37 @@ package sk.yoz.ycanvas.map.managers
     
     public class TouchTransformationManager extends AbstractTransformationManager
     {
-        private var transitionDuration:Number = .25;
         private var multitouch:TransitionMultitouch = new TransitionMultitouch;
         private var previousPosition:Point;
         
-        public function TouchTransformationManager(canvas:MapController, limit:CanvasLimit)
+        public function TouchTransformationManager(canvas:MapController, 
+            limit:CanvasLimit, transitionDuration:Number=.25)
         {
             Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
             
-            super(canvas, limit);
+            super(canvas, limit, transitionDuration);
             
             multitouch.attach(stage);
             multitouch.transitionDuration = transitionDuration;
             multitouch.addEventListener(TransitionMultitouchEvent.TRANSITION_COMPLETE, onMultitouchTransitionComplete);
             
-            stage.addEventListener(TwoFingerEvent.SCALE_AND_ROTATE, onScaleAndRotate);
-            stage.addEventListener(TouchEvent.TOUCH_BEGIN, onTouchBegin);
-            stage.addEventListener(TouchEvent.TOUCH_END, onTouchEnd);
-            stage.addEventListener(TouchEvent.TOUCH_ROLL_OUT, onTouchRollOut);
+            stage.addEventListener(TwoFingerEvent.SCALE_AND_ROTATE, onStageScaleAndRotate);
+            stage.addEventListener(TouchEvent.TOUCH_BEGIN, onStageTouchBegin);
+            stage.addEventListener(TouchEvent.TOUCH_END, onStageTouchEnd);
+            stage.addEventListener(TouchEvent.TOUCH_ROLL_OUT, onStageTouchRollOut);
         }
         
         override public function dispose():void
         {
             multitouch.detach(stage);
             multitouch.removeEventListener(TransitionMultitouchEvent.TRANSITION_COMPLETE, onMultitouchTransitionComplete);
+            multitouch = null;
             
-            stage.removeEventListener(TwoFingerEvent.SCALE_AND_ROTATE, onScaleAndRotate);
+            stage.removeEventListener(TwoFingerEvent.SCALE_AND_ROTATE, onStageScaleAndRotate);
+            stage.removeEventListener(TouchEvent.TOUCH_BEGIN, onStageTouchBegin);
+            stage.removeEventListener(TouchEvent.TOUCH_END, onStageTouchEnd);
+            stage.removeEventListener(TouchEvent.TOUCH_ROLL_OUT, onStageTouchRollOut);
+            stage.removeEventListener(TouchEvent.TOUCH_MOVE, onStageTouchMove, false);
             
             super.dispose();
         }
@@ -113,7 +118,7 @@ package sk.yoz.ycanvas.map.managers
             return canvas.hitTestComponent(x, y);
         }
         
-        private function onScaleAndRotate(event:TwoFingerEvent):void
+        private function onStageScaleAndRotate(event:TwoFingerEvent):void
         {
             if(!hitTest(event.source.stageX, event.source.stageY))
                 return;
@@ -126,15 +131,13 @@ package sk.yoz.ycanvas.map.managers
             
             dispatchTransformationStarted();
             
-            if(allowRotate)
-                TransformationUtils.rotateScaleTo(canvas, 
-                    canvas.rotation + normalizeRadians(event.rotation), 
-                    limitScale(canvas.scale * event.scale), 
-                    canvas.globalToCanvas(event.lock));
-            else
-                TransformationUtils.scaleTo(canvas,
-                    limitScale(canvas.scale * event.scale),
-                    canvas.globalToCanvas(event.lock));
+            var rotation:Number = canvas.rotation;
+            TransformationUtils.rotateScaleTo(canvas, 
+                canvas.rotation + normalizeRadians(event.rotation), 
+                limitScale(canvas.scale * event.scale), 
+                canvas.globalToCanvas(event.lock));
+            if(!allowRotate)
+                canvas.rotation = rotation;
             
             resetTransformation();
             resetTransformationTarget();
@@ -145,7 +148,7 @@ package sk.yoz.ycanvas.map.managers
             dispatchTransformationFinished();
         }
         
-        private function onTouchBegin(event:TouchEvent):void
+        private function onStageTouchBegin(event:TouchEvent):void
         {
             if(!hitTest(event.stageX, event.stageY))
                 return;
@@ -154,10 +157,10 @@ package sk.yoz.ycanvas.map.managers
             resetTransformationTarget();
             previousPosition = getGlobalPointInTweenTarget(multitouch.getPoint(event));
             
-            stage.addEventListener(TouchEvent.TOUCH_MOVE, onTouchMove, false, 1);
+            stage.addEventListener(TouchEvent.TOUCH_MOVE, onStageTouchMove, false, 1);
         }
         
-        private function onTouchMove(event:TouchEvent):void
+        private function onStageTouchMove(event:TouchEvent):void
         {
             dispatchTransformationStarted();
             killTween();
@@ -182,9 +185,9 @@ package sk.yoz.ycanvas.map.managers
             previousPosition = getGlobalPointInTweenTarget(point);
         }
         
-        private function onTouchEnd(event:TouchEvent):void
+        private function onStageTouchEnd(event:TouchEvent):void
         {
-            stage.removeEventListener(TouchEvent.TOUCH_MOVE, onTouchMove, false);
+            stage.removeEventListener(TouchEvent.TOUCH_MOVE, onStageTouchMove, false);
             
             resetTransformationTarget();
             previousPosition = null;
@@ -192,9 +195,9 @@ package sk.yoz.ycanvas.map.managers
             dispatchTransformationFinished();
         }
         
-        private function onTouchRollOut(event:TouchEvent):void
+        private function onStageTouchRollOut(event:TouchEvent):void
         {
-            onTouchEnd(event);
+            onStageTouchEnd(event);
         }
         
         private function onTransformationUpdate():void

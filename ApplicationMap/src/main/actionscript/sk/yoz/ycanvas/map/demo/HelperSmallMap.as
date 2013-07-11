@@ -3,40 +3,46 @@ package sk.yoz.ycanvas.map.demo
     import flash.geom.Point;
     
     import sk.yoz.ycanvas.map.MapController;
+    import sk.yoz.ycanvas.map.display.MapComponent;
     import sk.yoz.ycanvas.map.events.CanvasEvent;
     import sk.yoz.ycanvas.map.valueObjects.CanvasTransformation;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
     
-    import starling.core.Starling;
-    import starling.events.Touch;
+    import starling.display.Quad;
     import starling.events.TouchEvent;
     import starling.events.TouchPhase;
+    import sk.yoz.ycanvas.map.demo.mock.Maps;
 
     public class HelperSmallMap
     {
-        public var map:MapController;
+        public var mapController:MapController;
         
         private var _autoSync:Boolean = true;
+        private var background:Quad;
+        private var bigMapController:MapController;
         
-        private var original:MapController;
-        
-        public function HelperSmallMap(original:MapController)
+        public function HelperSmallMap(bigMapController:MapController)
         {
-            this.original = original;
+            this.bigMapController = bigMapController;
             
             var init:CanvasTransformation = new CanvasTransformation;
-            init.centerX = original.center.x;
-            init.centerY = original.center.y;
-            init.scale = original.scale;
-            init.rotation = original.rotation;
+            init.centerX = bigMapController.center.x;
+            init.centerY = bigMapController.center.y;
+            init.scale = bigMapController.scale;
+            init.rotation = bigMapController.rotation;
             
-            map = new MapController(Maps.MAP_CONFIG_OSM, init);
-            map.component.addEventListener(TouchEvent.TOUCH, onMapTouch);
+            background = new Quad(1, 1, 0xffffff);
+            background.touchable = false;
             
-            original.addEventListener(CanvasEvent.RENDERED, onOriginalRendered);
-            original.addEventListener(CanvasEvent.CENTER_CHANGED, onOriginalCenterChanged);
-            original.addEventListener(CanvasEvent.SCALE_CHANGED, onOriginalScaleChanged);
-            original.addEventListener(CanvasEvent.ROTATION_CHANGED, onOriginalRotationChanged);
+            mapController = new MapController(Maps.OSM, init);
+            mapController.component.addChildAt(background, 0);
+            mapController.component.addEventListener(TouchEvent.TOUCH, onMapTouch);
+            mapController.component.addEventListener(MapComponent.VIEWPORT_UPDATED, onViewportUpdated);
+            
+            bigMapController.addEventListener(CanvasEvent.RENDERED, onBigMapControllerRendered);
+            bigMapController.addEventListener(CanvasEvent.CENTER_CHANGED, onBigMapControllerCenterChanged);
+            bigMapController.addEventListener(CanvasEvent.SCALE_CHANGED, onBigMapControllerScaleChanged);
+            bigMapController.addEventListener(CanvasEvent.ROTATION_CHANGED, onBigMapControllerRotationChanged);
         }
         
         public function set autoSync(value:Boolean):void
@@ -56,42 +62,47 @@ package sk.yoz.ycanvas.map.demo
         
         public function sync():void
         {
-            var globalPoint:Point = map.canvasToGlobal(map.center);
-            map.center = original.globalToCanvas(globalPoint);
-            map.scale = original.scale;
-            map.rotation = original.rotation;
-            map.render();
+            var globalPoint:Point = mapController.canvasToGlobal(mapController.center);
+            mapController.center = bigMapController.globalToCanvas(globalPoint);
+            mapController.scale = bigMapController.scale;
+            mapController.rotation = bigMapController.rotation;
+            mapController.render();
         }
         
         private function onMapTouch(event:TouchEvent):void
         {
-            var touch:Touch = event.getTouch(map.component, TouchPhase.BEGAN);
-            if(touch)
+            if(event.getTouch(mapController.component, TouchPhase.BEGAN))
             {
-                var config:MapConfig = original.config;
-                original.config = map.config;
-                map.config = config;
+                var config:MapConfig = bigMapController.config;
+                bigMapController.config = mapController.config;
+                mapController.config = config;
             }
         }
         
-        private function onOriginalRendered(event:CanvasEvent):void
+        private function onViewportUpdated():void
         {
-            map.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_FINISHED));
+            background.width = mapController.component.width;
+            background.height = mapController.component.height;
         }
         
-        private function onOriginalCenterChanged(event:CanvasEvent):void
+        private function onBigMapControllerRendered(event:CanvasEvent):void
+        {
+            mapController.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_FINISHED));
+        }
+        
+        private function onBigMapControllerCenterChanged(event:CanvasEvent):void
         {
             if(autoSync)
                 sync();
         }
         
-        private function onOriginalScaleChanged(event:CanvasEvent):void
+        private function onBigMapControllerScaleChanged(event:CanvasEvent):void
         {
             if(autoSync)
                 sync();
         }
         
-        private function onOriginalRotationChanged(event:CanvasEvent):void
+        private function onBigMapControllerRotationChanged(event:CanvasEvent):void
         {
             if(autoSync)
                 sync();

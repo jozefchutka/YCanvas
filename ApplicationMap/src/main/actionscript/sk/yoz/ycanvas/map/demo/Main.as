@@ -13,8 +13,9 @@ package sk.yoz.ycanvas.map.demo
     import fr.kouma.starling.utils.Stats;
     
     import sk.yoz.ycanvas.map.MapController;
-    import sk.yoz.ycanvas.map.demo.routes.RouteNewYorkWashington;
-    import sk.yoz.ycanvas.map.demo.routes.RouteRomeParis;
+    import sk.yoz.ycanvas.map.demo.mock.Maps;
+    import sk.yoz.ycanvas.map.demo.mock.RouteNewYorkWashington;
+    import sk.yoz.ycanvas.map.demo.mock.RouteRomeParis;
     import sk.yoz.ycanvas.map.display.MapStroke;
     import sk.yoz.ycanvas.map.utils.GeoUtils;
     
@@ -39,6 +40,9 @@ package sk.yoz.ycanvas.map.demo
         private var routeRomeParis:Check;
         private var routeNewYorkWashington:Check;
         private var rotationInput:Slider;
+        private var buttonZoomIn:Button;
+        private var buttonZoomOut:Button;
+        private var stats:Stats;
         
         private var routeRomeParisStroke:MapStroke;
         private var routeNewYorkWashingtonStroke:MapStroke;
@@ -46,38 +50,56 @@ package sk.yoz.ycanvas.map.demo
         public function Main()
         {
             addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+            
+            Starling.current.nativeStage.addEventListener("resize", resize);
         }
         
         private function syncLatLon():void
         {
-            var lat:Number = GeoUtils.y2lat(bigMap.map.center.y);
-            var lon:Number = GeoUtils.x2lon(bigMap.map.center.x);
+            var lat:Number = GeoUtils.y2lat(bigMap.mapController.center.y);
+            var lon:Number = GeoUtils.x2lon(bigMap.mapController.center.x);
             latInput.text = (Math.round(lat * 1000) / 1000).toString();
             lonInput.text = (Math.round(lon * 1000) / 1000).toString();
+        }
+        
+        private function resize(...rest):void
+        {
+            bigMap.mapController.component.x = 200;
+            bigMap.mapController.component.y = 0;
+            bigMap.mapController.component.width = Starling.current.viewPort.width - bigMap.mapController.component.x;
+            bigMap.mapController.component.height = Starling.current.viewPort.height;
+            
+            smallMap.mapController.component.x = bigMap.mapController.component.x + 20;
+            smallMap.mapController.component.y = bigMap.mapController.component.height - 150 - 20;
+            smallMap.mapController.component.width = 150;
+            smallMap.mapController.component.height = 150;
+            
+            rotationInput.x = (stage.stageWidth - rotationInput.width) / 2;
+            rotationInput.y = stage.stageHeight - rotationInput.height - 20;
+            
+            buttonZoomOut.x = stage.stageWidth - buttonZoomOut.width - 20;
+            buttonZoomOut.y = stage.stageHeight - buttonZoomOut.height - 20;
+            
+            buttonZoomIn.x = stage.stageWidth - buttonZoomIn.width - 20;
+            buttonZoomIn.y = stage.stageHeight - buttonZoomIn.height * 2 - 20;
+            
+            stats.x = stage.stageWidth - 70;
         }
         
         private function onAddedToStage(event:Event):void
         {
             removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
-
-            new MetalWorksMobileTheme();
-
-            bigMap = new HelperBigMap();
-            bigMap.map.component.x = 200;
-            bigMap.map.component.y = 0;
-            bigMap.map.component.width = Starling.current.viewPort.width - bigMap.map.component.x;
-            bigMap.map.component.height = Starling.current.viewPort.height;
-            bigMap.map.component.addEventListener(TouchEvent.TOUCH, onBigMapTouch);
-            addChild(bigMap.map.component);
-            bigMap.map.component.validateViewPort();
             
-            smallMap = new HelperSmallMap(bigMap.map);
-            smallMap.map.component.x = bigMap.map.component.x + 20;
-            smallMap.map.component.y = bigMap.map.component.height - 150 - 20;
-            smallMap.map.component.width = 150;
-            smallMap.map.component.height = 150;
-            addChild(smallMap.map.component);
-            smallMap.map.component.validateViewPort();
+            new MetalWorksMobileTheme();
+            
+            bigMap = new HelperBigMap();
+            bigMap.mapController.component.addEventListener(TouchEvent.TOUCH, onBigMapTouch);
+            addChild(bigMap.mapController.component);
+            bigMap.mapController.component.invalidateGlobalViewPort();
+            
+            smallMap = new HelperSmallMap(bigMap.mapController);
+            addChild(smallMap.mapController.component);
+            smallMap.mapController.component.invalidateGlobalViewPort();
             
             if(smallMap.autoSync)
                 smallMap.sync();
@@ -94,11 +116,12 @@ package sk.yoz.ycanvas.map.demo
             mapsSelector.width = 200;
             mapsSelector.y = componentSelector.y + componentSelector.height + 5;
             mapsSelector.dataProvider = new ListCollection([
-                {label: "Map Quest", data: Maps.MAP_CONFIG_MAPQUEST},
-                {label: "OSM", data: Maps.MAP_CONFIG_OSM},
-                {label: "MapBox", data: Maps.MAP_CONFIG_MAPBOX},
-                {label: "CloudMade", data: Maps.MAP_CONFIG_CLOUDMADE},
-                {label: "ESRI", data: Maps.MAP_CONFIG_ESRI}]);
+                {label: "ArcGIS Imagery", data: Maps.ARCGIS_IMAGERY},
+                {label: "ArcGIS National Geographic", data: Maps.ARCGIS_NATIONAL_GEOGRAPHIC},
+                {label: "Map Quest", data: Maps.MAPQUEST},
+                {label: "OSM", data: Maps.OSM},
+                {label: "MapBox", data: Maps.MAPBOX},
+                {label: "CloudMade", data: Maps.CLOUDMADE}]);
             addChild(mapsSelector);
             mapsSelector.validate();
             
@@ -186,29 +209,24 @@ package sk.yoz.ycanvas.map.demo
             rotationInput.maximum = 180;
             addChild(rotationInput);
             rotationInput.validate();
-            rotationInput.x = (stage.stageWidth - rotationInput.width) / 2;
-            rotationInput.y = stage.stageHeight - rotationInput.height - 20;
             rotationInput.addEventListener(Event.CHANGE, onRotationSliderChange);
             
-            button = new Button;
-            button.label = "-";
-            addChild(button);
-            button.validate();
-            button.x = stage.stageWidth - button.width - 20;
-            button.y = stage.stageHeight - button.height - 20;
-            button.addEventListener(Event.TRIGGERED, onZoomOutClick);
+            buttonZoomOut = new Button;
+            buttonZoomOut.label = "-";
+            addChild(buttonZoomOut);
+            buttonZoomOut.validate();
+            buttonZoomOut.addEventListener(Event.TRIGGERED, onZoomOutClick);
             
-            button = new Button;
-            button.label = "+";
-            addChild(button);
-            button.validate();
-            button.x = stage.stageWidth - button.width - 20;
-            button.y = stage.stageHeight - button.height * 2 - 20;
-            button.addEventListener(Event.TRIGGERED, onZoomInClick);
+            buttonZoomIn = new Button;
+            buttonZoomIn.label = "+";
+            addChild(buttonZoomIn);
+            buttonZoomIn.validate();
+            buttonZoomIn.addEventListener(Event.TRIGGERED, onZoomInClick);
             
-            var stats:Stats = new Stats();
-            stats.x = stage.stageWidth - 70;
+            stats = new Stats();
             addChild(stats);
+            
+            resize();
         }
         
         private function onUpdateTileProviderTriggered(event:Event):void
@@ -271,10 +289,10 @@ package sk.yoz.ycanvas.map.demo
         
         private function onBigMapTouch(event:TouchEvent):void
         {
-            var touch:Touch = event.getTouch(bigMap.map.component, TouchPhase.BEGAN);
+            var touch:Touch = event.getTouch(bigMap.mapController.component, TouchPhase.BEGAN);
             if(touch && addMarkerOnClick.isSelected)
             {
-                var position:Point = bigMap.map.globalToCanvas(new Point(touch.globalX, touch.globalY));
+                var position:Point = bigMap.mapController.globalToCanvas(new Point(touch.globalX, touch.globalY));
                 bigMap.addMarkerAt(position.x, position.y);
             }
         }

@@ -15,9 +15,10 @@ package sk.yoz.ycanvas.map.managers
     {
         private var last:Point;
         
-        public function MouseTransformationManager(canvas:MapController, limit:CanvasLimit)
+        public function MouseTransformationManager(canvas:MapController, 
+            limit:CanvasLimit, transitionDuration:Number=.5)
         {
-            super(canvas, limit);
+            super(canvas, limit, transitionDuration);
         }
         
         override public function dispose():void

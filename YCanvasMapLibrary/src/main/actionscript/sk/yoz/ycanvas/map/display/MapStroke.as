@@ -1,7 +1,7 @@
 package sk.yoz.ycanvas.map.display
 {
     import sk.yoz.ycanvas.map.utils.PathSimplify;
-    import sk.yoz.ycanvas.stage3D.elements.Stroke;
+    import sk.yoz.ycanvas.starling.elements.Stroke;
     
     public class MapStroke extends Stroke
     {
@@ -18,11 +18,7 @@ package sk.yoz.ycanvas.map.display
             _originalPoints = points;
             _originalThickness = thickness;
             
-            var x:Number = -(points[0] + points[points.length / 2] + points[points.length - 2]) / 3;
-            var y:Number = -(points[1] + points[points.length / 2 + 1] + points[points.length - 1]) / 3;
             super(null, thickness, color, alpha, false);
-            pivotX = x;
-            pivotY = y;
         }
         
         public function get originalPoints():Vector.<Number>
@@ -69,13 +65,10 @@ package sk.yoz.ycanvas.map.display
             var autoUpdate:Boolean = this.autoUpdate;
             this.autoUpdate = false;
             
-            var simplifiedPoints:Vector.<Number> = simplifyTolerance
-                ? PathSimplify.simplify(originalPoints, simplifyTolerance / layerScale, false)
+            var tolerance:Number = simplifyTolerance / layerScale;
+            points = simplifyTolerance
+                ? PathSimplify.simplify(originalPoints, tolerance, false)
                 : originalPoints.concat();
-            for(var i:uint = 0, lenght:uint = simplifiedPoints.length; i < lenght; i += 2)
-                simplifiedPoints[i] += pivotX, simplifiedPoints[uint(i + 1)] += pivotY;
-            
-            points = simplifiedPoints;
             
             this.autoUpdate = autoUpdate;
         }

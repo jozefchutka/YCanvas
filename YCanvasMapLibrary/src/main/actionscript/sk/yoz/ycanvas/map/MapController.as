@@ -21,7 +21,7 @@ package sk.yoz.ycanvas.map
     import sk.yoz.ycanvas.map.partitions.PartitionFactory;
     import sk.yoz.ycanvas.map.valueObjects.CanvasTransformation;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
-    import sk.yoz.ycanvas.stage3D.YCanvasRootStage3D;
+    import sk.yoz.ycanvas.starling.YCanvasRootStarling;
     import sk.yoz.ycanvas.utils.ILayerUtils;
     import sk.yoz.ycanvas.utils.IPartitionUtils;
     import sk.yoz.ycanvas.valueObjects.LayerPartitions;
@@ -46,30 +46,33 @@ package sk.yoz.ycanvas.map
         private var dispatcher:EventDispatcher = new EventDispatcher;
         private var mapLayers:Vector.<MapLayer> = new Vector.<MapLayer>;
         
-        public function MapController(config:MapConfig, init:CanvasTransformation)
+        public function MapController(config:MapConfig, 
+            init:CanvasTransformation, marginOffset:uint=0, 
+            buffer:URLRequestBuffer=null)
         {
             _config = config;
+            this.marginOffset = marginOffset;
             
-            addEventListener(CanvasEvent.TRANSFORMATION_STARTED, onCanvasTransformationStarted);
-            addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onCanvasTransformationFinished);
-            addEventListener(PartitionEvent.LOADED, onPartitionLoaded);
+            _root = new YCanvasRootStarling;
             
-            _root = new YCanvasRootStage3D;
-            
-            _component = new MapComponent(this);
-            component.addChild(root as YCanvasRootStage3D);
+            _component = new MapComponent;
+            component.addChild(root as YCanvasRootStarling);
             component.addEventListener(MapComponent.VIEWPORT_UPDATED, onComponentViewPortUpdated);
             
             super(getViewPort());
             
-            var buffer:URLRequestBuffer = new URLRequestBuffer(6, 10000);
-            marginOffset = 256;
+            if(!buffer)
+                buffer = new URLRequestBuffer(6, 10000);
             partitionFactory = new PartitionFactory(config, this, buffer);
             layerFactory = new LayerFactory(config, partitionFactory);
             center = new Point(init.centerX, init.centerY);
             scale = init.scale;
             rotation = init.rotation;
             render();
+            
+            addEventListener(CanvasEvent.TRANSFORMATION_STARTED, onCanvasTransformationStarted);
+            addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onCanvasTransformationFinished);
+            addEventListener(PartitionEvent.LOADED, onPartitionLoaded);
             
             timer.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerComplete);
         }
@@ -247,9 +250,9 @@ package sk.yoz.ycanvas.map
         {
             var starlingPoint:Point = component.localToGlobal(new Point(0, 0));
             return new Rectangle(
-                    Starling.current.viewPort.x + starlingPoint.x, 
-                    Starling.current.viewPort.y + starlingPoint.y, 
-                    component.width, component.height);
+                Starling.current.viewPort.x + starlingPoint.x, 
+                Starling.current.viewPort.y + starlingPoint.y, 
+                component.width, component.height);
         }
         
         private function sortByDistanceFromCenter(partition1:Partition, partition2:Partition):Number

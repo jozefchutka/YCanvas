@@ -19,13 +19,13 @@ package sk.yoz.ycanvas.map.partitions
     import sk.yoz.ycanvas.map.events.PartitionEvent;
     import sk.yoz.ycanvas.map.layers.Layer;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
-    import sk.yoz.ycanvas.stage3D.interfaces.IPartitionStage3D;
+    import sk.yoz.ycanvas.starling.interfaces.IPartitionStarling;
     
     import starling.display.DisplayObject;
     import starling.display.Image;
     import starling.textures.Texture;
     
-    public class Partition implements IPartitionStage3D
+    public class Partition implements IPartitionStarling
     {
         private static var EMPTY_TEXTURE:Texture;
         
@@ -109,14 +109,11 @@ package sk.yoz.ycanvas.map.partitions
         
         private function get url():String
         {
-            var level:uint = 18 - getLevel(layer.level);
-            var x:int = this.x / expectedWidth / layer.level;
-            var y:int = this.y / expectedHeight / layer.level;
             var templates:Vector.<String> = config.urlTemplates;
             var url:String = templates[Math.abs(x + y) % templates.length];
-            url = url.replace("${level}", level);
-            url = url.replace("${x}", x);
-            url = url.replace("${y}", y);
+            url = url.replace("${x}", x / expectedWidth / layer.level);
+            url = url.replace("${y}", y / expectedHeight / layer.level);
+            url = url.replace("${z}", 18 - getLevel(layer.level));
             return url;
         }   
         

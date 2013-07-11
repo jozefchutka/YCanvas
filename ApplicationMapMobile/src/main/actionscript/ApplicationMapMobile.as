@@ -15,8 +15,6 @@ package
     
     import sk.yoz.ycanvas.map.demo.Main;
     
-    import net.hires.debug.Stats;
-    
     import starling.core.Starling;
     
     [SWF(width="960",height="640",frameRate="60",backgroundColor="#4a4137")]
@@ -32,10 +30,6 @@ package
             this.mouseEnabled = this.mouseChildren = false;
             this.showLaunchImage();
             this.loaderInfo.addEventListener(Event.COMPLETE, loaderInfo_completeHandler);
-            
-            var stats:Stats = new Stats;
-            stats.x = stage.stageWidth - 70;
-            addChild(stats);
         }
         
         private var _starling:Starling;

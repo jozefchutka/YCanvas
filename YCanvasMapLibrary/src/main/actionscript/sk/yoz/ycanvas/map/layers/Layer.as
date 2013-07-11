@@ -5,13 +5,13 @@ package sk.yoz.ycanvas.map.layers
     import sk.yoz.ycanvas.interfaces.IPartition;
     import sk.yoz.ycanvas.interfaces.IPartitionFactory;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
-    import sk.yoz.ycanvas.stage3D.interfaces.ILayerStage3D;
-    import sk.yoz.ycanvas.stage3D.interfaces.IPartitionStage3D;
+    import sk.yoz.ycanvas.starling.interfaces.ILayerStarling;
+    import sk.yoz.ycanvas.starling.interfaces.IPartitionStarling;
     
     import starling.display.DisplayObjectContainer;
     import starling.display.Sprite;
     
-    public class Layer implements ILayerStage3D
+    public class Layer implements ILayerStarling
     {
         public var config:MapConfig;
         
@@ -80,7 +80,7 @@ package sk.yoz.ycanvas.map.layers
             
             partitions.push(partition);
             positionPartition(partition);
-            content.addChild((partition as IPartitionStage3D).content);
+            content.addChild((partition as IPartitionStarling).content);
         }
         
         public function getPartition(x:int, y:int):IPartition
@@ -98,10 +98,10 @@ package sk.yoz.ycanvas.map.layers
         
         public function removePartition(partition:IPartition):void
         {
-            var partitionStage3D:IPartitionStage3D = partition as IPartitionStage3D;
+            var partitionStarling:IPartitionStarling = partition as IPartitionStarling;
             
-            if(partitionStage3D.content)
-                content.removeChild(partitionStage3D.content);
+            if(partitionStarling.content)
+                content.removeChild(partitionStarling.content);
             var index:int = partitions.indexOf(partition);
             if(index != -1)
                 partitions.splice(index, 1);
@@ -124,9 +124,9 @@ package sk.yoz.ycanvas.map.layers
         
         private function positionPartition(partition:IPartition):void
         {
-            var partitionStage3D:IPartitionStage3D = partition as IPartitionStage3D;
-            partitionStage3D.content.x = (partition.x - center.x) / level;
-            partitionStage3D.content.y = (partition.y - center.y) / level;
+            var partitionStarling:IPartitionStarling = partition as IPartitionStarling;
+            partitionStarling.content.x = (partition.x - center.x) / level;
+            partitionStarling.content.y = (partition.y - center.y) / level;
         }
         
         public function toString():String

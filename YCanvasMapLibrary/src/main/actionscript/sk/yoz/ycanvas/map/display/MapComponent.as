@@ -1,6 +1,5 @@
 package sk.yoz.ycanvas.map.display
 {
-    import flash.events.IEventDispatcher;
     import flash.geom.Point;
     import flash.geom.Rectangle;
     
@@ -13,18 +12,9 @@ package sk.yoz.ycanvas.map.display
     {
         public static const VIEWPORT_UPDATED:String = "viewPortUpdated";
         
-        private var dispatcher:IEventDispatcher;
-        
         private var _width:Number = 200;
         private var _height:Number = 200;
-        private var _localViewPort:Rectangle;
-        
-        public function MapComponent(dispatcher:IEventDispatcher)
-        {
-            super();
-            
-            this.dispatcher = dispatcher;
-        }
+        private var _globalViewPort:Rectangle;
         
         override public function get width():Number
         {
@@ -34,7 +24,7 @@ package sk.yoz.ycanvas.map.display
         override public function set width(value:Number):void
         {
             _width = value;
-            validateViewPort();
+            invalidateGlobalViewPort();
         }
         
         override public function get height():Number
@@ -45,19 +35,30 @@ package sk.yoz.ycanvas.map.display
         override public function set height(value:Number):void
         {
             _height = value;
-            validateViewPort();
+            invalidateGlobalViewPort();
         }
         
         override public function set x(value:Number):void
         {
             super.x = value;
-            validateViewPort();
+            invalidateGlobalViewPort();
         }
         
         override public function set y(value:Number):void
         {
             super.y = value;
-            validateViewPort();
+            invalidateGlobalViewPort();
+        }
+        
+        private function get globalViewPort():Rectangle
+        {
+            if(!_globalViewPort)
+            {
+                var globalPoint:Point = localToGlobal(new Point(0, 0));
+                _globalViewPort = new Rectangle(globalPoint.x, globalPoint.y, width, height);
+            }
+            
+            return _globalViewPort;
         }
         
         override public function hitTest(localPoint:Point, forTouch:Boolean=false):DisplayObject
@@ -68,36 +69,25 @@ package sk.yoz.ycanvas.map.display
             if(object)
                 return object;
             
-            var starlingPoint:Point = localToGlobal(new Point(localX, localY));
-            return localViewPort.contains(starlingPoint.x, starlingPoint.y) ? this : null;
+            var globalPoint:Point = localToGlobal(new Point(localX, localY));
+            return globalViewPort.contains(globalPoint.x, globalPoint.y) ? this : null;
         }
         
         override public function render(support:RenderSupport, alpha:Number):void
         {
             support.finishQuadBatch()
             
-            Starling.context.setScissorRectangle(localViewPort);
+            Starling.context.setScissorRectangle(globalViewPort);
             super.render(support,alpha);
             support.finishQuadBatch();
             
             Starling.context.setScissorRectangle(null);
         }
         
-        public function validateViewPort():void
+        public function invalidateGlobalViewPort():void
         {
-            _localViewPort = null;
+            _globalViewPort = null;
             dispatchEventWith(VIEWPORT_UPDATED);
-        }
-        
-        private function get localViewPort():Rectangle
-        {
-            if(!_localViewPort)
-            {
-                var starlingPoint:Point = localToGlobal(new Point(0, 0));
-                _localViewPort = new Rectangle(starlingPoint.x, starlingPoint.y, width, height);
-            }
-            
-            return _localViewPort;
         }
     }
 }

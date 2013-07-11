@@ -4,7 +4,7 @@ package sk.yoz.ycanvas.utils
     
     import flexunit.framework.Assert;
     
-    import sk.yoz.ycanvas.stage3D.elements.Stroke;
+    import sk.yoz.ycanvas.starling.elements.Stroke;
     
     import starling.utils.VertexData;
 

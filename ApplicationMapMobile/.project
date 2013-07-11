@@ -33,10 +33,5 @@
 			<type>2</type>
 			<locationURI>DOCUMENTS/ApplicationMap/src/main/resources</locationURI>
 		</link>
-		<link>
-			<name>[source path] src</name>
-			<type>2</type>
-			<locationURI>DOCUMENTS/ApplicationMap/libs/src</locationURI>
-		</link>
 	</linkedResources>
 </projectDescription>

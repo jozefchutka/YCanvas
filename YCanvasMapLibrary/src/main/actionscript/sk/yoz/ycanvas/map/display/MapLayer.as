@@ -17,7 +17,7 @@ package sk.yoz.ycanvas.map.display
                 return;
             
             _width = value;
-            update();
+            updatePosition();
         }
         
         override public function get width():Number
@@ -31,7 +31,7 @@ package sk.yoz.ycanvas.map.display
                 return;
             
             _height = value;
-            update();
+            updatePosition();
         }
         
         override public function get height():Number
@@ -45,7 +45,7 @@ package sk.yoz.ycanvas.map.display
                 return;
             
             _center = value;
-            update();
+            updatePosition();
         }
         
         public function get center():Point
@@ -59,7 +59,7 @@ package sk.yoz.ycanvas.map.display
                 return;
             
             _scale = scaleX = scaleY = value;
-            update();
+            updatePosition();
         }
         
         public function get scale():Number
@@ -73,10 +73,10 @@ package sk.yoz.ycanvas.map.display
                 return;
             
             super.rotation = value;
-            update();
+            updatePosition();
         }
         
-        private function update():void
+        private function updatePosition():void
         {
             var x:Number = -center.x * scale;
             var y:Number = -center.y * scale;

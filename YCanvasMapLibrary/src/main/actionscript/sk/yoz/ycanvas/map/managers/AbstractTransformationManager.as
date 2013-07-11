@@ -16,6 +16,7 @@ package sk.yoz.ycanvas.map.managers
         public static const PI2:Number = Math.PI * 2;
         
         protected var canvas:MapController;
+        protected var transitionDuration:Number = .25;
         protected var transformation:CanvasTransformation = new CanvasTransformation;
         protected var transformationTarget:CanvasTransformation = new CanvasTransformation;
         
@@ -28,10 +29,12 @@ package sk.yoz.ycanvas.map.managers
         private var _allowInteractions:Boolean;
         private var _transforming:Boolean;
         
-        public function AbstractTransformationManager(canvas:MapController, limit:CanvasLimit)
+        public function AbstractTransformationManager(canvas:MapController, 
+            limit:CanvasLimit, transitionDuration:Number=.5)
         {
             this.canvas = canvas;
             this.limit = limit;
+            this.transitionDuration = transitionDuration;
             
             allowMove = true;
             allowZoom = true;
@@ -294,7 +297,7 @@ package sk.yoz.ycanvas.map.managers
                 transformationTarget.rotation = data.rotation = rotation;
             
             tween && tween.kill();
-            tween = TweenMax.to(transformation, .5, data);
+            tween = TweenMax.to(transformation, transitionDuration, data);
             transforming = true;
             canvas.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_STARTED));
         }
