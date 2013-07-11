@@ -16,7 +16,7 @@ package sk.yoz.ycanvas.demo.explorer.managers
     import sk.yoz.ycanvas.demo.explorer.modes.Mode;
     import sk.yoz.ycanvas.demo.explorer.modes.Partition;
     import sk.yoz.ycanvas.interfaces.IPartition;
-    import sk.yoz.ycanvas.stage3D.YCanvasStage3D;
+    import sk.yoz.ycanvas.starling.YCanvasStarling;
     import sk.yoz.ycanvas.utils.ILayerUtils;
     import sk.yoz.ycanvas.utils.IPartitionUtils;
     import sk.yoz.ycanvas.valueObjects.LayerPartitions;
@@ -35,7 +35,7 @@ package sk.yoz.ycanvas.demo.explorer.managers
             this.dispatcher = dispatcher;
             this.canvasInitCallback = canvasInitCallback;
             
-            _canvas = new YCanvasStage3D(stage, stage3D, viewPort, canvasInit);
+            _canvas = new YCanvasStarling(stage, stage3D, viewPort, canvasInit);
             
             dispatcher.addEventListener(CanvasEvent.TRANSFORMATION_STARTED, onCanvasTransformationStarted);
             dispatcher.addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onCanvasTransformationFinished);

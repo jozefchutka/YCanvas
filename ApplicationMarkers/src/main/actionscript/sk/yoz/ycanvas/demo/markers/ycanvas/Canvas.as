@@ -5,9 +5,9 @@ package sk.yoz.ycanvas.demo.markers.ycanvas
     import flash.geom.Point;
     import flash.geom.Rectangle;
     
-    import sk.yoz.ycanvas.stage3D.YCanvasStage3D;
+    import sk.yoz.ycanvas.starling.YCanvasStarling;
     
-    public class Canvas extends YCanvasStage3D
+    public class Canvas extends YCanvasStarling
     {
         private var _markers:Vector.<Marker> = new Vector.<Marker>;
         

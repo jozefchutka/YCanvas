@@ -14,13 +14,13 @@ package sk.yoz.ycanvas.demo.remotair
     import sk.yoz.net.URLRequestBuffer;
     import sk.yoz.net.URLRequestBufferItem;
     import sk.yoz.ycanvas.interfaces.ILayer;
-    import sk.yoz.ycanvas.stage3D.interfaces.IPartitionStage3D;
+    import sk.yoz.ycanvas.starling.interfaces.IPartitionStarling;
     
     import starling.display.DisplayObject;
     import starling.display.Image;
     import starling.textures.Texture;
     
-    public class Partition implements IPartitionStage3D
+    public class Partition implements IPartitionStarling
     {
         private static const buffer:URLRequestBuffer = new URLRequestBuffer(6, 15000);
         

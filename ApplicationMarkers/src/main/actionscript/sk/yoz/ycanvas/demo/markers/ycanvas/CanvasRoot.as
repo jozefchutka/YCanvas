@@ -1,11 +1,11 @@
 package sk.yoz.ycanvas.demo.markers.ycanvas
 {
-    import sk.yoz.ycanvas.stage3D.YCanvasRootStage3D;
+    import sk.yoz.ycanvas.starling.YCanvasRootStarling;
     
     import starling.display.DisplayObject;
     import starling.display.Sprite;
     
-    public class CanvasRoot extends YCanvasRootStage3D
+    public class CanvasRoot extends YCanvasRootStarling
     {
         private var mapTilesContainer:Sprite = new Sprite;
         private var markersContainer:Sprite = new Sprite;

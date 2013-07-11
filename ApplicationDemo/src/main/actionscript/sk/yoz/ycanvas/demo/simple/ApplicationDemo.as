@@ -9,7 +9,7 @@ package sk.yoz.ycanvas.demo.simple
     import flash.geom.Rectangle;
     
     import sk.yoz.ycanvas.interfaces.IPartition;
-    import sk.yoz.ycanvas.stage3D.YCanvasStage3D;
+    import sk.yoz.ycanvas.starling.YCanvasStarling;
     import sk.yoz.ycanvas.utils.ILayerUtils;
     import sk.yoz.ycanvas.utils.IPartitionUtils;
     import sk.yoz.ycanvas.utils.TransformationUtils;
@@ -17,7 +17,7 @@ package sk.yoz.ycanvas.demo.simple
     [SWF(frameRate="60", backgroundColor="#ffffff")]
     public class ApplicationDemo extends Sprite
     {
-        private var canvas:YCanvasStage3D;
+        private var canvas:YCanvasStarling;
         private var position:Point;
         
         public function ApplicationDemo()
@@ -25,7 +25,7 @@ package sk.yoz.ycanvas.demo.simple
             stage.align = StageAlign.TOP_LEFT;
             stage.scaleMode = StageScaleMode.NO_SCALE;
             
-            canvas = new YCanvasStage3D(stage, stage.stage3Ds[0], viewPort, canvasInit);
+            canvas = new YCanvasStarling(stage, stage.stage3Ds[0], viewPort, canvasInit);
             canvas.partitionFactory = new PartitionFactory;
             canvas.layerFactory = new LayerFactory(canvas.partitionFactory);
         }

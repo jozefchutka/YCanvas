@@ -12,13 +12,13 @@ package sk.yoz.ycanvas.demo.simple
     import flash.system.LoaderContext;
     
     import sk.yoz.ycanvas.interfaces.ILayer;
-    import sk.yoz.ycanvas.stage3D.interfaces.IPartitionStage3D;
+    import sk.yoz.ycanvas.starling.interfaces.IPartitionStarling;
     
     import starling.display.DisplayObject;
     import starling.display.Image;
     import starling.textures.Texture;
     
-    public class Partition implements IPartitionStage3D
+    public class Partition implements IPartitionStarling
     {
         private var _x:int;
         private var _y:int;
