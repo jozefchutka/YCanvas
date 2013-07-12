@@ -46,12 +46,15 @@ package sk.yoz.ycanvas.map
         private var dispatcher:EventDispatcher = new EventDispatcher;
         private var mapLayers:Vector.<MapLayer> = new Vector.<MapLayer>;
         
+        protected var maxLayers:uint;
+        
         public function MapController(config:MapConfig, 
-            init:CanvasTransformation, marginOffset:uint=0, 
+            init:CanvasTransformation, marginOffset:uint=0, maxLayers:uint=0,
             buffer:URLRequestBuffer=null)
         {
             _config = config;
             this.marginOffset = marginOffset;
+            this.maxLayers = maxLayers;
             
             _root = new YCanvasRootStarling;
             
@@ -275,13 +278,11 @@ package sk.yoz.ycanvas.map
         private function onCanvasTransformationStarted(event:CanvasEvent):void
         {
             resetTimer();
-            component.touchable = false;
         }
         
         private function onCanvasTransformationFinished(event:CanvasEvent):void
         {
             render();
-            component.touchable = true;
         }
         
         private function onPartitionLoaded(event:PartitionEvent):void
@@ -295,6 +296,8 @@ package sk.yoz.ycanvas.map
                 IPartitionUtils.getLower(this, layer, partition);
             IPartitionUtils.diposeLayerPartitionsList(this, layerPartitions);
             ILayerUtils.disposeEmpty(this);
+            if(maxLayers)
+                ILayerUtils.disposeDeep(this, maxLayers);
         }
         
         private function onTimerComplete(event:Event):void

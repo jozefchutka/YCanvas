@@ -10,6 +10,7 @@ package sk.yoz.ycanvas.map.demo.mock
         private static var _CLOUDMADE:MapConfig;
         private static var _ARCGIS_IMAGERY:MapConfig;
         private static var _ARCGIS_NATIONAL_GEOGRAPHIC:MapConfig;
+        private static var _ARCGIS_REFERENCE:MapConfig;
         
         public static function get MAPQUEST():MapConfig
         {
@@ -69,6 +70,15 @@ package sk.yoz.ycanvas.map.demo.mock
                     "http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/${z}/${y}/${x}.png",
                     "http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/${z}/${y}/${x}.png"]);
             return _ARCGIS_NATIONAL_GEOGRAPHIC;
+        }
+        
+        public static function get ARCGIS_REFERENCE():MapConfig
+        {
+            if(!_ARCGIS_REFERENCE)
+                _ARCGIS_REFERENCE = createMapConfig([
+                    "http://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/${z}/${y}/${x}.png",
+                    "http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/${z}/${y}/${x}.png"]);
+            return _ARCGIS_REFERENCE;
         }
         
         private static function createMapConfig(templates:Array):MapConfig

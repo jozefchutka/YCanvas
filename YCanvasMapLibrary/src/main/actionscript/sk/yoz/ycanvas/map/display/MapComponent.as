@@ -63,6 +63,9 @@ package sk.yoz.ycanvas.map.display
         
         override public function hitTest(localPoint:Point, forTouch:Boolean=false):DisplayObject
         {
+            if(forTouch && (!visible || !touchable))
+                return null;
+            
             var localX:Number = localPoint.x;
             var localY:Number = localPoint.y;
             var object:DisplayObject = super.hitTest(localPoint, forTouch);

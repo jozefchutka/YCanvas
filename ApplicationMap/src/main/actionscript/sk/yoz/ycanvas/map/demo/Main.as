@@ -31,9 +31,11 @@ package sk.yoz.ycanvas.map.demo
         private var componentSelector:PickerList;
         private var mapsSelector:PickerList;
         private var bigMap:HelperBigMap;
+        private var bigOverlayMap:HelperBigOverlayMap;
         private var allowRotate:Check;
         private var smallMap:HelperSmallMap;
         private var syncCheckBox:Check;
+        private var showOverlayCheck:Check;
         private var latInput:TextInput;
         private var lonInput:TextInput;
         private var addMarkerOnClick:Check;
@@ -68,6 +70,14 @@ package sk.yoz.ycanvas.map.demo
             bigMap.mapController.component.y = 0;
             bigMap.mapController.component.width = Starling.current.viewPort.width - bigMap.mapController.component.x;
             bigMap.mapController.component.height = Starling.current.viewPort.height;
+            
+            if(bigOverlayMap)
+            {
+                bigOverlayMap.mapController.component.x = bigMap.mapController.component.x;
+                bigOverlayMap.mapController.component.y = bigMap.mapController.component.y;
+                bigOverlayMap.mapController.component.width = bigMap.mapController.component.width;
+                bigOverlayMap.mapController.component.height = bigMap.mapController.component.height;
+            }
             
             smallMap.mapController.component.x = bigMap.mapController.component.x + 20;
             smallMap.mapController.component.y = bigMap.mapController.component.height - 150 - 20;
@@ -149,10 +159,19 @@ package sk.yoz.ycanvas.map.demo
             addChild(syncCheckBox);
             syncCheckBox.validate();
             
+            showOverlayCheck = new Check;
+            showOverlayCheck.label = "Show overlay";
+            showOverlayCheck.isSelected = false;
+            showOverlayCheck.y = syncCheckBox.y + syncCheckBox.height + 5;
+            showOverlayCheck.addEventListener(Event.CHANGE, onShowOverlayCheckChange);
+            addChild(showOverlayCheck);
+            showOverlayCheck.validate();
+            
+            
             latInput = new TextInput;
             latInput.restrict = "0-9.";
             latInput.width = 95;
-            latInput.y = syncCheckBox.y + syncCheckBox.height + 15;
+            latInput.y = showOverlayCheck.y + showOverlayCheck.height + 15;
             addChild(latInput);
             latInput.validate();
             
@@ -243,6 +262,23 @@ package sk.yoz.ycanvas.map.demo
         private function onSyncCheckBoxChange(event:Event):void
         {
             smallMap.autoSync = syncCheckBox.isSelected;
+        }
+        
+        private function onShowOverlayCheckChange(event:Event):void
+        {
+            if(showOverlayCheck.isSelected)
+            {
+                bigOverlayMap = new HelperBigOverlayMap(bigMap.mapController);
+                addChildAt(bigOverlayMap.mapController.component, getChildIndex(bigMap.mapController.component) + 1);
+                bigMap.mapController.component.invalidateGlobalViewPort();
+                resize();
+            }
+            else
+            {
+                removeChild(bigOverlayMap.mapController.component);
+                bigOverlayMap.dispose();
+                bigOverlayMap = null;
+            }
         }
         
         private function onNavigateClick():void
