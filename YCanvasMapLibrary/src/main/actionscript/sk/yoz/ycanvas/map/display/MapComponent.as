@@ -8,14 +8,23 @@ package sk.yoz.ycanvas.map.display
     import starling.display.DisplayObject;
     import starling.display.Sprite;
     
+    /**
+    * Starling implementation for map component.
+    */
     public class MapComponent extends Sprite
     {
+        /**
+        * View port updated event.
+        */
         public static const VIEWPORT_UPDATED:String = "viewPortUpdated";
         
         private var _width:Number = 200;
         private var _height:Number = 200;
-        private var _globalViewPort:Rectangle;
+        private var _starlingViewPort:Rectangle;
         
+        /**
+        * Width of the component is handled custom for clipping purposes.
+        */
         override public function get width():Number
         {
             return _width;
@@ -24,9 +33,12 @@ package sk.yoz.ycanvas.map.display
         override public function set width(value:Number):void
         {
             _width = value;
-            invalidateGlobalViewPort();
+            invalidateStarlingViewPort();
         }
         
+        /**
+         * Width of the component is handled custom for clipping purposes.
+         */
         override public function get height():Number
         {
             return _height;
@@ -35,32 +47,44 @@ package sk.yoz.ycanvas.map.display
         override public function set height(value:Number):void
         {
             _height = value;
-            invalidateGlobalViewPort();
+            invalidateStarlingViewPort();
         }
         
+        /**
+        * @inheritDoc
+        */
         override public function set x(value:Number):void
         {
             super.x = value;
-            invalidateGlobalViewPort();
+            invalidateStarlingViewPort();
         }
         
+        /**
+        * @inheritDoc
+        */
         override public function set y(value:Number):void
         {
             super.y = value;
-            invalidateGlobalViewPort();
+            invalidateStarlingViewPort();
         }
         
-        private function get globalViewPort():Rectangle
+        /**
+        * Returns view port in starling view port coordinates.
+        */
+        private function get starlingViewPort():Rectangle
         {
-            if(!_globalViewPort)
+            if(!_starlingViewPort)
             {
-                var globalPoint:Point = localToGlobal(new Point(0, 0));
-                _globalViewPort = new Rectangle(globalPoint.x, globalPoint.y, width, height);
+                var point:Point = localToGlobal(new Point(0, 0));
+                _starlingViewPort = new Rectangle(point.x, point.y, width, height);
             }
             
-            return _globalViewPort;
+            return _starlingViewPort;
         }
         
+        /**
+        * @inheritDoc
+        */
         override public function hitTest(localPoint:Point, forTouch:Boolean=false):DisplayObject
         {
             if(forTouch && (!visible || !touchable))
@@ -73,23 +97,30 @@ package sk.yoz.ycanvas.map.display
                 return object;
             
             var globalPoint:Point = localToGlobal(new Point(localX, localY));
-            return globalViewPort.contains(globalPoint.x, globalPoint.y) ? this : null;
+            return starlingViewPort.contains(globalPoint.x, globalPoint.y) ? this : null;
         }
         
+        /**
+        * Renders component with clipping.
+        */
         override public function render(support:RenderSupport, alpha:Number):void
         {
             support.finishQuadBatch()
             
-            Starling.context.setScissorRectangle(globalViewPort);
+            Starling.context.setScissorRectangle(starlingViewPort);
             super.render(support,alpha);
             support.finishQuadBatch();
             
             Starling.context.setScissorRectangle(null);
         }
         
-        public function invalidateGlobalViewPort():void
+        /**
+        * Invalidation is required in case of view port of component is changed
+        * in starling coordinates.
+        */
+        public function invalidateStarlingViewPort():void
         {
-            _globalViewPort = null;
+            _starlingViewPort = null;
             dispatchEventWith(VIEWPORT_UPDATED);
         }
     }

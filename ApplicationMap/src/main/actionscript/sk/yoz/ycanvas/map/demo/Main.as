@@ -105,11 +105,11 @@ package sk.yoz.ycanvas.map.demo
             bigMap = new HelperBigMap();
             bigMap.mapController.component.addEventListener(TouchEvent.TOUCH, onBigMapTouch);
             addChild(bigMap.mapController.component);
-            bigMap.mapController.component.invalidateGlobalViewPort();
+            bigMap.mapController.component.invalidateStarlingViewPort();
             
             smallMap = new HelperSmallMap(bigMap.mapController);
             addChild(smallMap.mapController.component);
-            smallMap.mapController.component.invalidateGlobalViewPort();
+            smallMap.mapController.component.invalidateStarlingViewPort();
             
             if(smallMap.autoSync)
                 smallMap.sync();
@@ -250,7 +250,7 @@ package sk.yoz.ycanvas.map.demo
         
         private function onUpdateTileProviderTriggered(event:Event):void
         {
-            var component:MapController = componentSelector.selectedItem.data.map;
+            var component:MapController = componentSelector.selectedItem.data.mapController;
             component.config = mapsSelector.selectedItem.data;
         }
         
@@ -270,7 +270,7 @@ package sk.yoz.ycanvas.map.demo
             {
                 bigOverlayMap = new HelperBigOverlayMap(bigMap.mapController);
                 addChildAt(bigOverlayMap.mapController.component, getChildIndex(bigMap.mapController.component) + 1);
-                bigMap.mapController.component.invalidateGlobalViewPort();
+                bigMap.mapController.component.invalidateStarlingViewPort();
                 resize();
             }
             else

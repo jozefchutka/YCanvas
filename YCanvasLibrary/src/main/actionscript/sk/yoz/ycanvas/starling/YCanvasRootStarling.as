@@ -8,7 +8,7 @@ package sk.yoz.ycanvas.starling
     import starling.display.Sprite;
     
     /**
-    * A Stage3D implementation of root interface.
+    * A Starling implementation of root interface.
     */
     public class YCanvasRootStarling extends Sprite implements IYCanvasRoot
     {

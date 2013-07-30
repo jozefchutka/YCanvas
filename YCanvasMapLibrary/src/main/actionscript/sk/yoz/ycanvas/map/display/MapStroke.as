@@ -15,10 +15,20 @@ package sk.yoz.ycanvas.map.display
         public function MapStroke(points:Vector.<Number>, thickness:Number=1, 
             color:uint=16777215, alpha:Number=1)
         {
-            _originalPoints = points;
+            _originalPoints = points.concat();
             _originalThickness = thickness;
             
             super(null, thickness, color, alpha, false);
+            
+            var length:uint = originalPoints.length;
+            pivotX = -(originalPoints[0] + originalPoints[length - 2]) / 2;
+            pivotY = -(originalPoints[1] + originalPoints[length - 1]) / 2;
+            
+            for(var x:uint = 0, y:uint = 1; x < length; x += 2, y += 2)
+            {
+                originalPoints[x] += pivotX;
+                originalPoints[y] += pivotY;
+            }
         }
         
         public function get originalPoints():Vector.<Number>

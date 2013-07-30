@@ -4,6 +4,9 @@ package sk.yoz.ycanvas.map.display
     
     import starling.display.Sprite;
     
+    /**
+    * Base implementation for any map layer.
+    */
     public class MapLayer extends Sprite
     {
         private var _width:Number;
@@ -11,6 +14,9 @@ package sk.yoz.ycanvas.map.display
         private var _center:Point = new Point;
         private var _scale:Number;
         
+        /**
+        * Width of the component is handled custom for positioning purposes.
+        */
         override public function set width(value:Number):void
         {
             if(width == value)
@@ -25,6 +31,9 @@ package sk.yoz.ycanvas.map.display
             return _width;
         }
         
+        /**
+        * Height of the component is handled custom for positioning purposes.
+        */
         override public function set height(value:Number):void
         {
             if(height == value)

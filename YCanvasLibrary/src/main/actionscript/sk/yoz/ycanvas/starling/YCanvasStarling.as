@@ -13,7 +13,7 @@ package sk.yoz.ycanvas.starling
     import starling.events.Event;
     
     /**
-    * A Stage3D implementation of canvas based on Starling.
+    * A Starling implementation of canvas based on Starling.
     */
     public class YCanvasStarling extends AbstractYCanvas
     {

@@ -6,6 +6,9 @@ package sk.yoz.ycanvas.utils
 
     public class PartialBoundsUtils
     {
+        /**
+        * Creates bounds from a list of partial bounds.
+        */
         public static function mergeListToRectangle(list:Vector.<PartialBounds>):Rectangle
         {
             var item:PartialBounds = list[0];

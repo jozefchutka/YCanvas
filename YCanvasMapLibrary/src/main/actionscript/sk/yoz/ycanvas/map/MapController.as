@@ -37,15 +37,41 @@ package sk.yoz.ycanvas.map
     
     [Event(name="partitionLoaded", type="sk.yoz.ycanvas.map.events.PartitionEvent")]
     
+    /**
+    * Map implementation of YCanvas.
+    */
     public class MapController extends AbstractYCanvas implements IEventDispatcher
     {
+        /**
+        * Timer is started on any canvas transformation and executes render() 
+        * method when complete. 
+        */
         private var timer:Timer = new Timer(250, 1);
+        
+        /**
+        * Variable holder for component.
+        */
         private var _component:MapComponent;
+        
+        /**
+        * Variable holder for config.
+        */
         private var _config:MapConfig;
         
+        /**
+        * This is the main dispatcher for this class as this class is expected
+        * to dispatch events.
+        */
         private var dispatcher:EventDispatcher = new EventDispatcher;
+        
+        /**
+        * List of layers currently available.
+        */
         private var mapLayers:Vector.<MapLayer> = new Vector.<MapLayer>;
         
+        /**
+        * Max count of map layers to be rendered and preserved in cache.
+        */
         protected var maxLayers:uint;
         
         public function MapController(config:MapConfig, 
@@ -80,11 +106,17 @@ package sk.yoz.ycanvas.map
             timer.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerComplete);
         }
         
+        /**
+         * Starling DisplayObject.
+         */
         public function get component():MapComponent
         {
             return _component;
         }
         
+        /**
+        * Main config for the controller.
+        */
         public function set config(value:MapConfig):void
         {
             if(config == value)
@@ -111,6 +143,9 @@ package sk.yoz.ycanvas.map
             return _config;
         }
         
+        /**
+        * @inheritDoc
+        */
         override public function set center(value:Point):void
         {
             super.center = value;
@@ -121,6 +156,9 @@ package sk.yoz.ycanvas.map
             dispatchEvent(new CanvasEvent(CanvasEvent.CENTER_CHANGED));
         }
         
+        /**
+        * @inheritDoc
+        */
         override public function set scale(value:Number):void
         {
             super.scale = value;
@@ -131,6 +169,9 @@ package sk.yoz.ycanvas.map
             dispatchEvent(new CanvasEvent(CanvasEvent.SCALE_CHANGED));
         }
         
+        /**
+        * @inheritDoc
+        */
         override public function set rotation(value:Number):void
         {
             super.rotation = value;
@@ -141,11 +182,17 @@ package sk.yoz.ycanvas.map
             dispatchEvent(new CanvasEvent(CanvasEvent.ROTATION_CHANGED));
         }
         
+        /**
+        * Returns top most map layer.
+        */
         public function get mainLayer():Layer
         {
             return layers[layers.length - 1] as Layer;
         }
         
+        /**
+        * @inheritDoc
+        */
         override public function set viewPort(value:Rectangle):void
         {
             super.viewPort = value;
@@ -159,6 +206,9 @@ package sk.yoz.ycanvas.map
             resetTimer();
         }
         
+        /**
+        * @inheritDoc
+        */
         override public function render():void
         {
             super.render();
@@ -172,13 +222,19 @@ package sk.yoz.ycanvas.map
             dispatchEvent(new CanvasEvent(CanvasEvent.RENDERED));
         }
         
+        /**
+        * Returns true if global point hits current component view port.
+        */
         public function hitTestComponent(x:Number, y:Number):Boolean
         {
-            var engine:Starling = Starling.current;
-            var starlingPoint:Point = new Point(x - engine.viewPort.x, y - engine.viewPort.y);
+            var viewPort:Rectangle = Starling.current.viewPort;
+            var starlingPoint:Point = new Point(x - viewPort.x, y - viewPort.y);
             return component.stage.hitTest(starlingPoint, true) == component;
         }
         
+        /**
+        * Adds map layer to the controller.
+        */
         public function addMapLayer(mapLayer:MapLayer):void
         {
             mapLayer.width = viewPort.width;
@@ -190,12 +246,18 @@ package sk.yoz.ycanvas.map
             component.addChild(mapLayer);
         }
         
+        /**
+        * Removes map layer from the controller.
+        */
         public function removeMapLayer(mapLayer:MapLayer):void
         {
             mapLayers.splice(mapLayers.indexOf(mapLayer), 1);
             component.removeChild(mapLayer);
         }
         
+        /**
+        * Required by IEventDispatcher implementation.
+        */
         public function addEventListener(type:String, listener:Function, 
             useCapture:Boolean=false, priority:int=0, 
             useWeakReference:Boolean=false):void
@@ -203,27 +265,42 @@ package sk.yoz.ycanvas.map
             dispatcher.addEventListener(type, listener, useCapture, priority, useWeakReference);
         }
         
+        /**
+        * Required by IEventDispatcher implementation.
+        */
         public function removeEventListener(type:String, listener:Function, 
             useCapture:Boolean=false):void
         {
             dispatcher.removeEventListener(type, listener, useCapture);
         }
         
+        /**
+        * Required by IEventDispatcher implementation.
+        */
         public function dispatchEvent(event:Event):Boolean
         {
             return dispatcher.dispatchEvent(event);
         }
         
+        /**
+        * Required by IEventDispatcher implementation.
+        */
         public function hasEventListener(type:String):Boolean
         {
             return dispatcher.hasEventListener(type);
         }
         
+        /**
+        * Required by IEventDispatcher implementation.
+        */
         public function willTrigger(type:String):Boolean
         {
             return dispatcher.willTrigger(type);
         }
         
+        /**
+        * Loads necessary partitions for a layer.
+        */
         private function startLoading(layer:Layer):void
         {
             var partition:Partition;
@@ -237,6 +314,9 @@ package sk.yoz.ycanvas.map
             }
         }
         
+        /**
+        * Cancels partition loading in layer.
+        */
         private function stopLoading(layer:Layer):void
         {
             var partition:Partition;
@@ -249,6 +329,9 @@ package sk.yoz.ycanvas.map
             }
         }
         
+        /**
+        * Returns component view port in global coordinates.
+        */
         private function getViewPort():Rectangle
         {
             var starlingPoint:Point = component.localToGlobal(new Point(0, 0));
@@ -258,6 +341,9 @@ package sk.yoz.ycanvas.map
                 component.width, component.height);
         }
         
+        /**
+        * Sorting method for partitions.
+        */
         private function sortByDistanceFromCenter(partition1:Partition, partition2:Partition):Number
         {
             var x1:Number = partition1.x + partition1.expectedWidth * .5 - center.x;
@@ -267,6 +353,9 @@ package sk.yoz.ycanvas.map
             return (x1 * x1 + y1 * y1) - (x2 * x2 + y2 * y2);
         }
         
+        /**
+        * Resets the timer.
+        */
         private function resetTimer():void
         {
             if(timer.running)
@@ -275,16 +364,25 @@ package sk.yoz.ycanvas.map
             timer.start();
         }
         
+        /**
+        * Listener for transformation tween start.
+        */
         private function onCanvasTransformationStarted(event:CanvasEvent):void
         {
             resetTimer();
         }
         
+        /**
+        * Listener for transformation tween finish.
+        */
         private function onCanvasTransformationFinished(event:CanvasEvent):void
         {
             render();
         }
         
+        /**
+        * Listener for partition loaded.
+        */
         private function onPartitionLoaded(event:PartitionEvent):void
         {
             var partition:Partition = event.partition;
@@ -300,11 +398,17 @@ package sk.yoz.ycanvas.map
                 ILayerUtils.disposeDeep(this, maxLayers);
         }
         
+        /**
+        * Listener for timer complete.
+        */
         private function onTimerComplete(event:Event):void
         {
             render();
         }
         
+        /**
+        * Listener for component view port update.
+        */
         private function onComponentViewPortUpdated():void
         {
             viewPort = getViewPort();

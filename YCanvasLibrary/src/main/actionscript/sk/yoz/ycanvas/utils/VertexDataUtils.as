@@ -8,7 +8,10 @@ package sk.yoz.ycanvas.utils
 
     public class VertexDataUtils
     {
-        /* while native VertexData.getBounds() seems to be broken */
+        /**
+        * Starling 1.3 has broken implementation of VertexData.getBounds().
+        * This is a simplified and optimized version.
+        */
         public static function getBounds(vertexData:VertexData, vertexID:int, numVertices:int):Rectangle
         {
             var minX:Number = Number.MAX_VALUE, maxX:Number = -Number.MAX_VALUE;
@@ -35,17 +38,20 @@ package sk.yoz.ycanvas.utils
             return new Rectangle(minX, minY, maxX - minX, maxY - minY);
         }
         
+        /**
+        * Creates partial bounds from vertex data.
+        */
         public static function getPartialBoundsList(vertexData:VertexData, 
-            verticesPerRectangle:uint):Vector.<PartialBounds>
+            verticesPerPartialBounds:uint):Vector.<PartialBounds>
         {
             var result:Vector.<PartialBounds> = new Vector.<PartialBounds>;
-            var step:uint = verticesPerRectangle - 2;
+            var step:uint = verticesPerPartialBounds - 2;
             var partialBounds:PartialBounds;
             var count:uint;
             var maxIndice:uint = (vertexData.numVertices - 3) * 3;
             for(var i:uint = 0, length:uint = vertexData.numVertices; i < length; i += step)
             {
-                count = verticesPerRectangle;
+                count = verticesPerPartialBounds;
                 if(i + count > length)
                     count = length - i;
                 

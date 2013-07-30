@@ -2,6 +2,9 @@ package sk.yoz.ycanvas.valueObjects
 {
     import flash.geom.Rectangle;
 
+    /**
+    * A helper object for hitTest() optimization.
+    */
     public class PartialBounds
     {
         public var rectangle:Rectangle;

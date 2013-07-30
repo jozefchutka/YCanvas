@@ -4,19 +4,28 @@ package sk.yoz.ycanvas.utils
 
     public class StrokeUtils
     {
+        /**
+        * Converts points and thickness into vertex data.
+        */
         public static function pointsToVertexData(points:Vector.<Number>, thickness:Number):VertexData
         {
             var vertices:Vector.<Number> = pointsToVertices(points, thickness);
             var result:VertexData = new VertexData(vertices.length / 2);
             for(var i:uint = 0, p:uint = 0, length:uint = vertices.length; i < length; i += 4, p += 2)
             {
-                result.setPosition(p, vertices[i], vertices[i + 1]);
-                result.setPosition(p + 1, vertices[i + 2], vertices[i + 3]);
+                var i1:uint = i + 1;
+                var i2:uint = i + 2;
+                var i3:uint = i + 3;
+                result.setPosition(p, vertices[i], vertices[i1]);
+                result.setPosition(p + 1, vertices[i2], vertices[i3]);
             }
             
             return result;
         }
         
+        /**
+        * Creates index data for properly ordered vertex data.
+        */
         public static function vertexDataToIndexData(vertexData:VertexData):Vector.<uint>
         {
             var result:Vector.<uint> = new Vector.<uint>;
@@ -25,6 +34,9 @@ package sk.yoz.ycanvas.utils
             return result;
         }
         
+        /**
+        * Converts points and thickness into vertex coordinates.
+        */
         private static function pointsToVertices(points:Vector.<Number>, thickness:Number):Vector.<Number>
         {
             var p0x:Number = points[0], p0y:Number = points[1];
