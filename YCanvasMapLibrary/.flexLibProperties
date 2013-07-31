@@ -5,11 +5,11 @@
     <classEntry path="sk.yoz.ycanvas.map.display.MapLayer"/>
     <classEntry path="sk.yoz.ycanvas.map.display.MarkerLayer"/>
     <classEntry path="sk.yoz.ycanvas.map.valueObjects.CanvasLimit"/>
-    <classEntry path="sk.yoz.ycanvas.map.utils.PathSimplify"/>
+    <classEntry path="sk.yoz.utils.PathSimplify"/>
     <classEntry path="sk.yoz.ycanvas.map.utils.PathSimplifyTest"/>
     <classEntry path="sk.yoz.ycanvas.map.managers.AbstractTransformationManager"/>
     <classEntry path="sk.yoz.ycanvas.map.managers.TouchTransformationManager"/>
-    <classEntry path="sk.yoz.ycanvas.map.events.TransitionMultitouchEvent"/>
+    <classEntry path="sk.yoz.touch.events.TransitionMultitouchEvent"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

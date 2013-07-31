@@ -1,5 +1,8 @@
 package sk.yoz.ycanvas.map.valueObjects
 {
+    /**
+    * Canvas limitation values.
+    */
     public class CanvasLimit
     {
         public var minScale:Number;

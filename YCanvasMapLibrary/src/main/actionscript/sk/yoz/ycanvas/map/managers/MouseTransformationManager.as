@@ -11,6 +11,9 @@ package sk.yoz.ycanvas.map.managers
     
     import starling.core.Starling;
     
+    /**
+    * Transformation manager implementation for mouse interactions.
+    */
     public class MouseTransformationManager extends AbstractTransformationManager
     {
         private var last:Point;

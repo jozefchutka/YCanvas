@@ -11,6 +11,9 @@ package sk.yoz.ycanvas.map.managers
     import sk.yoz.ycanvas.map.valueObjects.CanvasTransformation;
     import sk.yoz.ycanvas.utils.TransformationUtils;
 
+    /**
+    * An abstract implementation of transformation manager.
+    */
     public class AbstractTransformationManager
     {
         public static const PI2:Number = Math.PI * 2;

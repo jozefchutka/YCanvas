@@ -17,7 +17,7 @@ package sk.yoz.ycanvas.map.demo
     import sk.yoz.ycanvas.map.demo.mock.RouteNewYorkWashington;
     import sk.yoz.ycanvas.map.demo.mock.RouteRomeParis;
     import sk.yoz.ycanvas.map.display.MapStroke;
-    import sk.yoz.ycanvas.map.utils.GeoUtils;
+    import sk.yoz.utils.GeoUtils;
     
     import starling.core.Starling;
     import starling.display.Sprite;

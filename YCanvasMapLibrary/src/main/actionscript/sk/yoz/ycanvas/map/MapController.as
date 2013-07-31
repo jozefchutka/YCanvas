@@ -10,6 +10,7 @@ package sk.yoz.ycanvas.map
     
     import sk.yoz.net.URLRequestBuffer;
     import sk.yoz.ycanvas.AbstractYCanvas;
+    import sk.yoz.ycanvas.interfaces.ILayer;
     import sk.yoz.ycanvas.interfaces.IPartition;
     import sk.yoz.ycanvas.map.display.MapComponent;
     import sk.yoz.ycanvas.map.display.MapLayer;
@@ -386,7 +387,7 @@ package sk.yoz.ycanvas.map
         private function onPartitionLoaded(event:PartitionEvent):void
         {
             var partition:Partition = event.partition;
-            var layer:Layer = partition.layer;
+            var layer:ILayer = partition.layer;
             if(mainLayer != layer)
                 return;
             

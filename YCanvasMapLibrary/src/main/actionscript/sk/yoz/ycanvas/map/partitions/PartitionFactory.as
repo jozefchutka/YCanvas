@@ -6,11 +6,16 @@ package sk.yoz.ycanvas.map.partitions
     import sk.yoz.ycanvas.interfaces.ILayer;
     import sk.yoz.ycanvas.interfaces.IPartition;
     import sk.yoz.ycanvas.interfaces.IPartitionFactory;
-    import sk.yoz.ycanvas.map.layers.Layer;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
     
+    /**
+    * An implementation of YCanvas partition factory.
+    */
     public class PartitionFactory implements IPartitionFactory
     {
+        /**
+        * A map config reference.
+        */
         public var config:MapConfig;
         
         private var dispatcher:IEventDispatcher;
@@ -24,11 +29,17 @@ package sk.yoz.ycanvas.map.partitions
             this.buffer = buffer;
         }
         
+        /**
+        * Creates and returns a partition with proper coordinates and layer.
+        */
         public function create(x:int, y:int, layer:ILayer):IPartition
         {
-            return new Partition(x, y, layer as Layer, config, dispatcher, buffer);
+            return new Partition(x, y, layer, config, dispatcher, buffer);
         }
         
+        /**
+        * Disposes a partition.
+        */
         public function disposePartition(partition:IPartition):void
         {
             Partition(partition).dispose();

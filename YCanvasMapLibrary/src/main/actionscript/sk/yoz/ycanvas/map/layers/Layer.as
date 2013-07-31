@@ -11,8 +11,14 @@ package sk.yoz.ycanvas.map.layers
     import starling.display.DisplayObjectContainer;
     import starling.display.Sprite;
     
+    /**
+    * An implementaion of YCanvas layer.
+    */
     public class Layer implements ILayerStarling
     {
+        /**
+        * A map configuration.
+        */
         public var config:MapConfig;
         
         private var partitionFactory:IPartitionFactory;
@@ -30,11 +36,17 @@ package sk.yoz.ycanvas.map.layers
             content.touchable = false;
         }
         
+        /**
+        * Returns the main container.
+        */
         public function get content():DisplayObjectContainer
         {
             return _content;
         }
         
+        /**
+        * YCanvas center point coordinates.
+        */
         public function set center(value:Point):void
         {
             _center = value;
@@ -48,31 +60,49 @@ package sk.yoz.ycanvas.map.layers
             return _center;
         }
         
+        /**
+        * YCanvas scale.
+        */
         public function set scale(value:Number):void
         {
             content.scaleX = content.scaleY = value;
         }
         
+        /**
+        * Returns level of the layer.
+        */
         public function get level():uint
         {
             return _level;
         }
         
+        /**
+        * Returns the list of available partitions.
+        */
         public function get partitions():Vector.<IPartition>
         {
             return _partitions;
         }
         
+        /**
+        * Returns expected partition width.
+        */
         public function get partitionWidth():uint
         {
             return config.tileWidth;
         }
         
+        /**
+        * Returns expected partition height.
+        */
         public function get partitionHeight():uint
         {
             return config.tileHeight;
         }
         
+        /**
+        * Adds a partition.
+        */
         public function addPartition(partition:IPartition):void
         {
             if(partitions.indexOf(partition) != -1)
@@ -83,6 +113,9 @@ package sk.yoz.ycanvas.map.layers
             content.addChild((partition as IPartitionStarling).content);
         }
         
+        /**
+        * Returns available partition with specific coordinates.
+        */
         public function getPartition(x:int, y:int):IPartition
         {
             var length:uint = partitions.length;
@@ -96,6 +129,9 @@ package sk.yoz.ycanvas.map.layers
             return null;
         }
         
+        /**
+        * Removes a partition.
+        */
         public function removePartition(partition:IPartition):void
         {
             var partitionStarling:IPartitionStarling = partition as IPartitionStarling;
@@ -107,6 +143,9 @@ package sk.yoz.ycanvas.map.layers
                 partitions.splice(index, 1);
         }
         
+        /**
+        * Dispopses itself and all its content.
+        */
         public function dispose():void
         {
             if(!partitions.length)
@@ -122,6 +161,9 @@ package sk.yoz.ycanvas.map.layers
             }
         }
         
+        /**
+        * Repositions a partition according to current YCanvas transformation.
+        */
         private function positionPartition(partition:IPartition):void
         {
             var partitionStarling:IPartitionStarling = partition as IPartitionStarling;
@@ -129,6 +171,9 @@ package sk.yoz.ycanvas.map.layers
             partitionStarling.content.y = (partition.y - center.y) / level;
         }
         
+        /**
+        * Returns a string interpretation of the layer.
+        */
         public function toString():String
         {
             return "Layer: [level:" + level + "]";

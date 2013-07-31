@@ -48,6 +48,9 @@ package sk.yoz.ycanvas.map.display
             return _height;
         }
         
+        /**
+        * YCanvas center point coordinates.
+        */
         public function set center(value:Point):void
         {
             if(center == value)
@@ -62,6 +65,9 @@ package sk.yoz.ycanvas.map.display
             return _center;
         }
         
+        /**
+        * YCanvas scale.
+        */
         public function set scale(value:Number):void
         {
             if(scale == value)
@@ -76,6 +82,9 @@ package sk.yoz.ycanvas.map.display
             return _scale;
         }
         
+        /**
+        * YCanvas rotation.
+        */
         override public function set rotation(value:Number):void
         {
             if(rotation == value)
@@ -85,6 +94,9 @@ package sk.yoz.ycanvas.map.display
             updatePosition();
         }
         
+        /**
+        * Calculates x, y of map layer based on YCanvas transformation.
+        */
         private function updatePosition():void
         {
             var x:Number = -center.x * scale;

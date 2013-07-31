@@ -16,6 +16,7 @@ package sk.yoz.ycanvas.map.partitions
     
     import sk.yoz.net.URLRequestBuffer;
     import sk.yoz.net.URLRequestBufferItem;
+    import sk.yoz.ycanvas.interfaces.ILayer;
     import sk.yoz.ycanvas.map.events.PartitionEvent;
     import sk.yoz.ycanvas.map.layers.Layer;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
@@ -25,13 +26,16 @@ package sk.yoz.ycanvas.map.partitions
     import starling.display.Image;
     import starling.textures.Texture;
     
+    /**
+    * An implementation of YCanvas partition (map tile).
+    */
     public class Partition implements IPartitionStarling
     {
         private static var EMPTY_TEXTURE:Texture;
         
         private var _x:int;
         private var _y:int;
-        private var _layer:Layer;
+        private var _layer:ILayer;
         private var _config:MapConfig;
         private var _content:Image;
         private var _bitmapData:BitmapData;
@@ -42,7 +46,7 @@ package sk.yoz.ycanvas.map.partitions
         private var loader:Loader;
         private var tweener:TweenMax;
         
-        public function Partition(x:int, y:int, layer:Layer, config:MapConfig,
+        public function Partition(x:int, y:int, layer:ILayer, config:MapConfig,
             dispatcher:IEventDispatcher, buffer:URLRequestBuffer)
         {
             _x = x;
@@ -52,8 +56,7 @@ package sk.yoz.ycanvas.map.partitions
             this.dispatcher = dispatcher;
             this.buffer = buffer;
             
-            if(!EMPTY_TEXTURE)
-                EMPTY_TEXTURE = Texture.fromBitmapData(new BitmapData(expectedWidth, expectedHeight, true, 0xffffff));
+            validateEmptyTexture();
             
             _content = new Image(EMPTY_TEXTURE);
             content.touchable = false;
@@ -62,51 +65,82 @@ package sk.yoz.ycanvas.map.partitions
             content.alpha = 0;
         }
         
+        /**
+        * Returns main content (Image).
+        */
         public function get content():starling.display.DisplayObject
         {
             return _content;
         }
         
+        /**
+        * Returns partition x coordinate.
+        */
         public function get x():int
         {
             return _x;
         }
         
+        /**
+        * Returns partition y coordinate.
+        */
         public function get y():int
         {
             return _y;
         }
         
+        /**
+        * Returns expected width of the partition.
+        */
         public function get expectedWidth():uint
         {
             return config.tileWidth;
         }
         
+        /**
+        * Returns expected height of the partition.
+        */
         public function get expectedHeight():uint
         {
             return config.tileHeight;
         }
         
+        /**
+        * Creates a matrix that represents the transformation of the partition
+        * in stage coordinate system.
+        */
         public function get concatenatedMatrix():Matrix
         {
-            return content.getTransformationMatrix(content.stage);;
+            return content.getTransformationMatrix(content.stage);
         }
         
+        /**
+        * Returns true if partition is being loded.
+        */
         public function get loading():Boolean
         {
             return loader != null;
         }
         
+        /**
+        * Returns true if partition has been properly loaded.
+        */
         public function get loaded():Boolean
         {
             return bitmapData || error;
         }
         
-        public function get layer():Layer
+        /**
+        * Returns reference to a layer this partition is available in.
+        */
+        public function get layer():ILayer
         {
             return _layer;
         }
         
+        /**
+        * Returns url of partition to load based on map config template.
+        */
         private function get url():String
         {
             var templates:Vector.<String> = config.urlTemplates;
@@ -117,6 +151,9 @@ package sk.yoz.ycanvas.map.partitions
             return url;
         }   
         
+        /**
+        * Redefines map config.
+        */
         public function set config(value:MapConfig):void
         {
             if(config == value)
@@ -131,6 +168,9 @@ package sk.yoz.ycanvas.map.partitions
             return _config;
         }
         
+        /**
+        * Updates the partition BitmapData/Texture.
+        */
         private function set bitmapData(value:BitmapData):void
         {
             if(bitmapData == value)
@@ -148,7 +188,8 @@ package sk.yoz.ycanvas.map.partitions
             }
             catch(error:Error)
             {
-                /* we are here because context has been disposed (system logout/screenshot) */
+                // we are here because context has been disposed
+                // (system logout/screensaver)
             }
         }
         
@@ -157,7 +198,11 @@ package sk.yoz.ycanvas.map.partitions
             return _bitmapData;
         }
         
-        public static function getLevel(value:uint):uint
+        /**
+        * Converts YCanvas layer level to power of two factor.
+        * (1..1, 2..2, 4..3, 8..4)
+        */
+        public function getLevel(value:uint):uint
         {
             var i:uint = 0;
             while(value > 1)
@@ -168,6 +213,9 @@ package sk.yoz.ycanvas.map.partitions
             return i;
         }
         
+        /**
+        * Loads the content of the partition.
+        */
         public function load():void
         {
             stopLoading();
@@ -179,10 +227,13 @@ package sk.yoz.ycanvas.map.partitions
             buffer.push(loader, request, context);
             
             var loaderInfo:LoaderInfo = loader.contentLoaderInfo;
-            loaderInfo.addEventListener(Event.COMPLETE, onComplete);
-            loaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onError);
+            loaderInfo.addEventListener(Event.COMPLETE, onLoaderComplete);
+            loaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onLoaderError);
         }
         
+        /**
+        * Cancels loading.
+        */
         public function stopLoading(cancelRequest:Boolean = true):void
         {
             if(!loading)
@@ -213,17 +264,23 @@ package sk.yoz.ycanvas.map.partitions
             var loaderInfo:LoaderInfo = loader.loaderInfo;
             if(loaderInfo)
             {
-                loaderInfo.removeEventListener(Event.COMPLETE, onComplete);
-                loaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onError);
+                loaderInfo.removeEventListener(Event.COMPLETE, onLoaderComplete);
+                loaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onLoaderError);
             }
             loader = null;
         }
         
+        /**
+        * Applies any IBitmapDrawable into partition.
+        */
         public function applyIBitmapDrawable(source:IBitmapDrawable, 
             matrix:Matrix):void
         {
         }
         
+        /**
+        * Disposes the partition.
+        */
         public function dispose():void
         {
             stopLoading(true);
@@ -236,6 +293,9 @@ package sk.yoz.ycanvas.map.partitions
             content.dispose();
         }
         
+        /**
+        * Disposes partition BitmapData.
+        */
         private function disposeBitmapData():void
         {
             if(!bitmapData)
@@ -245,20 +305,48 @@ package sk.yoz.ycanvas.map.partitions
             _bitmapData = null;
         }
         
+        /**
+        * Disposes partition Texture.
+        */
         private function disposeTexture():void
         {
             if(!content || !_content.texture || _content.texture == EMPTY_TEXTURE)
                 return;
             
+            try
+            {
+                _content.texture.base.dispose();
+            }
+            catch(error:Error){}
+            
             _content.texture.dispose();
         }
         
+        /**
+        * Validates empty texture.
+        */
+        private function validateEmptyTexture():void
+        {
+            if(EMPTY_TEXTURE)
+                return;
+            
+            var bitmapData:BitmapData = new BitmapData(
+                expectedWidth, expectedHeight, true, 0xffffff);
+            EMPTY_TEXTURE = Texture.fromBitmapData(bitmapData);
+        }
+        
+        /**
+        * Returns a string interpretation of the partition.
+        */
         public function toString():String
         {
             return "Partition: [x:" + x + ", y:" + y + "]";
         }
         
-        private function onComplete(event:Event):void
+        /**
+        * Listener for loader complete.
+        */
+        private function onLoaderComplete(event:Event):void
         {
             var loaderInfo:LoaderInfo = LoaderInfo(event.target);
             bitmapData = Bitmap(loaderInfo.content).bitmapData;
@@ -269,7 +357,10 @@ package sk.yoz.ycanvas.map.partitions
             dispatcher.dispatchEvent(new PartitionEvent(type, this));
         }
         
-        private function onError(event:Event):void
+        /**
+        * Listener for loader error.
+        */
+        private function onLoaderError(event:Event):void
         {
             error = true;
             bitmapData = null;

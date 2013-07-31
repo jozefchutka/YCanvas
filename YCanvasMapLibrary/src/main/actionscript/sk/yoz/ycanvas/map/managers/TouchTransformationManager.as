@@ -12,13 +12,16 @@ package sk.yoz.ycanvas.map.managers
     import sk.yoz.touch.events.TwoFingerEvent;
     import sk.yoz.ycanvas.map.MapController;
     import sk.yoz.ycanvas.map.events.CanvasEvent;
-    import sk.yoz.ycanvas.map.events.TransitionMultitouchEvent;
-    import sk.yoz.ycanvas.map.utils.TransitionMultitouch;
+    import sk.yoz.touch.events.TransitionMultitouchEvent;
+    import sk.yoz.touch.TransitionMultitouch;
     import sk.yoz.ycanvas.map.valueObjects.CanvasLimit;
     import sk.yoz.ycanvas.utils.TransformationUtils;
     
     import starling.core.Starling;
     
+    /**
+    * Transformation manager implementation for touch interactions.
+    */
     public class TouchTransformationManager extends AbstractTransformationManager
     {
         private var multitouch:TransitionMultitouch = new TransitionMultitouch;

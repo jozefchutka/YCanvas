@@ -1,4 +1,4 @@
-package sk.yoz.ycanvas.map.events
+package sk.yoz.touch.events
 {
     import flash.events.Event;
     

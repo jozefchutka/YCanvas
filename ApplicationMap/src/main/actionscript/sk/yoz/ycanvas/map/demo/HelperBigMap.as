@@ -12,7 +12,7 @@ package sk.yoz.ycanvas.map.demo
     import sk.yoz.ycanvas.map.managers.AbstractTransformationManager;
     import sk.yoz.ycanvas.map.managers.MouseTransformationManager;
     import sk.yoz.ycanvas.map.managers.TouchTransformationManager;
-    import sk.yoz.ycanvas.map.utils.GeoUtils;
+    import sk.yoz.utils.GeoUtils;
     import sk.yoz.ycanvas.map.valueObjects.CanvasLimit;
     import sk.yoz.ycanvas.map.valueObjects.CanvasTransformation;
     

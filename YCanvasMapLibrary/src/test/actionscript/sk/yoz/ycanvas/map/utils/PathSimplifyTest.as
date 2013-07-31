@@ -5,6 +5,7 @@ package sk.yoz.ycanvas.map.utils
     import flexunit.framework.Assert;
     
     import simplify.Simplify;
+    import sk.yoz.utils.PathSimplify;
 
     public class PathSimplifyTest
     {

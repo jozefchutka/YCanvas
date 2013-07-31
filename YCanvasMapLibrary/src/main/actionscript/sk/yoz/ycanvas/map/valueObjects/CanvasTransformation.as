@@ -1,5 +1,8 @@
 package sk.yoz.ycanvas.map.valueObjects
 {
+    /**
+    * YCanvas transformation value object.
+    */
     public class CanvasTransformation
     {
         public var centerX:Number = 0;

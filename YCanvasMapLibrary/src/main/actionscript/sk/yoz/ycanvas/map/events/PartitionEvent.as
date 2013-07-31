@@ -4,8 +4,14 @@ package sk.yoz.ycanvas.map.events
     
     import sk.yoz.ycanvas.map.partitions.Partition;
     
+    /**
+    * An event with partition reference.
+    */
     public class PartitionEvent extends Event
     {
+        /**
+        * Partition dispatches this evet type when loaded.
+        */
         public static const LOADED:String = "partitionLoaded";
         
         private var _partition:Partition;

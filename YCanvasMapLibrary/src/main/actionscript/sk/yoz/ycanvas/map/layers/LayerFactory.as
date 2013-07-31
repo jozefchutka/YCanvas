@@ -7,6 +7,9 @@ package sk.yoz.ycanvas.map.layers
     import sk.yoz.ycanvas.interfaces.IPartitionFactory;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
     
+    /**
+    * An implementation of YCanvas layer factory.
+    */
     public class LayerFactory implements ILayerFactory
     {
         private var layers:Vector.<Layer> = new Vector.<Layer>();
@@ -17,21 +20,33 @@ package sk.yoz.ycanvas.map.layers
                 layers.push(new Layer(level, config, partitionFactory));
         }
         
+        /**
+        * Returns a layer that fits the arguments.
+        */
         public function create(scale:Number, center:Point):ILayer
         {
             return getLayerByScale(scale);
         }
         
+        /**
+        * Disposes a layer.
+        */
         public function disposeLayer(layer:ILayer):void
         {
             Layer(layer).dispose();
         }
         
+        /**
+        * Returns a layer by scale.
+        */
         private function getLayerByScale(scale:Number):Layer
         {
             return layers[getLayerIndex(scale)];
         }
         
+        /**
+        * Converts YCanvas scale to index/level.
+        */
         protected function getLayerIndex(scale:Number):uint
         {
             var zoom:Number = 1 / scale;

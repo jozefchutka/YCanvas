@@ -1,14 +1,20 @@
-/*
-Copyright (c) 2013, Vladimir Agafonkin
-Simplify.js is a high-performance JS polyline simplification library
-mourner.github.io/simplify-js
-*/
+// Copyright (c) 2013, Vladimir Agafonkin
+// Simplify.js is a high-performance JS polyline simplification library
+// mourner.github.io/simplify-js
 
-package sk.yoz.ycanvas.map.utils
+package sk.yoz.utils
 {
+    /**
+    * PathSimplify is a tiny high-performance 2D polyline simplification 
+    * library originaly written by Vladimir Agafonkin, extracted from Leaflet,
+    * a JS interactive maps library of the same author. It uses a combination
+    * of Douglas-Peucker and Radial Distance algorithms.
+    */
     public class PathSimplify
     {
-        // square distance from a point to a segment
+        /**
+        * Returns square distance from a point to a segment.
+        */ 
         public static function getSquareSegmentDistance(px:Number, py:Number,
             p1x:Number, p1y:Number, p2x:Number, p2y:Number):Number
         {
@@ -37,8 +43,10 @@ package sk.yoz.ycanvas.map.utils
             return dx * dx + dy * dy;
         }
         
-        // the rest of the code doesn't care for the point format
-        // basic distance-based simplification
+        /**
+        * The rest of the code doesn't care for the point format
+        * basic distance-based simplification
+        */
         public static function simplifyRadialDistance(points:Vector.<Number>,
             sqTolerance:Number):Vector.<Number>
         {
@@ -69,7 +77,10 @@ package sk.yoz.ycanvas.map.utils
             return newPoints;
         }
         
-        // simplification using optimized Douglas-Peucker algorithm with recursion elimination
+        /**
+        * Simplification using optimized Douglas-Peucker algorithm with 
+        * recursion elimination.
+        */
         public static function simplifyDouglasPeucker(points:Vector.<Number>,
             sqTolerance:Number):Vector.<Number>
         {
@@ -125,7 +136,9 @@ package sk.yoz.ycanvas.map.utils
             return newPoints;
         }
         
-        // both algorithms combined for awesome performance
+        /**
+        * Both algorithms combined for awesome performance.
+        */
         public static function simplify(points:Vector.<Number>, 
             tolerance:Number = 1, highestQuality:Boolean = false):Vector.<Number>
         {

@@ -2,6 +2,9 @@ package sk.yoz.ycanvas.map.events
 {
     import flash.events.Event;
     
+    /**
+    * A dummy event class with basic canvas events.
+    */
     public class CanvasEvent extends Event
     {
         public static const TRANSFORMATION_STARTED:String = "canvasTransformationStarted";

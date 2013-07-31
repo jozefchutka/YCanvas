@@ -1,4 +1,4 @@
-package sk.yoz.ycanvas.map.utils
+package sk.yoz.touch
 {
     import com.greensock.TweenMax;
     
@@ -8,8 +8,7 @@ package sk.yoz.ycanvas.map.utils
     import flash.events.TouchEvent;
     import flash.geom.Point;
     
-    import sk.yoz.touch.TwoFingerTouch;
-    import sk.yoz.ycanvas.map.events.TransitionMultitouchEvent;
+    import sk.yoz.touch.events.TransitionMultitouchEvent;
     
     public class TransitionMultitouch extends TwoFingerTouch implements IEventDispatcher
     {

@@ -1,7 +1,10 @@
-package sk.yoz.ycanvas.map.utils
+package sk.yoz.utils
 {
     import flash.geom.Point;
     
+    /**
+    * 
+    */
     public class GeoUtils
     {
         public static const DEG_RAD:Number = PI / 180;
@@ -19,30 +22,45 @@ package sk.yoz.ycanvas.map.utils
         private static const COS_1_EARTH_RADIUS:Number = Math.cos(1 / EARTH_RADIUS);
         private static const SIN_1_EARTH_RADIUS:Number = Math.sin(1 / EARTH_RADIUS);
         
+        /**
+         * Converts x coordinate to lon.
+         */
         public static function x2lon(x:Number):Number
         {
             return x * C_LONGITUDE - 180;
         }
         
+        /**
+         * Converts lon to x coordinate.
+         */
         public static function lon2x(lon:Number):Number
         {
             return (lon + 180) / C_LONGITUDE
         }
         
+        /**
+         * Converts y coordinate to lat.
+         */
         public static function y2lat(y:Number):Number
         {
             return Math.atan(sinh(PI - (C_LATITUDE * y))) * RAD_DEG;
         }
         
+        /**
+         * Converts lat to y coordinate.
+         */
         public static function lat2y(lat:Number):Number
         {
             var latRad:Number = lat * DEG_RAD;
             return (1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / PI) * C_LATITUDE2;
         }
         
-        public static function sinh(x:Number):Number
+        /**
+         * Returns the hyperbolic sine of value.
+         */
+        public static function sinh(value:Number):Number
         {
-            return (Math.exp(x) - Math.exp(-x)) / 2;
+            return (Math.exp(value) - Math.exp(-value)) / 2;
         }
         
         /**
@@ -59,6 +77,9 @@ package sk.yoz.ycanvas.map.utils
             return v > 1 ? 0 : EARTH_RADIUS * Math.acos(v);
         }
         
+        /**
+         * Returns distance using deg parameters.
+         */
         public static function distanceDeg(lon1:Number, lat1:Number, 
             lon2:Number, lat2:Number):Number
         {
@@ -85,6 +106,9 @@ package sk.yoz.ycanvas.map.utils
             return new Point(lon2, lat2);
         }
         
+        /**
+         * Returns destination point using deg parameters.
+         */
         public static function destionationDeg(lon:Number, lat:Number, bearing:Number, distance:Number):Point
         {
             var result:Point = destination(lon * DEG_RAD, lat * DEG_RAD, bearing * DEG_RAD, distance);
@@ -93,6 +117,9 @@ package sk.yoz.ycanvas.map.utils
             return result;
         }
         
+        /**
+         * Returns lat coordinate at specific distance and 90 degree angle.
+         */
         public static function lonAtDistanceDeg(lon:Number, lat:Number, distance:Number):Number
         {
             return destionationDeg(lon, lat, 90, distance).x;
@@ -121,11 +148,17 @@ package sk.yoz.ycanvas.map.utils
             return result < 0 ? -result : result;
         }
         
+        /**
+         * Returns pixels per meter in specific coordinates.
+         */
         public static function pixelPerMeterByCenter(center:Point):Number
         {
             return pixelsPerMeter(y2lat(center.y));
         }
         
+        /**
+         * Returns pixels per meter using destination algorithm.
+         */
         public static function pixelsPerMeterPrecise(lon:Number, lat:Number):Number
         {
             var destination:Point = destionationDeg(lon, lat, 45, 1);
