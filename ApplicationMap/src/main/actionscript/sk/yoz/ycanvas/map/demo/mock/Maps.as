@@ -2,6 +2,10 @@ package sk.yoz.ycanvas.map.demo.mock
 {
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
 
+    /**
+    * This class provides implementation of some tile providers
+    * (mapquest, openstreetmaps, cloudmade, arcgis)
+    */
     public class Maps
     {
         private static var _MAPQUEST:MapConfig;

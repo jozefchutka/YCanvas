@@ -1,5 +1,8 @@
 package sk.yoz.ycanvas.map.demo.mock
 {
+    /**
+     * This is x, y coordinates of a road/path from Rome to Paris
+     */
     public class RouteRomeParis
     {
         public static const DATA:Vector.<Number> = new <Number>[

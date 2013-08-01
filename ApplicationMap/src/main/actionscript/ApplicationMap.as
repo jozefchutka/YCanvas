@@ -10,6 +10,10 @@ package
     
     import starling.core.Starling;
     
+    /**
+    * A simple application wrapper inspired by Feathers common wrapper used 
+    * in examples.
+    */
     [SWF(width="960",height="640",frameRate="60",backgroundColor="#4a4137")]
     public class ApplicationMap extends Sprite
     {
@@ -17,45 +21,45 @@ package
         
         public function ApplicationMap()
         {
-            this.mouseEnabled = this.mouseChildren = false;
+            mouseEnabled = mouseChildren = false;
             
             stage.scaleMode = StageScaleMode.NO_SCALE;
             stage.align = StageAlign.TOP_LEFT;
             
             Starling.handleLostContext = true;
             Starling.multitouchEnabled = true;
-            this._starling = new Starling(Main, this.stage);
-            this._starling.enableErrorChecking = false;
-            this._starling.start();
-            this.stage.addEventListener(Event.RESIZE, stage_resizeHandler, false, int.MAX_VALUE, true);
-            this.stage.addEventListener(Event.DEACTIVATE, stage_deactivateHandler, false, 0, true);
+            _starling = new Starling(Main, stage);
+            _starling.enableErrorChecking = false;
+            _starling.start();
+            stage.addEventListener(Event.RESIZE, onStageResize, false, int.MAX_VALUE, true);
+            stage.addEventListener(Event.DEACTIVATE, onStageDeactivate, false, 0, true);
         }
         
-        private function stage_resizeHandler(event:Event):void
+        private function onStageResize(event:Event):void
         {
-            this._starling.stage.stageWidth = this.stage.stageWidth;
-            this._starling.stage.stageHeight = this.stage.stageHeight;
+            _starling.stage.stageWidth = stage.stageWidth;
+            _starling.stage.stageHeight = stage.stageHeight;
             
-            const viewPort:Rectangle = this._starling.viewPort;
-            viewPort.width = this.stage.stageWidth;
-            viewPort.height = this.stage.stageHeight;
+            const viewPort:Rectangle = _starling.viewPort;
+            viewPort.width = stage.stageWidth;
+            viewPort.height = stage.stageHeight;
             try
             {
-                this._starling.viewPort = viewPort;
+                _starling.viewPort = viewPort;
             }
-            catch(error:Error) {}
+            catch(error:Error){}
         }
         
-        private function stage_deactivateHandler(event:Event):void
+        private function onStageDeactivate(event:Event):void
         {
-            this._starling.stop();
-            this.stage.addEventListener(Event.ACTIVATE, stage_activateHandler, false, 0, true);
+            _starling.stop();
+            stage.addEventListener(Event.ACTIVATE, onStageActivate, false, 0, true);
         }
         
-        private function stage_activateHandler(event:Event):void
+        private function onStageActivate(event:Event):void
         {
-            this.stage.removeEventListener(Event.ACTIVATE, stage_activateHandler);
-            this._starling.start();
+            stage.removeEventListener(Event.ACTIVATE, onStageActivate);
+            _starling.start();
         }
     }
 }

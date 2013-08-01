@@ -7,7 +7,7 @@ package sk.yoz.ycanvas.map.managers
     import flash.geom.Point;
     
     import sk.yoz.ycanvas.map.MapController;
-    import sk.yoz.ycanvas.map.valueObjects.CanvasLimit;
+    import sk.yoz.ycanvas.map.valueObjects.Limit;
     
     import starling.core.Starling;
     
@@ -19,7 +19,7 @@ package sk.yoz.ycanvas.map.managers
         private var last:Point;
         
         public function MouseTransformationManager(canvas:MapController, 
-            limit:CanvasLimit, transitionDuration:Number=.5)
+            limit:Limit, transitionDuration:Number=.5)
         {
             super(canvas, limit, transitionDuration);
         }
@@ -77,23 +77,23 @@ package sk.yoz.ycanvas.map.managers
             var targetCenter:Point =
                 new Point(transformationTarget.centerX, transformationTarget.centerY);
             var globalPoint:Point = new Point(stage.mouseX, stage.mouseY);
-            var point:Point = canvas.globalToViewPort(globalPoint);
-            var matrix:Matrix = canvas.getConversionMatrix(
+            var point:Point = controller.globalToViewPort(globalPoint);
+            var matrix:Matrix = controller.getConversionMatrix(
                 targetCenter, 
                 transformationTarget.scale, 
-                transformationTarget.rotation, canvas.viewPort);
+                transformationTarget.rotation, controller.viewPort);
             matrix.invert();
             return matrix.transformPoint(point);
         }
         
         private function get globalPointOnCanvas():Point
         {
-            return canvas.globalToCanvas(new Point(stage.mouseX, stage.mouseY));
+            return controller.globalToCanvas(new Point(stage.mouseX, stage.mouseY));
         }
         
         private function hitTest(x:Number, y:Number):Boolean
         {
-            return canvas.hitTestComponent(x, y);
+            return controller.hitTestComponent(x, y);
         }
         
         override protected function stop():void

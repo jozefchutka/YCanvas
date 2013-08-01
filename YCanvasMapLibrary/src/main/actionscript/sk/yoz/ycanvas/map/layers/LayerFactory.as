@@ -14,7 +14,8 @@ package sk.yoz.ycanvas.map.layers
     {
         private var layers:Vector.<Layer> = new Vector.<Layer>();
         
-        public function LayerFactory(config:MapConfig, partitionFactory:IPartitionFactory)
+        public function LayerFactory(config:MapConfig, 
+            partitionFactory:IPartitionFactory)
         {
             for(var level:uint = 1; level <= 32768; level *= 2)
                 layers.push(new Layer(level, config, partitionFactory));

@@ -4,7 +4,14 @@ package sk.yoz.ycanvas.map.display
     import sk.yoz.ycanvas.starling.elements.Stroke;
     
     /**
-    * Stroke extension for with map optimizations.
+    * Stroke extension for maps with optimizations.
+    * 
+    * 1. pivotX, pivotY are shifted in order to prevent ragged rendering
+    * when panning map on max zoom.
+    * 
+    * 2. simplify algorithms are used to re-calculate stroke path at lower 
+    * zoom. Simplifying reduces the points / triangles making it faster to 
+    * evaluate hitTest() method.
     */
     public class MapStroke extends Stroke
     {
@@ -26,21 +33,21 @@ package sk.yoz.ycanvas.map.display
             
             super(null, thickness, color, alpha, false);
             
-            var length:uint = bsaePoints.length;
-            pivotX = -(bsaePoints[0] + bsaePoints[length - 2]) / 2;
-            pivotY = -(bsaePoints[1] + bsaePoints[length - 1]) / 2;
+            var length:uint = basePoints.length;
+            pivotX = -(basePoints[0] + basePoints[length - 2]) / 2;
+            pivotY = -(basePoints[1] + basePoints[length - 1]) / 2;
             
             for(var x:uint = 0, y:uint = 1; x < length; x += 2, y += 2)
             {
-                bsaePoints[x] += pivotX;
-                bsaePoints[y] += pivotY;
+                basePoints[x] += pivotX;
+                basePoints[y] += pivotY;
             }
         }
         
         /**
         * A copy of array of original points shifted by pivot.
         */
-        public function get bsaePoints():Vector.<Number>
+        public function get basePoints():Vector.<Number>
         {
             return _basePoints;
         }
@@ -99,8 +106,8 @@ package sk.yoz.ycanvas.map.display
             
             var tolerance:Number = simplifyTolerance / layerScale;
             points = simplifyTolerance
-                ? PathSimplify.simplify(bsaePoints, tolerance, false)
-                : bsaePoints.concat();
+                ? PathSimplify.simplify(basePoints, tolerance, false)
+                : basePoints.concat();
             
             this.autoUpdate = autoUpdate;
         }

@@ -14,7 +14,7 @@ package sk.yoz.ycanvas.map.managers
     import sk.yoz.ycanvas.map.events.CanvasEvent;
     import sk.yoz.touch.events.TransitionMultitouchEvent;
     import sk.yoz.touch.TransitionMultitouch;
-    import sk.yoz.ycanvas.map.valueObjects.CanvasLimit;
+    import sk.yoz.ycanvas.map.valueObjects.Limit;
     import sk.yoz.ycanvas.utils.TransformationUtils;
     
     import starling.core.Starling;
@@ -28,7 +28,7 @@ package sk.yoz.ycanvas.map.managers
         private var previousPosition:Point;
         
         public function TouchTransformationManager(canvas:MapController, 
-            limit:CanvasLimit, transitionDuration:Number=.25)
+            limit:Limit, transitionDuration:Number=.25)
         {
             Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
             
@@ -66,10 +66,10 @@ package sk.yoz.ycanvas.map.managers
         
         private function getGlobalPointInTweenTarget(globalPoint:Point):Point
         {
-            var point:Point = canvas.globalToViewPort(globalPoint);
-            var matrix:Matrix = canvas.getConversionMatrix(
+            var point:Point = controller.globalToViewPort(globalPoint);
+            var matrix:Matrix = controller.getConversionMatrix(
                 new Point(transformationTarget.centerX, transformationTarget.centerY), 
-                canvas.scale, canvas.rotation, canvas.viewPort);
+                controller.scale, controller.rotation, controller.viewPort);
             matrix.invert();
             return matrix.transformPoint(point);
         }
@@ -81,18 +81,18 @@ package sk.yoz.ycanvas.map.managers
         
         private function resetTransformation():void
         {
-            transformation.centerX = canvas.center.x;
-            transformation.centerY = canvas.center.y;
-            transformation.scale = canvas.scale;
-            transformation.rotation = canvas.rotation;
+            transformation.centerX = controller.center.x;
+            transformation.centerY = controller.center.y;
+            transformation.scale = controller.scale;
+            transformation.rotation = controller.rotation;
         }
         
         private function resetTransformationTarget():void
         {
-            transformationTarget.centerX = canvas.center.x;
-            transformationTarget.centerY = canvas.center.y;
-            transformationTarget.scale = canvas.scale;
-            transformationTarget.rotation = canvas.rotation;
+            transformationTarget.centerX = controller.center.x;
+            transformationTarget.centerY = controller.center.y;
+            transformationTarget.scale = controller.scale;
+            transformationTarget.rotation = controller.rotation;
         }
         
         private function dispatchTransformationStarted():void
@@ -101,7 +101,7 @@ package sk.yoz.ycanvas.map.managers
                 return;
             
             transforming = true;
-            canvas.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_STARTED));
+            controller.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_STARTED));
         }
         
         private function dispatchTransformationFinished():void
@@ -113,12 +113,12 @@ package sk.yoz.ycanvas.map.managers
                 return;
             
             transforming = false;
-            canvas.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_FINISHED));
+            controller.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_FINISHED));
         }
         
         private function hitTest(x:Number, y:Number):Boolean
         {
-            return canvas.hitTestComponent(x, y);
+            return controller.hitTestComponent(x, y);
         }
         
         private function onStageScaleAndRotate(event:TwoFingerEvent):void
@@ -134,13 +134,13 @@ package sk.yoz.ycanvas.map.managers
             
             dispatchTransformationStarted();
             
-            var rotation:Number = canvas.rotation;
-            TransformationUtils.rotateScaleTo(canvas, 
-                canvas.rotation + normalizeRadians(event.rotation), 
-                limitScale(canvas.scale * event.scale), 
-                canvas.globalToCanvas(event.lock));
+            var rotation:Number = controller.rotation;
+            TransformationUtils.rotateScaleTo(controller, 
+                controller.rotation + normalizeRadians(event.rotation), 
+                limitScale(controller.scale * event.scale), 
+                controller.globalToCanvas(event.lock));
             if(!allowRotate)
-                canvas.rotation = rotation;
+                controller.rotation = rotation;
             
             resetTransformation();
             resetTransformationTarget();
@@ -205,7 +205,7 @@ package sk.yoz.ycanvas.map.managers
         
         private function onTransformationUpdate():void
         {
-            TransformationUtils.moveTo(canvas, 
+            TransformationUtils.moveTo(controller, 
                 new Point(transformation.centerX, transformation.centerY));
         }
     }

@@ -3,7 +3,7 @@ package sk.yoz.ycanvas.map.valueObjects
     /**
     * Canvas limitation values.
     */
-    public class CanvasLimit
+    public class Limit
     {
         public var minScale:Number;
         public var maxScale:Number;

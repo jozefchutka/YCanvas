@@ -3,7 +3,7 @@ package sk.yoz.utils
     import flash.geom.Point;
     
     /**
-    * 
+    * Geographical utils using mercator projection algorithms. 
     */
     public class GeoUtils
     {

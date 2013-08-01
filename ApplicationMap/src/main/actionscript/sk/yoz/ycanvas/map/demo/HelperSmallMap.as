@@ -5,7 +5,7 @@ package sk.yoz.ycanvas.map.demo
     import sk.yoz.ycanvas.map.MapController;
     import sk.yoz.ycanvas.map.display.MapComponent;
     import sk.yoz.ycanvas.map.events.CanvasEvent;
-    import sk.yoz.ycanvas.map.valueObjects.CanvasTransformation;
+    import sk.yoz.ycanvas.map.valueObjects.Transformation;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
     
     import starling.display.Quad;
@@ -13,6 +13,9 @@ package sk.yoz.ycanvas.map.demo
     import starling.events.TouchPhase;
     import sk.yoz.ycanvas.map.demo.mock.Maps;
 
+    /**
+    * Provides functionality for the small map.
+    */
     public class HelperSmallMap
     {
         public var mapController:MapController;
@@ -25,16 +28,16 @@ package sk.yoz.ycanvas.map.demo
         {
             this.bigMapController = bigMapController;
             
-            var init:CanvasTransformation = new CanvasTransformation;
-            init.centerX = bigMapController.center.x;
-            init.centerY = bigMapController.center.y;
-            init.scale = bigMapController.scale;
-            init.rotation = bigMapController.rotation;
+            var transformation:Transformation = new Transformation;
+            transformation.centerX = bigMapController.center.x;
+            transformation.centerY = bigMapController.center.y;
+            transformation.scale = bigMapController.scale;
+            transformation.rotation = bigMapController.rotation;
             
             background = new Quad(1, 1, 0xffffff);
             background.touchable = false;
             
-            mapController = new MapController(Maps.OSM, init);
+            mapController = new MapController(Maps.OSM, transformation);
             mapController.component.addChildAt(background, 0);
             mapController.component.addEventListener(TouchEvent.TOUCH, onMapTouch);
             mapController.component.addEventListener(MapComponent.VIEWPORT_UPDATED, onViewportUpdated);

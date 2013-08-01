@@ -20,7 +20,7 @@ package sk.yoz.ycanvas.map
     import sk.yoz.ycanvas.map.layers.LayerFactory;
     import sk.yoz.ycanvas.map.partitions.Partition;
     import sk.yoz.ycanvas.map.partitions.PartitionFactory;
-    import sk.yoz.ycanvas.map.valueObjects.CanvasTransformation;
+    import sk.yoz.ycanvas.map.valueObjects.Transformation;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
     import sk.yoz.ycanvas.starling.YCanvasRootStarling;
     import sk.yoz.ycanvas.utils.ILayerUtils;
@@ -76,8 +76,8 @@ package sk.yoz.ycanvas.map
         protected var maxLayers:uint;
         
         public function MapController(config:MapConfig, 
-            init:CanvasTransformation, marginOffset:uint=0, maxLayers:uint=0,
-            buffer:URLRequestBuffer=null)
+            transformation:Transformation, marginOffset:uint=0,
+            maxLayers:uint=0, buffer:URLRequestBuffer=null)
         {
             _config = config;
             this.marginOffset = marginOffset;
@@ -95,9 +95,9 @@ package sk.yoz.ycanvas.map
                 buffer = new URLRequestBuffer(6, 10000);
             partitionFactory = new PartitionFactory(config, this, buffer);
             layerFactory = new LayerFactory(config, partitionFactory);
-            center = new Point(init.centerX, init.centerY);
-            scale = init.scale;
-            rotation = init.rotation;
+            center = new Point(transformation.centerX, transformation.centerY);
+            scale = transformation.scale;
+            rotation = transformation.rotation;
             render();
             
             addEventListener(CanvasEvent.TRANSFORMATION_STARTED, onCanvasTransformationStarted);
@@ -116,7 +116,11 @@ package sk.yoz.ycanvas.map
         }
         
         /**
-        * Main config for the controller.
+        * Map config for the controller. When changed:
+        * 1. partitionFactory config is updated
+        * 2. all except main layers are disposed
+        * 3. main layer config is updated
+        * 4. main layer partitions config is updated (triggers partition reload)
         */
         public function set config(value:MapConfig):void
         {
@@ -216,15 +220,18 @@ package sk.yoz.ycanvas.map
             IPartitionUtils.disposeInvisible(this);
             ILayerUtils.disposeEmpty(this);
             
-            var main:Layer = layers[layers.length - 1] as Layer;
-            for each(var layer:Layer in layers)
-                (layer == main) ? startLoading(layer) : stopLoading(layer);
+            if(layers.length)
+            {
+                var main:Layer = mainLayer;
+                for each(var layer:Layer in layers)
+                    (layer == main) ? startLoading(layer) : stopLoading(layer);
+            }
             
             dispatchEvent(new CanvasEvent(CanvasEvent.RENDERED));
         }
         
         /**
-        * Returns true if global point hits current component view port.
+        * Returns true if global point hits current component viewport.
         */
         public function hitTestComponent(x:Number, y:Number):Boolean
         {
@@ -263,7 +270,8 @@ package sk.yoz.ycanvas.map
             useCapture:Boolean=false, priority:int=0, 
             useWeakReference:Boolean=false):void
         {
-            dispatcher.addEventListener(type, listener, useCapture, priority, useWeakReference);
+            dispatcher.addEventListener(type, listener, useCapture, priority,
+                useWeakReference);
         }
         
         /**
@@ -331,7 +339,7 @@ package sk.yoz.ycanvas.map
         }
         
         /**
-        * Returns component view port in global coordinates.
+        * Returns component viewport in global coordinates.
         */
         private function getViewPort():Rectangle
         {
@@ -345,7 +353,8 @@ package sk.yoz.ycanvas.map
         /**
         * Sorting method for partitions.
         */
-        private function sortByDistanceFromCenter(partition1:Partition, partition2:Partition):Number
+        private function sortByDistanceFromCenter(partition1:Partition,
+            partition2:Partition):Number
         {
             var x1:Number = partition1.x + partition1.expectedWidth * .5 - center.x;
             var y1:Number = partition1.y + partition1.expectedHeight * .5 - center.y;
@@ -408,7 +417,7 @@ package sk.yoz.ycanvas.map
         }
         
         /**
-        * Listener for component view port update.
+        * Listener for component viewport update.
         */
         private function onComponentViewPortUpdated():void
         {

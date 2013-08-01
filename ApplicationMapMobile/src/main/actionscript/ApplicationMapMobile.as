@@ -17,6 +17,10 @@ package
     
     import starling.core.Starling;
     
+    /**
+     * This is a common application wrapper used in feathers examples.
+     * The Main class is reused from ApplicationMap project.
+     */
     [SWF(width="960",height="640",frameRate="60",backgroundColor="#4a4137")]
     public class ApplicationMapMobile extends Sprite
     {
@@ -147,6 +151,5 @@ package
             this.stage.removeEventListener(Event.ACTIVATE, stage_activateHandler);
             this._starling.start();
         }
-        
     }
 }

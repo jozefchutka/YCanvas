@@ -5,22 +5,25 @@ package sk.yoz.ycanvas.map.demo
     import feathers.controls.Label;
     import feathers.core.PopUpManager;
     
+    import sk.yoz.utils.GeoUtils;
     import sk.yoz.ycanvas.map.MapController;
+    import sk.yoz.ycanvas.map.demo.mock.Maps;
     import sk.yoz.ycanvas.map.display.MarkerLayer;
     import sk.yoz.ycanvas.map.display.StrokeLayer;
     import sk.yoz.ycanvas.map.events.CanvasEvent;
     import sk.yoz.ycanvas.map.managers.AbstractTransformationManager;
     import sk.yoz.ycanvas.map.managers.MouseTransformationManager;
     import sk.yoz.ycanvas.map.managers.TouchTransformationManager;
-    import sk.yoz.utils.GeoUtils;
-    import sk.yoz.ycanvas.map.valueObjects.CanvasLimit;
-    import sk.yoz.ycanvas.map.valueObjects.CanvasTransformation;
+    import sk.yoz.ycanvas.map.valueObjects.Limit;
+    import sk.yoz.ycanvas.map.valueObjects.Transformation;
     
     import starling.display.Image;
     import starling.events.TouchEvent;
     import starling.events.TouchPhase;
-    import sk.yoz.ycanvas.map.demo.mock.Maps;
 
+    /**
+    * Provides functionality for the main map.
+    */
     public class HelperBigMap
     {
         public var mapController:MapController;
@@ -30,13 +33,13 @@ package sk.yoz.ycanvas.map.demo
         
         public function HelperBigMap()
         {
-            var init:CanvasTransformation = new CanvasTransformation;
-            init.centerX = GeoUtils.lon2x(7.75);
-            init.centerY = GeoUtils.lat2y(45.53);
-            init.rotation = 0;
-            init.scale = 1 / 4096;
+            var transformation:Transformation = new Transformation;
+            transformation.centerX = GeoUtils.lon2x(7.75);
+            transformation.centerY = GeoUtils.lat2y(45.53);
+            transformation.rotation = 0;
+            transformation.scale = 1 / 4096;
             
-            var limit:CanvasLimit = new CanvasLimit;
+            var limit:Limit = new Limit;
             limit.minScale = 1;
             limit.maxScale = 1 / 65536;
             limit.minCenterX = 0;
@@ -44,7 +47,7 @@ package sk.yoz.ycanvas.map.demo
             limit.minCenterY = GeoUtils.lat2y(85);
             limit.maxCenterY = GeoUtils.lat2y(-85);
             
-            mapController = new MapController(Maps.ARCGIS_IMAGERY, init, 256);
+            mapController = new MapController(Maps.ARCGIS_IMAGERY, transformation, 256);
             mapController.addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onMapTransformationFinished);
             
             transformationManager = Multitouch.supportsTouchEvents

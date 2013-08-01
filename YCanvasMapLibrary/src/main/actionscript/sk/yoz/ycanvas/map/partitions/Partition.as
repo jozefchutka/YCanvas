@@ -18,7 +18,6 @@ package sk.yoz.ycanvas.map.partitions
     import sk.yoz.net.URLRequestBufferItem;
     import sk.yoz.ycanvas.interfaces.ILayer;
     import sk.yoz.ycanvas.map.events.PartitionEvent;
-    import sk.yoz.ycanvas.map.layers.Layer;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
     import sk.yoz.ycanvas.starling.interfaces.IPartitionStarling;
     
@@ -310,7 +309,8 @@ package sk.yoz.ycanvas.map.partitions
         */
         private function disposeTexture():void
         {
-            if(!content || !_content.texture || _content.texture == EMPTY_TEXTURE)
+            if(!content || !_content.texture 
+                || _content.texture == EMPTY_TEXTURE)
                 return;
             
             try

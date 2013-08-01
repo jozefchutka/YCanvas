@@ -7,8 +7,8 @@ package sk.yoz.ycanvas.map.managers
     import sk.yoz.ycanvas.map.MapController;
     import sk.yoz.ycanvas.map.display.MapStroke;
     import sk.yoz.ycanvas.map.events.CanvasEvent;
-    import sk.yoz.ycanvas.map.valueObjects.CanvasLimit;
-    import sk.yoz.ycanvas.map.valueObjects.CanvasTransformation;
+    import sk.yoz.ycanvas.map.valueObjects.Limit;
+    import sk.yoz.ycanvas.map.valueObjects.Transformation;
     import sk.yoz.ycanvas.utils.TransformationUtils;
 
     /**
@@ -18,12 +18,12 @@ package sk.yoz.ycanvas.map.managers
     {
         public static const PI2:Number = Math.PI * 2;
         
-        protected var canvas:MapController;
+        protected var controller:MapController;
         protected var transitionDuration:Number = .25;
-        protected var transformation:CanvasTransformation = new CanvasTransformation;
-        protected var transformationTarget:CanvasTransformation = new CanvasTransformation;
+        protected var transformation:Transformation = new Transformation;
+        protected var transformationTarget:Transformation = new Transformation;
         
-        private var limit:CanvasLimit;
+        private var limit:Limit;
         private var tween:TweenMax;
         
         private var _allowMove:Boolean;
@@ -32,10 +32,10 @@ package sk.yoz.ycanvas.map.managers
         private var _allowInteractions:Boolean;
         private var _transforming:Boolean;
         
-        public function AbstractTransformationManager(canvas:MapController, 
-            limit:CanvasLimit, transitionDuration:Number=.5)
+        public function AbstractTransformationManager(controller:MapController, 
+            limit:Limit, transitionDuration:Number=.5)
         {
-            this.canvas = canvas;
+            this.controller = controller;
             this.limit = limit;
             this.transitionDuration = transitionDuration;
             
@@ -45,7 +45,7 @@ package sk.yoz.ycanvas.map.managers
             
             updateTransformation();
             
-            canvas.addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onCanvasTransformationFinished);
+            controller.addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onCanvasTransformationFinished);
         }
         
         public function dispose():void
@@ -57,9 +57,9 @@ package sk.yoz.ycanvas.map.managers
             allowRotate = false;
             allowInteractions = false;
             
-            canvas.removeEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onCanvasTransformationFinished);
+            controller.removeEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onCanvasTransformationFinished);
             
-            canvas = null;
+            controller = null;
         }
         
         public function set allowMove(value:Boolean):void
@@ -178,10 +178,10 @@ package sk.yoz.ycanvas.map.managers
         
         private function updateTransformation():void
         {
-            transformationTarget.centerX = transformation.centerX = canvas.center.x;
-            transformationTarget.centerY = transformation.centerY = canvas.center.y;
-            transformationTarget.scale = transformation.scale = canvas.scale;
-            transformationTarget.rotation = transformation.rotation = canvas.rotation;
+            transformationTarget.centerX = transformation.centerX = controller.center.x;
+            transformationTarget.centerY = transformation.centerY = controller.center.y;
+            transformationTarget.scale = transformation.scale = controller.scale;
+            transformationTarget.rotation = transformation.rotation = controller.rotation;
         }
         
         public function moveByTween(deltaX:Number, deltaY:Number):void
@@ -196,7 +196,8 @@ package sk.yoz.ycanvas.map.managers
             doTween(centerX, centerY, NaN, NaN, onMoveToTweenUpdate);
         }
         
-        public function moveRotateToTween(centerX:Number, centerY:Number, rotation:Number):void
+        public function moveRotateToTween(centerX:Number, centerY:Number,
+            rotation:Number):void
         {
             var delta:Number = normalizeRadians(rotation - transformationTarget.rotation);
             rotation = transformationTarget.rotation + delta;
@@ -240,30 +241,31 @@ package sk.yoz.ycanvas.map.managers
             doTween(NaN, NaN, scale, NaN, onScaleToTweenUpdate(lock));
         }
         
-        public function showBoundsTween(left:Number, right:Number, top:Number, bottom:Number):void
+        public function showBoundsTween(left:Number, right:Number, top:Number,
+            bottom:Number):void
         {
             var centerX:Number = (left + right) / 2;
             var centerY:Number = (top + bottom) / 2;
             
-            var targetLeftTop:Point = canvas.canvasToViewPort(new Point(left, top));
-            var targetRightBottom:Point = canvas.canvasToViewPort(new Point(right, bottom));
+            var targetLeftTop:Point = controller.canvasToViewPort(new Point(left, top));
+            var targetRightBottom:Point = controller.canvasToViewPort(new Point(right, bottom));
             var targetMinX:Number = Math.min(targetLeftTop.x, targetRightBottom.x);
             var targetMaxX:Number = Math.max(targetLeftTop.x, targetRightBottom.x);
             var targetMinY:Number = Math.min(targetLeftTop.y, targetRightBottom.y);
             var targetMaxY:Number = Math.max(targetLeftTop.y, targetRightBottom.y);
             
             var deltaScaleX:Number = 
-                Math.abs(canvas.viewPort.width) /
+                Math.abs(controller.viewPort.width) /
                 Math.abs(targetMaxX - targetMinX);
             
             var deltaScaleY:Number = 
-                Math.abs(canvas.viewPort.height) /
+                Math.abs(controller.viewPort.height) /
                 Math.abs(targetMaxY - targetMinY);
             
             var deltaScale:Number = Math.min(deltaScaleX, deltaScaleY);
-            var scale:Number = canvas.scale * deltaScale;
+            var scale:Number = controller.scale * deltaScale;
             
-            doTween(centerX, centerY, scale, canvas.rotation, onMoveScaleToTweenUpdate);
+            doTween(centerX, centerY, scale, controller.rotation, onMoveScaleToTweenUpdate);
         }
         
         public function showStrokeTween(stroke:MapStroke):void
@@ -280,87 +282,87 @@ package sk.yoz.ycanvas.map.managers
         {
             var data:Object = {onUpdate:updateCallback, onComplete:onTweenComplete};
             if(isNaN(centerX))
-                transformationTarget.centerX = transformation.centerX = canvas.center.x;
+                transformationTarget.centerX = transformation.centerX = controller.center.x;
             else
                 transformationTarget.centerX = data.centerX = limitCenterX(centerX);
             
             if(isNaN(centerY))
-                transformationTarget.centerY = transformation.centerY = canvas.center.y;
+                transformationTarget.centerY = transformation.centerY = controller.center.y;
             else
                 transformationTarget.centerY = data.centerY = limitCenterY(centerY);
             
             if(isNaN(scale))
-                transformationTarget.scale = transformation.scale = canvas.scale;
+                transformationTarget.scale = transformation.scale = controller.scale;
             else
                 transformationTarget.scale = data.scale = limitScale(scale);
             
             if(isNaN(rotation))
-                transformationTarget.rotation = transformation.rotation = canvas.rotation;
+                transformationTarget.rotation = transformation.rotation = controller.rotation;
             else
                 transformationTarget.rotation = data.rotation = rotation;
             
             tween && tween.kill();
             tween = TweenMax.to(transformation, transitionDuration, data);
             transforming = true;
-            canvas.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_STARTED));
+            controller.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_STARTED));
         }
         
         private function onTweenComplete():void
         {
-            canvas.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_FINISHED));
+            controller.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_FINISHED));
         }
         
         private function onMoveToTweenUpdate():void
         {
-            TransformationUtils.moveTo(canvas, 
+            TransformationUtils.moveTo(controller, 
                 new Point(transformation.centerX, transformation.centerY));
         }
         
         private function onMoveRotateToTweenUpdate():void
         {
-            TransformationUtils.moveRotateTo(canvas, 
+            TransformationUtils.moveRotateTo(controller, 
                 new Point(transformation.centerX, transformation.centerY), 
                 transformation.rotation);
         }
         
         private function onMoveRotateScaleToTweenUpdate():void
         {
-            TransformationUtils.moveRotateTo(canvas, 
+            TransformationUtils.moveRotateTo(controller, 
                 new Point(transformation.centerX, transformation.centerY), 
                 transformation.rotation);
-            canvas.scale = transformation.scale;
+            controller.scale = transformation.scale;
         }
         
         private function onRotateToTweenUpdate(lock:Point):Function
         {
             return function():void
             {
-                TransformationUtils.rotateTo(canvas, transformation.rotation, lock);
-                transformationTarget.centerX = transformation.centerX = canvas.center.x;
-                transformationTarget.centerY = transformation.centerY = canvas.center.y;
+                TransformationUtils.rotateTo(controller, transformation.rotation, lock);
+                transformationTarget.centerX = transformation.centerX = controller.center.x;
+                transformationTarget.centerY = transformation.centerY = controller.center.y;
             }
         }
         
         private function onRotateScaleToTweenUpdate():void
         {
-            TransformationUtils.rotateScaleTo(canvas, transformation.rotation, transformation.scale);
+            TransformationUtils.rotateScaleTo(controller, transformation.rotation, transformation.scale);
         }
         
         private function onScaleToTweenUpdate(lock:Point):Function
         {
             return function():void
             {
-                TransformationUtils.scaleTo(canvas, transformation.scale, lock);
-                transformationTarget.centerX = transformation.centerX = canvas.center.x;
-                transformationTarget.centerY = transformation.centerY = canvas.center.y;
+                TransformationUtils.scaleTo(controller, transformation.scale, lock);
+                transformationTarget.centerX = transformation.centerX = controller.center.x;
+                transformationTarget.centerY = transformation.centerY = controller.center.y;
             }
         }
         
         private function onMoveScaleToTweenUpdate():void
         {
-            TransformationUtils.scaleTo(canvas, transformation.scale,
+            TransformationUtils.scaleTo(controller, transformation.scale,
                 new Point(transformationTarget.centerX, transformationTarget.centerY));
-            canvas.center = new Point(transformation.centerX, transformation.centerY);
+            controller.center = new Point(transformation.centerX, transformation.centerY);
         }
         
         private function onCanvasTransformationFinished(event:CanvasEvent):void

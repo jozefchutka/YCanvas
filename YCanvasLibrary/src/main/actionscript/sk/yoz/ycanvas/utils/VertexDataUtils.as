@@ -12,11 +12,13 @@ package sk.yoz.ycanvas.utils
         * Starling 1.3 has broken implementation of VertexData.getBounds().
         * This is a simplified and optimized version.
         */
-        public static function getBounds(vertexData:VertexData, vertexID:int, numVertices:int):Rectangle
+        public static function getBounds(vertexData:VertexData, vertexID:int,
+            numVertices:int):Rectangle
         {
             var minX:Number = Number.MAX_VALUE, maxX:Number = -Number.MAX_VALUE;
             var minY:Number = Number.MAX_VALUE, maxY:Number = -Number.MAX_VALUE;
-            var offsetX:int = vertexID * VertexData.ELEMENTS_PER_VERTEX + VertexData.POSITION_OFFSET;
+            var offsetX:int = vertexID * VertexData.ELEMENTS_PER_VERTEX 
+                + VertexData.POSITION_OFFSET;
             var offestY:int = offsetX + 1;
             for(var i:uint = 0; i < numVertices; ++i)
             {
@@ -46,22 +48,25 @@ package sk.yoz.ycanvas.utils
         {
             var result:Vector.<PartialBounds> = new Vector.<PartialBounds>;
             var step:uint = verticesPerPartialBounds - 2;
-            var partialBounds:PartialBounds;
+            var bounds:PartialBounds;
             var count:uint;
             var maxIndice:uint = (vertexData.numVertices - 3) * 3;
-            for(var i:uint = 0, length:uint = vertexData.numVertices; i < length; i += step)
+            var length:uint = vertexData.numVertices;
+            for(var i:uint = 0; i < length; i += step)
             {
                 count = verticesPerPartialBounds;
                 if(i + count > length)
                     count = length - i;
                 
-                partialBounds = new PartialBounds;
-                partialBounds.rectangle = getBounds(vertexData, i, count);
-                partialBounds.vertexIndexMin = i;
-                partialBounds.vertexIndexMax = i + count - 1;
-                partialBounds.indiceIndexMin = partialBounds.vertexIndexMin < 2 ? 0 : (partialBounds.vertexIndexMin - 2) * 3;
-                partialBounds.indiceIndexMax = partialBounds.vertexIndexMax * 3 > maxIndice ? maxIndice : partialBounds.vertexIndexMax * 3;
-                result.push(partialBounds);
+                bounds = new PartialBounds;
+                bounds.rectangle = getBounds(vertexData, i, count);
+                bounds.vertexIndexMin = i;
+                bounds.vertexIndexMax = i + count - 1;
+                bounds.indiceIndexMin = bounds.vertexIndexMin < 2 
+                    ? 0 : (bounds.vertexIndexMin - 2) * 3;
+                bounds.indiceIndexMax = bounds.vertexIndexMax * 3 > maxIndice 
+                    ? maxIndice : bounds.vertexIndexMax * 3;
+                result.push(bounds);
             }
             return result;
         }

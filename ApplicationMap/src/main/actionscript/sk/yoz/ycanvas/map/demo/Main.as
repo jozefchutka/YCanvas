@@ -26,6 +26,9 @@ package sk.yoz.ycanvas.map.demo
     import starling.events.TouchEvent;
     import starling.events.TouchPhase;
 
+    /**
+    * Main Starling class. Provides demo Feathers UI for map controll.
+    */
     public class Main extends Sprite
     {
         private var componentSelector:PickerList;
@@ -96,6 +99,9 @@ package sk.yoz.ycanvas.map.demo
             stats.x = stage.stageWidth - 70;
         }
         
+        /**
+        * Creates UI (children).
+        */
         private function onAddedToStage(event:Event):void
         {
             removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
@@ -166,7 +172,6 @@ package sk.yoz.ycanvas.map.demo
             showOverlayCheck.addEventListener(Event.CHANGE, onShowOverlayCheckChange);
             addChild(showOverlayCheck);
             showOverlayCheck.validate();
-            
             
             latInput = new TextInput;
             latInput.restrict = "0-9.";

@@ -28,7 +28,8 @@ package sk.yoz.ycanvas.map.layers
         private var _partitions:Vector.<IPartition> = new Vector.<IPartition>;
         private var _content:Sprite = new Sprite;
         
-        public function Layer(level:uint, config:MapConfig, partitionFactory:IPartitionFactory)
+        public function Layer(level:uint, config:MapConfig,
+            partitionFactory:IPartitionFactory)
         {
             _level = level;
             this.config = config;
@@ -135,9 +136,9 @@ package sk.yoz.ycanvas.map.layers
         public function removePartition(partition:IPartition):void
         {
             var partitionStarling:IPartitionStarling = partition as IPartitionStarling;
-            
             if(partitionStarling.content)
                 content.removeChild(partitionStarling.content);
+            
             var index:int = partitions.indexOf(partition);
             if(index != -1)
                 partitions.splice(index, 1);

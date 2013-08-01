@@ -7,9 +7,6 @@ package sk.yoz.ycanvas.map.demo
         [Embed(source="/markers/green.png")]
         private static const MARKER_GREEN_CLASS:Class;
         
-        [Embed(source="/markers/pink.png")]
-        private static const MARKER_PINK_CLASS:Class;
-        
         private static var _MARKER_GREEN_TEXTURE:Texture;
         
         public static function get MARKER_GREEN_TEXTURE():Texture

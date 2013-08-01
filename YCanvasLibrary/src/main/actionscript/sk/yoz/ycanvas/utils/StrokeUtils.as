@@ -7,11 +7,13 @@ package sk.yoz.ycanvas.utils
         /**
         * Converts points and thickness into vertex data.
         */
-        public static function pointsToVertexData(points:Vector.<Number>, thickness:Number):VertexData
+        public static function pointsToVertexData(points:Vector.<Number>,
+            thickness:Number):VertexData
         {
             var vertices:Vector.<Number> = pointsToVertices(points, thickness);
             var result:VertexData = new VertexData(vertices.length / 2);
-            for(var i:uint = 0, p:uint = 0, length:uint = vertices.length; i < length; i += 4, p += 2)
+            var length:uint = vertices.length;
+            for(var i:uint = 0, p:uint = 0; i < length; i += 4, p += 2)
             {
                 var i1:uint = i + 1;
                 var i2:uint = i + 2;
@@ -26,10 +28,12 @@ package sk.yoz.ycanvas.utils
         /**
         * Creates index data for properly ordered vertex data.
         */
-        public static function vertexDataToIndexData(vertexData:VertexData):Vector.<uint>
+        public static function vertexDataToIndexData(
+            vertexData:VertexData):Vector.<uint>
         {
             var result:Vector.<uint> = new Vector.<uint>;
-            for(var i:uint = 0, length:uint = vertexData.numVertices - 2; i < length; i++)
+            var length:uint = vertexData.numVertices - 2;
+            for(var i:uint = 0; i < length; i++)
                 result.push(i, i + 1, i + 2);
             return result;
         }
@@ -37,7 +41,8 @@ package sk.yoz.ycanvas.utils
         /**
         * Converts points and thickness into vertex coordinates.
         */
-        private static function pointsToVertices(points:Vector.<Number>, thickness:Number):Vector.<Number>
+        private static function pointsToVertices(points:Vector.<Number>,
+            thickness:Number):Vector.<Number>
         {
             var p0x:Number = points[0], p0y:Number = points[1];
             var xi:uint = 2, yi:uint = 3;

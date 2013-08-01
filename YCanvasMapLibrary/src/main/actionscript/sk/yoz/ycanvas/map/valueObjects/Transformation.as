@@ -3,7 +3,7 @@ package sk.yoz.ycanvas.map.valueObjects
     /**
     * YCanvas transformation value object.
     */
-    public class CanvasTransformation
+    public class Transformation
     {
         public var centerX:Number = 0;
         public var centerY:Number = 0;

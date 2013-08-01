@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
   <includeClasses>
-    <classEntry path="sk.yoz.ycanvas.map.display.StrokeLayer"/>
+    <classEntry path="sk.yoz.ycanvas.map.MapController"/>
+    <classEntry path="sk.yoz.ycanvas.map.display.MapComponent"/>
     <classEntry path="sk.yoz.ycanvas.map.display.MapLayer"/>
+    <classEntry path="sk.yoz.ycanvas.map.display.MapStroke"/>
     <classEntry path="sk.yoz.ycanvas.map.display.MarkerLayer"/>
-    <classEntry path="sk.yoz.ycanvas.map.valueObjects.CanvasLimit"/>
-    <classEntry path="sk.yoz.utils.PathSimplify"/>
-    <classEntry path="sk.yoz.ycanvas.map.utils.PathSimplifyTest"/>
+    <classEntry path="sk.yoz.ycanvas.map.display.StrokeLayer"/>
+    <classEntry path="sk.yoz.ycanvas.map.events.CanvasEvent"/>
+    <classEntry path="sk.yoz.ycanvas.map.events.PartitionEvent"/>
+    <classEntry path="sk.yoz.ycanvas.map.layers.Layer"/>
+    <classEntry path="sk.yoz.ycanvas.map.layers.LayerFactory"/>
     <classEntry path="sk.yoz.ycanvas.map.managers.AbstractTransformationManager"/>
+    <classEntry path="sk.yoz.ycanvas.map.managers.MouseTransformationManager"/>
     <classEntry path="sk.yoz.ycanvas.map.managers.TouchTransformationManager"/>
-    <classEntry path="sk.yoz.touch.events.TransitionMultitouchEvent"/>
+    <classEntry path="sk.yoz.ycanvas.map.partitions.Partition"/>
+    <classEntry path="sk.yoz.ycanvas.map.partitions.PartitionFactory"/>
+    <classEntry path="sk.yoz.ycanvas.map.valueObjects.Limit"/>
+    <classEntry path="sk.yoz.ycanvas.map.valueObjects.MapConfig"/>
+    <classEntry path="sk.yoz.ycanvas.map.valueObjects.Transformation"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

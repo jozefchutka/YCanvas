@@ -121,7 +121,8 @@ package sk.yoz.ycanvas.starling.elements
             
             registerPrograms();
             
-            Starling.current.addEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
+            var type:String = Event.CONTEXT3D_CREATE;
+            Starling.current.addEventListener(type, onContextCreated);
         }
         
         /**
@@ -129,7 +130,8 @@ package sk.yoz.ycanvas.starling.elements
         */
         public override function dispose():void
         {
-            Starling.current.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
+            var type:String = Event.CONTEXT3D_CREATE;
+            Starling.current.removeEventListener(type, onContextCreated);
             
             if(vertexBuffer)
                 vertexBuffer.dispose();
@@ -208,14 +210,17 @@ package sk.yoz.ycanvas.starling.elements
         /**
         * @inheritDoc
         */
-        override public function getBounds(targetSpace:DisplayObject, resultRect:Rectangle=null):Rectangle
+        override public function getBounds(targetSpace:DisplayObject,
+            resultRect:Rectangle=null):Rectangle
         {
             if(resultRect == null)
                 resultRect = new Rectangle();
             
             var matrix:Matrix = getTransformationMatrix(targetSpace);
-            var lt:Point = MatrixUtil.transformCoords(matrix, bounds.x, bounds.y);
-            var rb:Point = MatrixUtil.transformCoords(matrix, bounds.x + bounds.width, bounds.y + bounds.height);
+            var lt:Point = MatrixUtil.transformCoords(matrix,
+                bounds.x, bounds.y);
+            var rb:Point = MatrixUtil.transformCoords(matrix,
+                bounds.x + bounds.width, bounds.y + bounds.height);
             resultRect.setTo(lt.x, lt.y, rb.x - lt.x, rb.y - lt.y);
             return resultRect;
         }
@@ -261,8 +266,10 @@ package sk.yoz.ycanvas.starling.elements
                 if(vertexBuffer)
                     vertexBuffer.dispose();
                 
-                vertexBuffer = context.createVertexBuffer(vertexData.numVertices, VertexData.ELEMENTS_PER_VERTEX);
-                vertexBuffer.uploadFromVector(vertexData.rawData, 0, vertexData.numVertices);
+                vertexBuffer = context.createVertexBuffer(
+                    vertexData.numVertices, VertexData.ELEMENTS_PER_VERTEX);
+                vertexBuffer.uploadFromVector(vertexData.rawData, 0, 
+                    vertexData.numVertices);
             }
             
             if(indexDataChanged)
@@ -281,7 +288,8 @@ package sk.yoz.ycanvas.starling.elements
         * a specific partial bounds all the necessary triagles are evaluated 
         * for a collision as well. 
         */
-        override public function hitTest(localPoint:Point, forTouch:Boolean=false):DisplayObject
+        override public function hitTest(localPoint:Point, 
+            forTouch:Boolean=false):DisplayObject
         {
             if(forTouch && (!visible || !touchable))
                 return null;
@@ -295,26 +303,32 @@ package sk.yoz.ycanvas.starling.elements
                 if(!partialBound.rectangle.containsPoint(localPoint))
                     continue;
                 
-                var offset:uint;
-                for(var i:uint = partialBound.indiceIndexMin; i <= partialBound.indiceIndexMax; i += 3)
+                var offset:uint, offset1:uint, i1:uint, i2:uint;
+                var elementsPerVertex:uint = VertexData.ELEMENTS_PER_VERTEX;
+                var positionOffset:uint = VertexData.POSITION_OFFSET;
+                var min:uint = partialBound.indiceIndexMin;
+                var max:uint = partialBound.indiceIndexMax;
+                for(var i:uint = min; i <= max; i += 3)
                 {
-                    var i0:uint = indexData[i];
-                    var i1:uint = indexData[uint(i + 1)];
-                    var i2:uint = indexData[uint(i + 2)];
-                    
-                    offset = i0 * VertexData.ELEMENTS_PER_VERTEX + VertexData.POSITION_OFFSET;
+                    offset = indexData[i] * elementsPerVertex + positionOffset;
+                    offset1 = offset + 1;
                     var p1x:Number = vertexData.rawData[offset];
-                    var p1y:Number = vertexData.rawData[uint(offset + 1)];
+                    var p1y:Number = vertexData.rawData[offset1];
                     
-                    offset = i1 * VertexData.ELEMENTS_PER_VERTEX + VertexData.POSITION_OFFSET;
+                    i1 = i + 1;
+                    offset = indexData[i1] * elementsPerVertex + positionOffset;
+                    offset1 = offset + 1;
                     var p2x:Number = vertexData.rawData[offset];
-                    var p2y:Number = vertexData.rawData[uint(offset + 1)];
+                    var p2y:Number = vertexData.rawData[offset1];
                     
-                    offset = i2 * VertexData.ELEMENTS_PER_VERTEX + VertexData.POSITION_OFFSET;
+                    i2 = i + 2;
+                    offset = indexData[i2] * elementsPerVertex + positionOffset;
+                    offset1 = offset + 1;
                     var p3x:Number = vertexData.rawData[offset];
-                    var p3y:Number = vertexData.rawData[uint(offset + 1)];
+                    var p3y:Number = vertexData.rawData[offset1];
                     
-                    if(FastCollisions.pointInTriangle(localPoint.x, localPoint.y, p1x, p1y, p2x, p2y, p3x, p3y))
+                    if(FastCollisions.pointInTriangle(localPoint.x, 
+                        localPoint.y, p1x, p1y, p2x, p2y, p3x, p3y))
                         return this;
                 }
             }
@@ -325,7 +339,8 @@ package sk.yoz.ycanvas.starling.elements
         /**
         * @inheritDoc
         */
-        override public function render(support:RenderSupport, alpha:Number):void
+        override public function render(support:RenderSupport, 
+            alpha:Number):void
         {
             support.finishQuadBatch();
             support.raiseDrawCount();
@@ -339,10 +354,15 @@ package sk.yoz.ycanvas.starling.elements
             support.applyBlendMode(false);
             
             context.setProgram(Starling.current.getProgram(PROGRAM_NAME));
-            context.setVertexBufferAt(0, vertexBuffer, VertexData.POSITION_OFFSET, Context3DVertexBufferFormat.FLOAT_2); 
-            context.setVertexBufferAt(1, vertexBuffer, VertexData.COLOR_OFFSET, Context3DVertexBufferFormat.FLOAT_4);
-            context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, support.mvpMatrix3D, true);
-            context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 4, renderAlpha, 1);
+            context.setVertexBufferAt(0, vertexBuffer, 
+                VertexData.POSITION_OFFSET,
+                Context3DVertexBufferFormat.FLOAT_2); 
+            context.setVertexBufferAt(1, vertexBuffer, VertexData.COLOR_OFFSET,
+                Context3DVertexBufferFormat.FLOAT_4);
+            context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX,
+                0, support.mvpMatrix3D, true);
+            context.setProgramConstantsFromVector(Context3DProgramType.VERTEX,
+                4, renderAlpha, 1);
             
             context.drawTriangles(indexBuffer, 0, indexData.length / 3);
             
@@ -355,7 +375,8 @@ package sk.yoz.ycanvas.starling.elements
         */
         private function updateBounds():void
         {
-            partialBounds = VertexDataUtils.getPartialBoundsList(vertexData, verticesPerPartialBounds);
+            partialBounds = VertexDataUtils.getPartialBoundsList(vertexData,
+                verticesPerPartialBounds);
             _bounds = PartialBoundsUtils.mergeListToRectangle(partialBounds);
         }
         
@@ -364,8 +385,7 @@ package sk.yoz.ycanvas.starling.elements
         */
         private static function registerPrograms():void
         {
-            var target:Starling = Starling.current;
-            if(target.hasProgram(PROGRAM_NAME))
+            if(Starling.current.hasProgram(PROGRAM_NAME))
                 return;
             
             // va0 -> position
@@ -373,21 +393,19 @@ package sk.yoz.ycanvas.starling.elements
             // vc0 -> mvpMatrix (4 vectors, vc0 - vc3)
             // vc4 -> alpha
             
-            var vertexProgramCode:String = 
-                "m44 op, va0, vc0 \n" + // 4x4 matrix transform to output space
-                "mul v0, va1, vc4 \n"; // multiply color with alpha and pass it to fragment shader
+            // 4x4 matrix transform to output space
+            // multiply color with alpha and pass it to fragment shader
+            var vertex:AGALMiniAssembler = new AGALMiniAssembler();
+            vertex.assemble(Context3DProgramType.VERTEX, 
+                "m44 op, va0, vc0 \n" + 
+                "mul v0, va1, vc4 \n");
             
             // just forward incoming color
-            var fragmentProgramCode:String = "mov oc, v0";
+            var fragment:AGALMiniAssembler = new AGALMiniAssembler();
+            fragment.assemble(Context3DProgramType.FRAGMENT, "mov oc, v0");
             
-            var vertexProgramAssembler:AGALMiniAssembler = new AGALMiniAssembler();
-            vertexProgramAssembler.assemble(Context3DProgramType.VERTEX, vertexProgramCode);
-            
-            var fragmentProgramAssembler:AGALMiniAssembler = new AGALMiniAssembler();
-            fragmentProgramAssembler.assemble(Context3DProgramType.FRAGMENT, fragmentProgramCode);
-            
-            target.registerProgram(PROGRAM_NAME, vertexProgramAssembler.agalcode,
-                fragmentProgramAssembler.agalcode);
+            Starling.current.registerProgram(PROGRAM_NAME, vertex.agalcode,
+                fragment.agalcode);
         }
         
         /**

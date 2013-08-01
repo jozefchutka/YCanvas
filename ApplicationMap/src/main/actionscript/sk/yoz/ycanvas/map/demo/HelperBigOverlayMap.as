@@ -3,8 +3,12 @@ package sk.yoz.ycanvas.map.demo
     import sk.yoz.ycanvas.map.MapController;
     import sk.yoz.ycanvas.map.demo.mock.Maps;
     import sk.yoz.ycanvas.map.events.CanvasEvent;
-    import sk.yoz.ycanvas.map.valueObjects.CanvasTransformation;
+    import sk.yoz.ycanvas.map.valueObjects.Transformation;
 
+    /**
+    * Provides functionality for the main map overlay (transparent layer over 
+    * the main map - city names, countries etc.).
+    */
     public class HelperBigOverlayMap
     {
         public var mapController:MapController;
@@ -14,13 +18,13 @@ package sk.yoz.ycanvas.map.demo
         {
             this.bigMapController = bigMapController;
             
-            var init:CanvasTransformation = new CanvasTransformation;
-            init.centerX = bigMapController.center.x;
-            init.centerY = bigMapController.center.y;
-            init.scale = bigMapController.scale;
-            init.rotation = bigMapController.rotation;
+            var transformation:Transformation = new Transformation;
+            transformation.centerX = bigMapController.center.x;
+            transformation.centerY = bigMapController.center.y;
+            transformation.scale = bigMapController.scale;
+            transformation.rotation = bigMapController.rotation;
             
-            mapController = new MapController(Maps.ARCGIS_REFERENCE, init, 0, 1);
+            mapController = new MapController(Maps.ARCGIS_REFERENCE, transformation, 0, 1);
             mapController.component.touchable = false;
             
             bigMapController.addEventListener(CanvasEvent.RENDERED, sync);

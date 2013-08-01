@@ -14,7 +14,7 @@ package sk.yoz.ycanvas.map.display
     public class MapComponent extends Sprite
     {
         /**
-        * View port updated event.
+        * Viewport updated event constant.
         */
         public static const VIEWPORT_UPDATED:String = "viewPortUpdated";
         
@@ -69,7 +69,7 @@ package sk.yoz.ycanvas.map.display
         }
         
         /**
-        * Returns view port in starling view port coordinates.
+        * Returns viewport in starling viewport coordinates.
         */
         private function get starlingViewPort():Rectangle
         {
@@ -85,7 +85,8 @@ package sk.yoz.ycanvas.map.display
         /**
         * @inheritDoc
         */
-        override public function hitTest(localPoint:Point, forTouch:Boolean=false):DisplayObject
+        override public function hitTest(localPoint:Point, 
+            forTouch:Boolean=false):DisplayObject
         {
             if(forTouch && (!visible || !touchable))
                 return null;
@@ -97,7 +98,8 @@ package sk.yoz.ycanvas.map.display
                 return object;
             
             var globalPoint:Point = localToGlobal(new Point(localX, localY));
-            return starlingViewPort.contains(globalPoint.x, globalPoint.y) ? this : null;
+            return starlingViewPort.contains(globalPoint.x, globalPoint.y)
+                ? this : null;
         }
         
         /**
@@ -108,14 +110,14 @@ package sk.yoz.ycanvas.map.display
             support.finishQuadBatch()
             
             Starling.context.setScissorRectangle(starlingViewPort);
-            super.render(support,alpha);
+            super.render(support, alpha);
             support.finishQuadBatch();
             
             Starling.context.setScissorRectangle(null);
         }
         
         /**
-        * Invalidation is required in case of view port of component is changed
+        * Invalidation is required in case of viewport of component is changed
         * in starling coordinates.
         */
         public function invalidateStarlingViewPort():void
