@@ -1,6 +1,6 @@
 package sk.yoz.ycanvas.map.partitions
 {
-    import com.greensock.TweenMax;
+    import com.greensock.TweenNano;
     
     import flash.display.Bitmap;
     import flash.display.BitmapData;
@@ -43,7 +43,7 @@ package sk.yoz.ycanvas.map.partitions
         private var buffer:URLRequestBuffer;
         private var error:Boolean;
         private var loader:Loader;
-        private var tweener:TweenMax;
+        private var tweener:TweenNano;
         
         public function Partition(x:int, y:int, layer:ILayer, config:MapConfig,
             dispatcher:IEventDispatcher, buffer:URLRequestBuffer)
@@ -351,7 +351,7 @@ package sk.yoz.ycanvas.map.partitions
             var loaderInfo:LoaderInfo = LoaderInfo(event.target);
             bitmapData = Bitmap(loaderInfo.content).bitmapData;
             stopLoading(false);
-            tweener = TweenMax.to(content, .5, {alpha:1});
+            tweener = TweenNano.to(content, .5, {alpha:1});
             
             var type:String = PartitionEvent.LOADED;
             dispatcher.dispatchEvent(new PartitionEvent(type, this));

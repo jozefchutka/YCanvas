@@ -1,6 +1,6 @@
 package sk.yoz.ycanvas.map.managers
 {
-    import com.greensock.TweenMax;
+    import com.greensock.TweenNano;
     
     import flash.geom.Point;
     
@@ -24,7 +24,7 @@ package sk.yoz.ycanvas.map.managers
         protected var transformationTarget:Transformation = new Transformation;
         
         private var limit:Limit;
-        private var tween:TweenMax;
+        private var tween:TweenNano;
         
         private var _allowMove:Boolean;
         private var _allowZoom:Boolean;
@@ -302,7 +302,7 @@ package sk.yoz.ycanvas.map.managers
                 transformationTarget.rotation = data.rotation = rotation;
             
             tween && tween.kill();
-            tween = TweenMax.to(transformation, transitionDuration, data);
+            tween = TweenNano.to(transformation, transitionDuration, data);
             transforming = true;
             controller.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_STARTED));
         }

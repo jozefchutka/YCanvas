@@ -1,6 +1,6 @@
 package sk.yoz.ycanvas.map.managers
 {
-    import com.greensock.TweenMax;
+    import com.greensock.TweenNano;
     
     import flash.display.Stage;
     import flash.events.TouchEvent;
@@ -9,11 +9,11 @@ package sk.yoz.ycanvas.map.managers
     import flash.ui.Multitouch;
     import flash.ui.MultitouchInputMode;
     
+    import sk.yoz.touch.TransitionMultitouch;
+    import sk.yoz.touch.events.TransitionMultitouchEvent;
     import sk.yoz.touch.events.TwoFingerEvent;
     import sk.yoz.ycanvas.map.MapController;
     import sk.yoz.ycanvas.map.events.CanvasEvent;
-    import sk.yoz.touch.events.TransitionMultitouchEvent;
-    import sk.yoz.touch.TransitionMultitouch;
     import sk.yoz.ycanvas.map.valueObjects.Limit;
     import sk.yoz.ycanvas.utils.TransformationUtils;
     
@@ -76,7 +76,7 @@ package sk.yoz.ycanvas.map.managers
         
         private function killTween():void
         {
-            TweenMax.killTweensOf(transformation);
+            TweenNano.killTweensOf(transformation);
         }
         
         private function resetTransformation():void
@@ -180,7 +180,7 @@ package sk.yoz.ycanvas.map.managers
             transformationTarget.centerY += previousPosition.y - current.y;
             resetTransformation();
             
-            TweenMax.to(transformation, transitionDuration, {
+            TweenNano.to(transformation, transitionDuration, {
                 centerX:transformationTarget.centerX, 
                 centerY:transformationTarget.centerY, 
                 onUpdate:onTransformationUpdate});
