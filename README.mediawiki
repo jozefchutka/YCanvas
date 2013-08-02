@@ -4,11 +4,12 @@ Repository content:
 
 * '''ApplicationDemo''' - sources for simpliest YCanvas implementation demonstrating implementation over Open Street Map available live on http://ycanvas.yoz.sk/demo
 * '''ApplicationExplrorer''' - sources for YCanvas explorer available on http://ycanvas.yoz.sk/explorer
-* '''ApplicationMap''' - sources for YCanvasMap implementation
+* '''ApplicationMap''' - YCanvas maps implementation with [http://feathersui.com/ Feathers UI] available on http://ycanvas.yoz.sk/maps/
 * '''ApplicationMapMobile''' - sources for YCanvasMap implementation for mobile application
 * '''ApplicationMarkers''' - sources for YCanvas explorer available on http://ycanvas.yoz.sk/markers
 * '''ApplicationRemotair''' - sources for YCanvas with Remotair available on http://ycanvas.yoz.sk/remotair/ . This app lets you remote controll YCanvas application with [http://remotair.yoz.sk Remotair]. Uses multitouch (two-finger) gestures to move, scale, rotate
 * '''YCanvasLibrary''' - sources for YCanvas library
+* '''YCanvasMapLibrary''' - sources for YCanvas map library
 
 You can see [http://ycanvas.yoz.sk/explorer Ycanvas explorer demo live on ycanvas.yoz.sk] ([http://ycanvas.yoz.sk/explorer/?debug=true +stats]) to compare the speed of native implementation vs. YCanvas, or browse repository for sources to understand the simplicity of implementation of 3rd party systems:
 
