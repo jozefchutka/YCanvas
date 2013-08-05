@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
   <includeClasses>
-    <classEntry path="sk.yoz.ycanvas.map.MapController"/>
-    <classEntry path="sk.yoz.ycanvas.map.display.MapComponent"/>
+    <classEntry path="sk.yoz.ycanvas.map.YCanvasMap"/>
+    <classEntry path="sk.yoz.ycanvas.map.display.MapDisplay"/>
     <classEntry path="sk.yoz.ycanvas.map.display.MapLayer"/>
     <classEntry path="sk.yoz.ycanvas.map.display.MapStroke"/>
     <classEntry path="sk.yoz.ycanvas.map.display.MarkerLayer"/>
@@ -19,6 +19,14 @@
     <classEntry path="sk.yoz.ycanvas.map.valueObjects.Limit"/>
     <classEntry path="sk.yoz.ycanvas.map.valueObjects.MapConfig"/>
     <classEntry path="sk.yoz.ycanvas.map.valueObjects.Transformation"/>
+    <classEntry path="sk.yoz.ycanvas.map.display.Stroke"/>
+    <classEntry path="sk.yoz.ycanvas.map.utils.PartialBoundsUtils"/>
+    <classEntry path="sk.yoz.ycanvas.map.utils.StrokeUtils"/>
+    <classEntry path="sk.yoz.ycanvas.map.utils.VertexDataUtils"/>
+    <classEntry path="sk.yoz.ycanvas.map.valueObjects.PartialBounds"/>
+    <classEntry path="sk.yoz.ycanvas.map.utils.PartialBoundsUtilsTest"/>
+    <classEntry path="sk.yoz.ycanvas.map.utils.StrokeUtilsTest"/>
+    <classEntry path="sk.yoz.ycanvas.map.utils.VertexDataUtilsTest"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

@@ -4,7 +4,7 @@ package sk.yoz.ycanvas.map.managers
     
     import flash.geom.Point;
     
-    import sk.yoz.ycanvas.map.MapController;
+    import sk.yoz.ycanvas.map.YCanvasMap;
     import sk.yoz.ycanvas.map.display.MapStroke;
     import sk.yoz.ycanvas.map.events.CanvasEvent;
     import sk.yoz.ycanvas.map.valueObjects.Limit;
@@ -18,7 +18,7 @@ package sk.yoz.ycanvas.map.managers
     {
         public static const PI2:Number = Math.PI * 2;
         
-        protected var controller:MapController;
+        protected var controller:YCanvasMap;
         protected var transitionDuration:Number = .25;
         protected var transformation:Transformation = new Transformation;
         protected var transformationTarget:Transformation = new Transformation;
@@ -32,7 +32,7 @@ package sk.yoz.ycanvas.map.managers
         private var _allowInteractions:Boolean;
         private var _transforming:Boolean;
         
-        public function AbstractTransformationManager(controller:MapController, 
+        public function AbstractTransformationManager(controller:YCanvasMap, 
             limit:Limit, transitionDuration:Number=.5)
         {
             this.controller = controller;

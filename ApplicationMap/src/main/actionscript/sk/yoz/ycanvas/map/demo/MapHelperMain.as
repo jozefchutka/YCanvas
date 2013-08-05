@@ -6,7 +6,7 @@ package sk.yoz.ycanvas.map.demo
     import feathers.core.PopUpManager;
     
     import sk.yoz.utils.GeoUtils;
-    import sk.yoz.ycanvas.map.MapController;
+    import sk.yoz.ycanvas.map.YCanvasMap;
     import sk.yoz.ycanvas.map.demo.mock.Maps;
     import sk.yoz.ycanvas.map.display.MarkerLayer;
     import sk.yoz.ycanvas.map.display.StrokeLayer;
@@ -24,14 +24,14 @@ package sk.yoz.ycanvas.map.demo
     /**
     * Provides functionality for the main map.
     */
-    public class HelperBigMap
+    public class MapHelperMain
     {
-        public var mapController:MapController;
-        public var transformationManager:AbstractTransformationManager;
+        public var map:YCanvasMap;
         public var strokeLayer:StrokeLayer;
         public var markerLayer:MarkerLayer;
+        public var transformationManager:AbstractTransformationManager;
         
-        public function HelperBigMap()
+        public function MapHelperMain()
         {
             var transformation:Transformation = new Transformation;
             transformation.centerX = GeoUtils.lon2x(7.75);
@@ -47,21 +47,21 @@ package sk.yoz.ycanvas.map.demo
             limit.minCenterY = GeoUtils.lat2y(85);
             limit.maxCenterY = GeoUtils.lat2y(-85);
             
-            mapController = new MapController(Maps.ARCGIS_IMAGERY, transformation, 256);
-            mapController.addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onMapTransformationFinished);
+            map = new YCanvasMap(Maps.ARCGIS_IMAGERY, transformation, 256);
+            map.addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onMapTransformationFinished);
             
             transformationManager = Multitouch.supportsTouchEvents
-                ? new TouchTransformationManager(mapController, limit)
-                : new MouseTransformationManager(mapController, limit);
+                ? new TouchTransformationManager(map, limit)
+                : new MouseTransformationManager(map, limit);
             
             strokeLayer = new StrokeLayer;
             strokeLayer.autoUpdateThickness = false;
             strokeLayer.addEventListener(TouchEvent.TOUCH, onStrokeLayerTouch);
-            mapController.addMapLayer(strokeLayer);
+            map.addMapLayer(strokeLayer);
             
             markerLayer = new MarkerLayer;
             markerLayer.addEventListener(TouchEvent.TOUCH, onMarkerLayerTouch);
-            mapController.addMapLayer(markerLayer);
+            map.addMapLayer(markerLayer);
         }
         
         public function addMarkerAt(x:Number, y:Number):void
@@ -95,13 +95,13 @@ package sk.yoz.ycanvas.map.demo
         
         private function onStrokeLayerTouch(event:TouchEvent):void
         {
-            if(event.getTouch(mapController.component, TouchPhase.BEGAN))
+            if(event.getTouch(map.display, TouchPhase.BEGAN))
                 showLabelPopup("Stroke selected. Click here to close popup.");
         }
         
         private function onMarkerLayerTouch(event:TouchEvent):void
         {
-            if(event.getTouch(mapController.component, TouchPhase.BEGAN))
+            if(event.getTouch(map.display, TouchPhase.BEGAN))
                 showLabelPopup("Marker selected. Click here to close popup");
         }
     }

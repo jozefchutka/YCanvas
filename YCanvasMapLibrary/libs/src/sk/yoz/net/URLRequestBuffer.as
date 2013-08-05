@@ -1,7 +1,5 @@
 package sk.yoz.net
 {
-    import __AS3__.vec.Vector;
-    
     import flash.events.Event;
     import flash.events.EventDispatcher;
     import flash.events.IOErrorEvent;
@@ -9,6 +7,8 @@ package sk.yoz.net
     import flash.net.URLRequest;
     import flash.system.LoaderContext;
     import flash.utils.Timer;
+    
+    import __AS3__.vec.Vector;
     
     import sk.yoz.events.URLRequestBufferEvent;
     

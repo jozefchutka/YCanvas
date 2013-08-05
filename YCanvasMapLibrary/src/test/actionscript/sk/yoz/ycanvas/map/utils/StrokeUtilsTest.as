@@ -1,10 +1,10 @@
-package sk.yoz.ycanvas.utils
+package sk.yoz.ycanvas.map.utils
 {
     import flash.geom.Point;
     
     import flexunit.framework.Assert;
     
-    import sk.yoz.ycanvas.starling.elements.Stroke;
+    import sk.yoz.ycanvas.map.display.Stroke;
     
     import starling.utils.VertexData;
 

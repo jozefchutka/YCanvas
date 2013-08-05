@@ -12,7 +12,7 @@ package sk.yoz.ycanvas.map
     import sk.yoz.ycanvas.AbstractYCanvas;
     import sk.yoz.ycanvas.interfaces.ILayer;
     import sk.yoz.ycanvas.interfaces.IPartition;
-    import sk.yoz.ycanvas.map.display.MapComponent;
+    import sk.yoz.ycanvas.map.display.MapDisplay;
     import sk.yoz.ycanvas.map.display.MapLayer;
     import sk.yoz.ycanvas.map.events.CanvasEvent;
     import sk.yoz.ycanvas.map.events.PartitionEvent;
@@ -20,8 +20,8 @@ package sk.yoz.ycanvas.map
     import sk.yoz.ycanvas.map.layers.LayerFactory;
     import sk.yoz.ycanvas.map.partitions.Partition;
     import sk.yoz.ycanvas.map.partitions.PartitionFactory;
-    import sk.yoz.ycanvas.map.valueObjects.Transformation;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
+    import sk.yoz.ycanvas.map.valueObjects.Transformation;
     import sk.yoz.ycanvas.starling.YCanvasRootStarling;
     import sk.yoz.ycanvas.utils.ILayerUtils;
     import sk.yoz.ycanvas.utils.IPartitionUtils;
@@ -41,7 +41,7 @@ package sk.yoz.ycanvas.map
     /**
     * Map implementation of YCanvas.
     */
-    public class MapController extends AbstractYCanvas implements IEventDispatcher
+    public class YCanvasMap extends AbstractYCanvas implements IEventDispatcher
     {
         /**
         * Timer is started on any canvas transformation and executes render() 
@@ -50,9 +50,9 @@ package sk.yoz.ycanvas.map
         private var timer:Timer = new Timer(250, 1);
         
         /**
-        * Variable holder for component.
+        * Variable holder for display.
         */
-        private var _component:MapComponent;
+        private var _display:MapDisplay;
         
         /**
         * Variable holder for config.
@@ -75,7 +75,7 @@ package sk.yoz.ycanvas.map
         */
         protected var maxLayers:uint;
         
-        public function MapController(config:MapConfig, 
+        public function YCanvasMap(config:MapConfig, 
             transformation:Transformation, marginOffset:uint=0,
             maxLayers:uint=0, buffer:URLRequestBuffer=null)
         {
@@ -85,9 +85,9 @@ package sk.yoz.ycanvas.map
             
             _root = new YCanvasRootStarling;
             
-            _component = new MapComponent;
-            component.addChild(root as YCanvasRootStarling);
-            component.addEventListener(MapComponent.VIEWPORT_UPDATED, onComponentViewPortUpdated);
+            _display = new MapDisplay;
+            display.addChild(root as YCanvasRootStarling);
+            display.addEventListener(MapDisplay.VIEWPORT_UPDATED, onComponentViewPortUpdated);
             
             super(getViewPort());
             
@@ -110,9 +110,9 @@ package sk.yoz.ycanvas.map
         /**
          * Starling DisplayObject.
          */
-        public function get component():MapComponent
+        public function get display():MapDisplay
         {
-            return _component;
+            return _display;
         }
         
         /**
@@ -237,7 +237,7 @@ package sk.yoz.ycanvas.map
         {
             var viewPort:Rectangle = Starling.current.viewPort;
             var starlingPoint:Point = new Point(x - viewPort.x, y - viewPort.y);
-            return component.stage.hitTest(starlingPoint, true) == component;
+            return display.stage.hitTest(starlingPoint, true) == display;
         }
         
         /**
@@ -251,7 +251,7 @@ package sk.yoz.ycanvas.map
             mapLayer.scale = scale;
             mapLayer.rotation = rotation;
             mapLayers.push(mapLayer);
-            component.addChild(mapLayer);
+            display.addChild(mapLayer);
         }
         
         /**
@@ -260,7 +260,7 @@ package sk.yoz.ycanvas.map
         public function removeMapLayer(mapLayer:MapLayer):void
         {
             mapLayers.splice(mapLayers.indexOf(mapLayer), 1);
-            component.removeChild(mapLayer);
+            display.removeChild(mapLayer);
         }
         
         /**
@@ -343,11 +343,11 @@ package sk.yoz.ycanvas.map
         */
         private function getViewPort():Rectangle
         {
-            var starlingPoint:Point = component.localToGlobal(new Point(0, 0));
+            var starlingPoint:Point = display.localToGlobal(new Point(0, 0));
             return new Rectangle(
                 Starling.current.viewPort.x + starlingPoint.x, 
                 Starling.current.viewPort.y + starlingPoint.y, 
-                component.width, component.height);
+                display.width, display.height);
         }
         
         /**

@@ -12,7 +12,7 @@ package sk.yoz.ycanvas.map.managers
     import sk.yoz.touch.TransitionMultitouch;
     import sk.yoz.touch.events.TransitionMultitouchEvent;
     import sk.yoz.touch.events.TwoFingerEvent;
-    import sk.yoz.ycanvas.map.MapController;
+    import sk.yoz.ycanvas.map.YCanvasMap;
     import sk.yoz.ycanvas.map.events.CanvasEvent;
     import sk.yoz.ycanvas.map.valueObjects.Limit;
     import sk.yoz.ycanvas.utils.TransformationUtils;
@@ -27,7 +27,7 @@ package sk.yoz.ycanvas.map.managers
         private var multitouch:TransitionMultitouch = new TransitionMultitouch;
         private var previousPosition:Point;
         
-        public function TouchTransformationManager(canvas:MapController, 
+        public function TouchTransformationManager(canvas:YCanvasMap, 
             limit:Limit, transitionDuration:Number=.25)
         {
             Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;

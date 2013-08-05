@@ -1,4 +1,4 @@
-package sk.yoz.ycanvas.utils
+package sk.yoz.ycanvas.map.utils
 {
     import starling.utils.VertexData;
 

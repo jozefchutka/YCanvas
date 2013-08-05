@@ -6,7 +6,7 @@ package sk.yoz.ycanvas.map.managers
     import flash.geom.Matrix;
     import flash.geom.Point;
     
-    import sk.yoz.ycanvas.map.MapController;
+    import sk.yoz.ycanvas.map.YCanvasMap;
     import sk.yoz.ycanvas.map.valueObjects.Limit;
     
     import starling.core.Starling;
@@ -18,7 +18,7 @@ package sk.yoz.ycanvas.map.managers
     {
         private var last:Point;
         
-        public function MouseTransformationManager(canvas:MapController, 
+        public function MouseTransformationManager(canvas:YCanvasMap, 
             limit:Limit, transitionDuration:Number=.5)
         {
             super(canvas, limit, transitionDuration);

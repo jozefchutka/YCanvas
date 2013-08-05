@@ -1,4 +1,4 @@
-package sk.yoz.ycanvas.valueObjects
+package sk.yoz.ycanvas.map.valueObjects
 {
     import flash.geom.Rectangle;
 

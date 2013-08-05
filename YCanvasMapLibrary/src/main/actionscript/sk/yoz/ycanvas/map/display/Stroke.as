@@ -1,4 +1,4 @@
-package sk.yoz.ycanvas.starling.elements
+package sk.yoz.ycanvas.map.display
 {
     import com.adobe.utils.AGALMiniAssembler;
     
@@ -12,10 +12,10 @@ package sk.yoz.ycanvas.starling.elements
     import flash.geom.Rectangle;
     
     import sk.yoz.math.FastCollisions;
-    import sk.yoz.ycanvas.utils.PartialBoundsUtils;
-    import sk.yoz.ycanvas.utils.StrokeUtils;
-    import sk.yoz.ycanvas.utils.VertexDataUtils;
-    import sk.yoz.ycanvas.valueObjects.PartialBounds;
+    import sk.yoz.ycanvas.map.utils.PartialBoundsUtils;
+    import sk.yoz.ycanvas.map.utils.StrokeUtils;
+    import sk.yoz.ycanvas.map.utils.VertexDataUtils;
+    import sk.yoz.ycanvas.map.valueObjects.PartialBounds;
     
     import starling.core.RenderSupport;
     import starling.core.Starling;

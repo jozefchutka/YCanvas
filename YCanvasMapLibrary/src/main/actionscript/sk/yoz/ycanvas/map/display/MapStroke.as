@@ -1,7 +1,6 @@
 package sk.yoz.ycanvas.map.display
 {
     import sk.yoz.utils.PathSimplify;
-    import sk.yoz.ycanvas.starling.elements.Stroke;
     
     /**
     * Stroke extension for maps with optimizations.

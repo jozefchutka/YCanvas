@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
   <includeClasses>
-    <classEntry path="sk.yoz.ycanvas.starling.elements.Stroke"/>
-    <classEntry path="sk.yoz.ycanvas.utils.StrokeUtilsTest"/>
-    <classEntry path="sk.yoz.ycanvas.utils.StrokeUtils"/>
-    <classEntry path="sk.yoz.ycanvas.utils.VertexDataUtilsTest"/>
-    <classEntry path="sk.yoz.ycanvas.utils.PartialBoundsUtils"/>
-    <classEntry path="sk.yoz.ycanvas.utils.PartialBoundsUtilsTest"/>
-    <classEntry path="sk.yoz.ycanvas.valueObjects.PartialBounds"/>
+    <classEntry path="sk.yoz.math.FastCollisions"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

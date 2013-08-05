@@ -1,10 +1,10 @@
-package sk.yoz.ycanvas.utils
+package sk.yoz.ycanvas.map.utils
 {
     import flash.geom.Rectangle;
     
     import flexunit.framework.Assert;
     
-    import sk.yoz.ycanvas.valueObjects.PartialBounds;
+    import sk.yoz.ycanvas.map.valueObjects.PartialBounds;
     
     import starling.utils.VertexData;
 

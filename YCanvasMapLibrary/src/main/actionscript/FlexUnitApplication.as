@@ -6,10 +6,10 @@ package
     
     import flexunit.flexui.FlexUnitTestRunnerUIAS;
     
-    import sk.yoz.ycanvas.map.utils.PathSimplifyTest;
-    import sk.yoz.ycanvas.utils.PartialBoundsUtilsTest;
-    import sk.yoz.ycanvas.utils.StrokeUtilsTest;
-    import sk.yoz.ycanvas.utils.VertexDataUtilsTest;
+    import sk.yoz.utils.PathSimplifyTest;
+    import sk.yoz.ycanvas.map.utils.PartialBoundsUtilsTest;
+    import sk.yoz.ycanvas.map.utils.StrokeUtilsTest;
+    import sk.yoz.ycanvas.map.utils.VertexDataUtilsTest;
     
     public class FlexUnitApplication extends Sprite
     {
@@ -29,10 +29,10 @@ package
         public function currentRunTestSuite():Array
         {
             var testsToRun:Array = new Array();
-            testsToRun.push(sk.yoz.ycanvas.map.utils.PathSimplifyTest);
-            testsToRun.push(sk.yoz.ycanvas.utils.PartialBoundsUtilsTest);
-            testsToRun.push(sk.yoz.ycanvas.utils.VertexDataUtilsTest);
-            testsToRun.push(sk.yoz.ycanvas.utils.StrokeUtilsTest);
+            testsToRun.push(sk.yoz.utils.PathSimplifyTest);
+            testsToRun.push(sk.yoz.ycanvas.map.utils.PartialBoundsUtilsTest);
+            testsToRun.push(sk.yoz.ycanvas.map.utils.VertexDataUtilsTest);
+            testsToRun.push(sk.yoz.ycanvas.map.utils.StrokeUtilsTest);
             return testsToRun;
         }
     }

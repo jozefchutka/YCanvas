@@ -11,7 +11,7 @@ package sk.yoz.ycanvas.map.display
     /**
     * Starling implementation for map component.
     */
-    public class MapComponent extends Sprite
+    public class MapDisplay extends Sprite
     {
         /**
         * Viewport updated event constant.

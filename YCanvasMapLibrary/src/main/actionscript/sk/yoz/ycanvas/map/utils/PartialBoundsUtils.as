@@ -1,8 +1,8 @@
-package sk.yoz.ycanvas.utils
+package sk.yoz.ycanvas.map.utils
 {
     import flash.geom.Rectangle;
     
-    import sk.yoz.ycanvas.valueObjects.PartialBounds;
+    import sk.yoz.ycanvas.map.valueObjects.PartialBounds;
 
     public class PartialBoundsUtils
     {
