@@ -37,15 +37,18 @@ package sk.yoz.ycanvas.map.utils
             var maxY:Number = points[1];
             for(var i:uint = 0, length:uint = points.length / 2; i < length; i++)
             {
-                var x:Number = points[i * 2];
-                var y:Number = points[i * 2 + 1];
+                var xi:uint = i * 2;
+                var x:Number = points[xi];
                 if(x < minX)
                     minX = x;
-                if(x > maxX)
+                else if(x > maxX)
                     maxX = x;
+                
+                var yi:uint = xi + 1;
+                var y:Number = points[yi];
                 if(y < minY)
                     minY = y;
-                if(y > maxY)
+                else if(y > maxY)
                     maxY = y;
             }
             return new Rectangle(minX, minY, maxX - minX, maxY - minY);
