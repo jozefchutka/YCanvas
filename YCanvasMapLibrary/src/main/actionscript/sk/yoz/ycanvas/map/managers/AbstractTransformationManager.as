@@ -5,11 +5,12 @@ package sk.yoz.ycanvas.map.managers
     import flash.geom.Point;
     
     import sk.yoz.ycanvas.map.YCanvasMap;
-    import sk.yoz.ycanvas.map.display.MapStroke;
     import sk.yoz.ycanvas.map.events.CanvasEvent;
     import sk.yoz.ycanvas.map.valueObjects.Limit;
     import sk.yoz.ycanvas.map.valueObjects.Transformation;
     import sk.yoz.ycanvas.utils.TransformationUtils;
+    
+    import starling.display.DisplayObject;
 
     /**
     * An abstract implementation of transformation manager.
@@ -268,13 +269,13 @@ package sk.yoz.ycanvas.map.managers
             doTween(centerX, centerY, scale, controller.rotation, onMoveScaleToTweenUpdate);
         }
         
-        public function showStrokeTween(stroke:MapStroke):void
+        public function showDisplayObjectTween(displayObject:DisplayObject):void
         {
             showBoundsTween(
-                stroke.bounds.left - stroke.pivotX,
-                stroke.bounds.right - stroke.pivotX,
-                stroke.bounds.top - stroke.pivotY,
-                stroke.bounds.bottom - stroke.pivotY);
+                displayObject.bounds.left - displayObject.pivotX,
+                displayObject.bounds.right - displayObject.pivotX,
+                displayObject.bounds.top - displayObject.pivotY,
+                displayObject.bounds.bottom - displayObject.pivotY);
         }
         
         private function doTween(centerX:Number, centerY:Number, scale:Number, 

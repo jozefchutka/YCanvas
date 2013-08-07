@@ -1,12 +1,6 @@
 package sk.yoz.ycanvas.map.display
 {
-    import com.adobe.utils.AGALMiniAssembler;
-    
     import flash.display3D.Context3D;
-    import flash.display3D.Context3DProgramType;
-    import flash.display3D.Context3DVertexBufferFormat;
-    import flash.display3D.IndexBuffer3D;
-    import flash.display3D.VertexBuffer3D;
     import flash.geom.Matrix;
     import flash.geom.Point;
     import flash.geom.Rectangle;
@@ -17,7 +11,6 @@ package sk.yoz.ycanvas.map.display
     import sk.yoz.ycanvas.map.utils.VertexDataUtils;
     import sk.yoz.ycanvas.map.valueObjects.PartialBounds;
     
-    import starling.core.RenderSupport;
     import starling.core.Starling;
     import starling.display.DisplayObject;
     import starling.errors.MissingContextError;
@@ -28,7 +21,7 @@ package sk.yoz.ycanvas.map.display
     /**
     * Starling implementation for simple stroke.
     */
-    public class Stroke extends DisplayObject
+    public class Stroke extends AbstractGraphics
     {
         /**
         * Program/shader name.
@@ -89,23 +82,6 @@ package sk.yoz.ycanvas.map.display
         */
         private var colorChanged:Boolean = true;
         
-        /**
-        * Vertex data are calculated from points and thickness.
-        */
-        private var vertexData:VertexData;
-        private var vertexBuffer:VertexBuffer3D;
-        
-        /**
-        * Index data.
-        */
-        private var indexData:Vector.<uint>;
-        private var indexBuffer:IndexBuffer3D;
-        
-        /**
-        * Helper object to avoid temporary objects.
-        */
-        private var renderAlpha:Vector.<Number> = new <Number>[1.0, 1.0, 1.0, 1.0];
-        
         public function Stroke(points:Vector.<Number>, thickness:Number = 1, 
             color:uint=0xffffff, alpha:Number=1, 
             autoUpdate:Boolean=true)
@@ -119,27 +95,15 @@ package sk.yoz.ycanvas.map.display
             if(autoUpdate)
                 update();
             
-            registerPrograms();
-            
-            var type:String = Event.CONTEXT3D_CREATE;
-            Starling.current.addEventListener(type, onContextCreated);
+            super();
         }
         
         /**
-        * Disposes all resources and listeners.
+        * Program/shader name.
         */
-        public override function dispose():void
+        override protected function get programName():String
         {
-            var type:String = Event.CONTEXT3D_CREATE;
-            Starling.current.removeEventListener(type, onContextCreated);
-            
-            if(vertexBuffer)
-                vertexBuffer.dispose();
-            
-            if(indexBuffer)
-                indexBuffer.dispose();
-            
-            super.dispose();
+            return PROGRAM_NAME;
         }
         
         /**
@@ -234,6 +198,10 @@ package sk.yoz.ycanvas.map.display
             if(!pointsChanged && !thicknessChanged && !colorChanged)
                 return;
             
+            var context:Context3D = Starling.context;
+            if(context == null)
+                throw new MissingContextError();
+            
             var vertexDataChanged:Boolean = false;
             var indexDataChanged:Boolean = false;
             if(pointsChanged || thicknessChanged)
@@ -257,29 +225,11 @@ package sk.yoz.ycanvas.map.display
             thicknessChanged = false;
             colorChanged = false;
             
-            var context:Context3D = Starling.context;
-            if(context == null)
-                throw new MissingContextError();
-            
             if(vertexDataChanged)
-            {
-                if(vertexBuffer)
-                    vertexBuffer.dispose();
-                
-                vertexBuffer = context.createVertexBuffer(
-                    vertexData.numVertices, VertexData.ELEMENTS_PER_VERTEX);
-                vertexBuffer.uploadFromVector(vertexData.rawData, 0, 
-                    vertexData.numVertices);
-            }
+                updateVertexBuffer();
             
             if(indexDataChanged)
-            {
-                if(indexBuffer)
-                    indexBuffer.dispose();
-                
-                indexBuffer = context.createIndexBuffer(indexData.length);
-                indexBuffer.uploadFromVector(indexData, 0, indexData.length);
-            }
+                updateIndexBuffer();
         }
         
         /**
@@ -337,40 +287,6 @@ package sk.yoz.ycanvas.map.display
         }
         
         /**
-        * @inheritDoc
-        */
-        override public function render(support:RenderSupport, 
-            alpha:Number):void
-        {
-            support.finishQuadBatch();
-            support.raiseDrawCount();
-            
-            renderAlpha[3] = alpha * this.alpha;
-            
-            var context:Context3D = Starling.context;
-            if(context == null)
-                throw new MissingContextError();
-            
-            support.applyBlendMode(false);
-            
-            context.setProgram(Starling.current.getProgram(PROGRAM_NAME));
-            context.setVertexBufferAt(0, vertexBuffer, 
-                VertexData.POSITION_OFFSET,
-                Context3DVertexBufferFormat.FLOAT_2); 
-            context.setVertexBufferAt(1, vertexBuffer, VertexData.COLOR_OFFSET,
-                Context3DVertexBufferFormat.FLOAT_4);
-            context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX,
-                0, support.mvpMatrix3D, true);
-            context.setProgramConstantsFromVector(Context3DProgramType.VERTEX,
-                4, renderAlpha, 1);
-            
-            context.drawTriangles(indexBuffer, 0, indexData.length / 3);
-            
-            context.setVertexBufferAt(0, null);
-            context.setVertexBufferAt(1, null);
-        }
-        
-        /**
         * Calculates the main bounds.
         */
         private function updateBounds():void
@@ -381,43 +297,15 @@ package sk.yoz.ycanvas.map.display
         }
         
         /**
-        * Creates vertex and fragment programs from assembly.
-        */
-        private static function registerPrograms():void
-        {
-            if(Starling.current.hasProgram(PROGRAM_NAME))
-                return;
-            
-            // va0 -> position
-            // va1 -> color
-            // vc0 -> mvpMatrix (4 vectors, vc0 - vc3)
-            // vc4 -> alpha
-            
-            // 4x4 matrix transform to output space
-            // multiply color with alpha and pass it to fragment shader
-            var vertex:AGALMiniAssembler = new AGALMiniAssembler();
-            vertex.assemble(Context3DProgramType.VERTEX, 
-                "m44 op, va0, vc0 \n" + 
-                "mul v0, va1, vc4 \n");
-            
-            // just forward incoming color
-            var fragment:AGALMiniAssembler = new AGALMiniAssembler();
-            fragment.assemble(Context3DProgramType.FRAGMENT, "mov oc, v0");
-            
-            Starling.current.registerProgram(PROGRAM_NAME, vertex.agalcode,
-                fragment.agalcode);
-        }
-        
-        /**
         * The old context was lost, a new buffers and shaders are created.
         */
-        private function onContextCreated(event:Event):void
+        override protected function onContextCreated(event:Event):void
         {
             pointsChanged = true;
             colorChanged = true;
             thicknessChanged = true;
             update();
-            registerPrograms();
+            super.onContextCreated(event);
         }
     }
 }

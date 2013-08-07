@@ -8,6 +8,7 @@ package
     
     import sk.yoz.utils.PathSimplifyTest;
     import sk.yoz.ycanvas.map.utils.PartialBoundsUtilsTest;
+    import sk.yoz.ycanvas.map.utils.PolygonUtilsTest;
     import sk.yoz.ycanvas.map.utils.StrokeUtilsTest;
     import sk.yoz.ycanvas.map.utils.VertexDataUtilsTest;
     
@@ -30,6 +31,7 @@ package
         {
             var testsToRun:Array = new Array();
             testsToRun.push(sk.yoz.utils.PathSimplifyTest);
+            testsToRun.push(sk.yoz.ycanvas.map.utils.PolygonUtilsTest);
             testsToRun.push(sk.yoz.ycanvas.map.utils.PartialBoundsUtilsTest);
             testsToRun.push(sk.yoz.ycanvas.map.utils.VertexDataUtilsTest);
             testsToRun.push(sk.yoz.ycanvas.map.utils.StrokeUtilsTest);

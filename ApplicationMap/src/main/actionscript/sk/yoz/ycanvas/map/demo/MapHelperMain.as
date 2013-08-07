@@ -8,6 +8,7 @@ package sk.yoz.ycanvas.map.demo
     import sk.yoz.utils.GeoUtils;
     import sk.yoz.ycanvas.map.YCanvasMap;
     import sk.yoz.ycanvas.map.demo.mock.Maps;
+    import sk.yoz.ycanvas.map.display.MapLayer;
     import sk.yoz.ycanvas.map.display.MarkerLayer;
     import sk.yoz.ycanvas.map.display.StrokeLayer;
     import sk.yoz.ycanvas.map.events.CanvasEvent;
@@ -27,6 +28,7 @@ package sk.yoz.ycanvas.map.demo
     public class MapHelperMain
     {
         public var map:YCanvasMap;
+        public var polygonLayer:MapLayer;
         public var strokeLayer:StrokeLayer;
         public var markerLayer:MarkerLayer;
         public var transformationManager:AbstractTransformationManager;
@@ -53,6 +55,10 @@ package sk.yoz.ycanvas.map.demo
             transformationManager = Multitouch.supportsTouchEvents
                 ? new TouchTransformationManager(map, limit)
                 : new MouseTransformationManager(map, limit);
+            
+            polygonLayer = new MapLayer;
+            polygonLayer.addEventListener(TouchEvent.TOUCH, onPolygonLayerTouch);
+            map.addMapLayer(polygonLayer);
             
             strokeLayer = new StrokeLayer;
             strokeLayer.autoUpdateThickness = false;
@@ -91,6 +97,12 @@ package sk.yoz.ycanvas.map.demo
         {
             if(!strokeLayer.autoUpdateThickness)
                 strokeLayer.updateThickness();
+        }
+        
+        private function onPolygonLayerTouch(event:TouchEvent):void
+        {
+            if(event.getTouch(map.display, TouchPhase.BEGAN))
+                showLabelPopup("Polygon selected. Click here to close popup.");
         }
         
         private function onStrokeLayerTouch(event:TouchEvent):void

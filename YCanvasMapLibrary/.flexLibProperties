@@ -27,6 +27,11 @@
     <classEntry path="sk.yoz.ycanvas.map.utils.PartialBoundsUtilsTest"/>
     <classEntry path="sk.yoz.ycanvas.map.utils.StrokeUtilsTest"/>
     <classEntry path="sk.yoz.ycanvas.map.utils.VertexDataUtilsTest"/>
+    <classEntry path="sk.yoz.ycanvas.map.display.Polygon"/>
+    <classEntry path="sk.yoz.ycanvas.map.utils.PolygonUtils"/>
+    <classEntry path="sk.yoz.ycanvas.map.display.AbstractGraphics"/>
+    <classEntry path="sk.yoz.ycanvas.map.utils.PolygonUtilsTest"/>
+    <classEntry path="sk.yoz.ycanvas.map.display.MapPolygon"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

@@ -14,9 +14,11 @@ package sk.yoz.ycanvas.map.demo
     
     import sk.yoz.utils.GeoUtils;
     import sk.yoz.ycanvas.map.YCanvasMap;
+    import sk.yoz.ycanvas.map.demo.mock.AreaCzechRepublic;
     import sk.yoz.ycanvas.map.demo.mock.Maps;
     import sk.yoz.ycanvas.map.demo.mock.RouteNewYorkWashington;
     import sk.yoz.ycanvas.map.demo.mock.RouteRomeParis;
+    import sk.yoz.ycanvas.map.display.MapPolygon;
     import sk.yoz.ycanvas.map.display.MapStroke;
     
     import starling.core.Starling;
@@ -45,6 +47,7 @@ package sk.yoz.ycanvas.map.demo
         private var markerOnClickCheck:Check;
         private var routeRomeParisCheck:Check;
         private var routeNewYorkWashingtonCheck:Check;
+        private var areaCzechRepublicCheck:Check;
         private var rotationSlider:Slider;
         private var zoomInButton:Button;
         private var zoomOutButton:Button;
@@ -53,6 +56,7 @@ package sk.yoz.ycanvas.map.demo
         
         private var routeRomeParisStroke:MapStroke;
         private var routeNewYorkWashingtonStroke:MapStroke;
+        private var areaCzechRepublicPolygon:MapPolygon;
         
         public function Main()
         {
@@ -229,6 +233,13 @@ package sk.yoz.ycanvas.map.demo
             addChild(routeNewYorkWashingtonCheck);
             routeNewYorkWashingtonCheck.validate();
             
+            areaCzechRepublicCheck = new Check;
+            areaCzechRepublicCheck.label = "Show area Czech Republic";
+            areaCzechRepublicCheck.y = routeNewYorkWashingtonCheck.y + routeNewYorkWashingtonCheck.height + 5;
+            areaCzechRepublicCheck.addEventListener(Event.CHANGE, onAreachCzechRepublicCheckChange);
+            addChild(areaCzechRepublicCheck);
+            areaCzechRepublicCheck.validate();
+            
             rotationSlider = new Slider;
             rotationSlider.width = 200;
             rotationSlider.minimum = -180;
@@ -308,7 +319,7 @@ package sk.yoz.ycanvas.map.demo
             {
                 routeRomeParisStroke = new MapStroke(RouteRomeParis.DATA, 10, 0x0000ff, 1);
                 mapMain.strokeLayer.add(routeRomeParisStroke);
-                mapMain.transformationManager.showStrokeTween(routeRomeParisStroke);
+                mapMain.transformationManager.showDisplayObjectTween(routeRomeParisStroke);
             }
             else
             {
@@ -322,7 +333,7 @@ package sk.yoz.ycanvas.map.demo
             {
                 routeNewYorkWashingtonStroke = new MapStroke(RouteNewYorkWashington.DATA, 10, 0x00ff00, 1);
                 mapMain.strokeLayer.add(routeNewYorkWashingtonStroke);
-                mapMain.transformationManager.showStrokeTween(routeNewYorkWashingtonStroke);
+                mapMain.transformationManager.showDisplayObjectTween(routeNewYorkWashingtonStroke);
             }
             else
             {
@@ -330,14 +341,32 @@ package sk.yoz.ycanvas.map.demo
             }
         }
         
+        private function onAreachCzechRepublicCheckChange():void
+        {
+            
+            if(areaCzechRepublicCheck.isSelected)
+            {
+                areaCzechRepublicPolygon = new MapPolygon(AreaCzechRepublic.DATA, 0xff0000, .5);
+                mapMain.polygonLayer.addChild(areaCzechRepublicPolygon);
+                mapMain.transformationManager.showDisplayObjectTween(areaCzechRepublicPolygon);
+            }
+            else
+            {
+                mapMain.polygonLayer.removeChild(areaCzechRepublicPolygon);
+            }
+        }
+        
         private function onBigMapTouch(event:TouchEvent):void
         {
+            if(!markerOnClickCheck.isSelected)
+                return;
+            
             var touch:Touch = event.getTouch(mapMain.map.display, TouchPhase.BEGAN);
-            if(touch && markerOnClickCheck.isSelected)
-            {
-                var position:Point = mapMain.map.globalToCanvas(new Point(touch.globalX, touch.globalY));
-                mapMain.addMarkerAt(position.x, position.y);
-            }
+            if(!touch)
+                return;
+            
+            var position:Point = mapMain.map.globalToCanvas(new Point(touch.globalX, touch.globalY));
+            mapMain.addMarkerAt(position.x, position.y);
         }
         
         private function onRotationSliderChange(event:Event):void
