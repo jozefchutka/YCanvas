@@ -143,7 +143,8 @@ package sk.yoz.ycanvas.map.partitions
         private function get url():String
         {
             var templates:Vector.<String> = config.urlTemplates;
-            var url:String = templates[Math.abs(x + y) % templates.length];
+            var id:int = x / 5 + y / 3 + layer.level;
+            var url:String = templates[(id < 0 ? -id : id) % templates.length];
             url = url.replace("${x}", x / expectedWidth / layer.level);
             url = url.replace("${y}", y / expectedHeight / layer.level);
             url = url.replace("${z}", 18 - getLevel(layer.level));
