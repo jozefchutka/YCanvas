@@ -15,6 +15,7 @@ package sk.yoz.ycanvas.map.demo.mock
         private static var _ARCGIS_IMAGERY:MapConfig;
         private static var _ARCGIS_NATIONAL_GEOGRAPHIC:MapConfig;
         private static var _ARCGIS_REFERENCE:MapConfig;
+        private static var _BINGMAPS_IMAGERY:MapConfig;
         
         public static function get MAPQUEST():MapConfig
         {
@@ -83,6 +84,17 @@ package sk.yoz.ycanvas.map.demo.mock
                     "http://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/${z}/${y}/${x}.png",
                     "http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/${z}/${y}/${x}.png"]);
             return _ARCGIS_REFERENCE;
+        }
+        
+        public static function get BINGMAPS_IMAGERY():MapConfig
+        {
+            if(!_BINGMAPS_IMAGERY)
+                _BINGMAPS_IMAGERY = createMapConfig([
+                    "http://ecn.t0.tiles.virtualearth.net/tiles/a${bingMapsQuadKey}.jpeg?g=1494",
+                    "http://ecn.t1.tiles.virtualearth.net/tiles/a${bingMapsQuadKey}.jpeg?g=1494",
+                    "http://ecn.t2.tiles.virtualearth.net/tiles/a${bingMapsQuadKey}.jpeg?g=1494",
+                    "http://ecn.t3.tiles.virtualearth.net/tiles/a${bingMapsQuadKey}.jpeg?g=1494"]);
+            return _BINGMAPS_IMAGERY;
         }
         
         private static function createMapConfig(templates:Array):MapConfig

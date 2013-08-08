@@ -141,6 +141,7 @@ package sk.yoz.ycanvas.map.demo
             tilesPickerList.y = mapPickerList.y + mapPickerList.height + 5;
             tilesPickerList.dataProvider = new ListCollection([
                 {label: "ArcGIS Imagery", data: Maps.ARCGIS_IMAGERY},
+                {label: "BingMaps Imagery", data: Maps.BINGMAPS_IMAGERY},
                 {label: "ArcGIS National Geographic", data: Maps.ARCGIS_NATIONAL_GEOGRAPHIC},
                 {label: "Map Quest", data: Maps.MAPQUEST},
                 {label: "OSM", data: Maps.OSM},

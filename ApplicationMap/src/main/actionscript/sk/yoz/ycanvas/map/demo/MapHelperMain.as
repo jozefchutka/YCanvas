@@ -6,17 +6,22 @@ package sk.yoz.ycanvas.map.demo
     import feathers.controls.Label;
     import feathers.core.PopUpManager;
     
+    import sk.yoz.net.URLRequestBuffer;
     import sk.yoz.utils.GeoUtils;
     import sk.yoz.ycanvas.map.YCanvasMap;
     import sk.yoz.ycanvas.map.demo.mock.Maps;
+    import sk.yoz.ycanvas.map.demo.partition.CustomPartitionFactory;
     import sk.yoz.ycanvas.map.display.MapLayer;
     import sk.yoz.ycanvas.map.display.MarkerLayer;
     import sk.yoz.ycanvas.map.display.StrokeLayer;
     import sk.yoz.ycanvas.map.events.CanvasEvent;
+    import sk.yoz.ycanvas.map.layers.LayerFactory;
     import sk.yoz.ycanvas.map.managers.AbstractTransformationManager;
     import sk.yoz.ycanvas.map.managers.MouseTransformationManager;
     import sk.yoz.ycanvas.map.managers.TouchTransformationManager;
+    import sk.yoz.ycanvas.map.partitions.PartitionFactory;
     import sk.yoz.ycanvas.map.valueObjects.Limit;
+    import sk.yoz.ycanvas.map.valueObjects.MapConfig;
     import sk.yoz.ycanvas.map.valueObjects.Transformation;
     
     import starling.core.Starling;
@@ -51,7 +56,15 @@ package sk.yoz.ycanvas.map.demo
             limit.minCenterY = GeoUtils.lat2y(85);
             limit.maxCenterY = GeoUtils.lat2y(-85);
             
-            map = new YCanvasMap(Maps.ARCGIS_IMAGERY, transformation, 256);
+            var config:MapConfig = Maps.ARCGIS_IMAGERY;
+            
+            map = new YCanvasMap(config, transformation, 256);
+            
+            //Lets customize partition factory so it creates CustomPartition
+            // capable of handling bing maps
+            map.partitionFactory = new CustomPartitionFactory(config, map, new URLRequestBuffer(6, 10000));
+            map.layerFactory = new LayerFactory(config, map.partitionFactory);
+            
             map.addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onMapTransformationFinished);
             transformationManager = Mouse.supportsCursor && !Starling.multitouchEnabled
                 ? new MouseTransformationManager(map, limit)

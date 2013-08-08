@@ -93,12 +93,12 @@ package sk.yoz.ycanvas.map
             
             if(!buffer)
                 buffer = new URLRequestBuffer(6, 10000);
+            
             partitionFactory = new PartitionFactory(config, this, buffer);
             layerFactory = new LayerFactory(config, partitionFactory);
             center = new Point(transformation.centerX, transformation.centerY);
             scale = transformation.scale;
             rotation = transformation.rotation;
-            render();
             
             addEventListener(CanvasEvent.TRANSFORMATION_STARTED, onCanvasTransformationStarted);
             addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onCanvasTransformationFinished);

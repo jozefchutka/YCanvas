@@ -18,8 +18,8 @@ package sk.yoz.ycanvas.map.partitions
         */
         public var config:MapConfig;
         
-        private var dispatcher:IEventDispatcher;
-        private var buffer:URLRequestBuffer;
+        protected var dispatcher:IEventDispatcher;
+        protected var buffer:URLRequestBuffer;
         
         public function PartitionFactory(config:MapConfig, 
             dispatcher:IEventDispatcher, buffer:URLRequestBuffer)

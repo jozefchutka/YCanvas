@@ -140,7 +140,7 @@ package sk.yoz.ycanvas.map.partitions
         /**
         * Returns url of partition to load based on map config template.
         */
-        private function get url():String
+        protected function get url():String
         {
             var templates:Vector.<String> = config.urlTemplates;
             var id:int = x / 5 + y / 3 + layer.level;
@@ -149,7 +149,7 @@ package sk.yoz.ycanvas.map.partitions
             url = url.replace("${y}", y / expectedHeight / layer.level);
             url = url.replace("${z}", 18 - getLevel(layer.level));
             return url;
-        }   
+        }
         
         /**
         * Redefines map config.
