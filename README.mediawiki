@@ -4,7 +4,7 @@ Repository content:
 
 * '''ApplicationDemo''' - sources for simpliest YCanvas implementation demonstrating implementation over Open Street Map available live on http://ycanvas.yoz.sk/demo
 * '''ApplicationExplrorer''' - sources for YCanvas explorer available on http://ycanvas.yoz.sk/explorer
-* '''ApplicationMap''' - YCanvas maps implementation with [http://feathersui.com/ Feathers UI] available on http://ycanvas.yoz.sk/maps/ (available tiles: [http://www.arcgis.com/features/ ArcGIS Imagery], [http://www.arcgis.com/features/ ArcGIS National Geographic], [http://www.mapquest.com/ MapQuest], [http://www.openstreetmap.org/ OpenStreetMap], [http://www.mapbox.com/ MapBox], [http://cloudmade.com/ CloudMade, [http://www.bing.com/maps/ Bing Maps]
+* '''ApplicationMap''' - YCanvas maps implementation with [http://feathersui.com/ Feathers UI] available on http://ycanvas.yoz.sk/maps/ (available tiles: [http://www.arcgis.com/features/ ArcGIS Imagery], [http://www.arcgis.com/features/ ArcGIS National Geographic], [http://www.mapquest.com/ MapQuest], [http://www.openstreetmap.org/ OpenStreetMap], [http://www.mapbox.com/ MapBox], [http://cloudmade.com/ CloudMade, [http://www.bing.com/maps/ Bing Maps Imagery])
 * '''ApplicationMapMobile''' - sources for YCanvasMap implementation for mobile application
 * '''ApplicationMarkers''' - sources for YCanvas explorer available on http://ycanvas.yoz.sk/markers
 * '''ApplicationRemotair''' - sources for YCanvas with Remotair available on http://ycanvas.yoz.sk/remotair/ . This app lets you remote controll YCanvas application with [http://remotair.yoz.sk Remotair]. Uses multitouch (two-finger) gestures to move, scale, rotate
