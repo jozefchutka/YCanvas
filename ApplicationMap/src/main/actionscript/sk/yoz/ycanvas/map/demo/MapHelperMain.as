@@ -1,5 +1,6 @@
 package sk.yoz.ycanvas.map.demo
 {
+    import flash.ui.Mouse;
     import flash.ui.Multitouch;
     
     import feathers.controls.Label;
@@ -18,6 +19,7 @@ package sk.yoz.ycanvas.map.demo
     import sk.yoz.ycanvas.map.valueObjects.Limit;
     import sk.yoz.ycanvas.map.valueObjects.Transformation;
     
+    import starling.core.Starling;
     import starling.display.Image;
     import starling.events.TouchEvent;
     import starling.events.TouchPhase;
@@ -51,10 +53,9 @@ package sk.yoz.ycanvas.map.demo
             
             map = new YCanvasMap(Maps.ARCGIS_IMAGERY, transformation, 256);
             map.addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onMapTransformationFinished);
-            
-            transformationManager = Multitouch.supportsTouchEvents
-                ? new TouchTransformationManager(map, limit)
-                : new MouseTransformationManager(map, limit);
+            transformationManager = Mouse.supportsCursor && !Starling.multitouchEnabled
+                ? new MouseTransformationManager(map, limit)
+                : new TouchTransformationManager(map, limit);
             
             polygonLayer = new MapLayer;
             polygonLayer.addEventListener(TouchEvent.TOUCH, onPolygonLayerTouch);
