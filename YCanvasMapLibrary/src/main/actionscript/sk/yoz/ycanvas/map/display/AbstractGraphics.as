@@ -7,12 +7,18 @@ package sk.yoz.ycanvas.map.display
     import flash.display3D.Context3DVertexBufferFormat;
     import flash.display3D.IndexBuffer3D;
     import flash.display3D.VertexBuffer3D;
+    import flash.geom.Matrix;
+    import flash.geom.Point;
+    import flash.geom.Rectangle;
+    
+    import sk.yoz.math.FastCollisions;
     
     import starling.core.RenderSupport;
     import starling.core.Starling;
     import starling.display.DisplayObject;
     import starling.errors.MissingContextError;
     import starling.events.Event;
+    import starling.utils.MatrixUtil;
     import starling.utils.VertexData;
     
     public class AbstractGraphics extends DisplayObject
@@ -47,6 +53,24 @@ package sk.yoz.ycanvas.map.display
         protected function get programName():String
         {
             throw new Error("Method not implemented");
+        }
+        
+        /**
+        * @inheritDoc
+        */
+        override public function getBounds(targetSpace:DisplayObject,
+            resultRect:Rectangle=null):Rectangle
+        {
+            if(resultRect == null)
+                resultRect = new Rectangle();
+            
+            var matrix:Matrix = getTransformationMatrix(targetSpace);
+            var lt:Point = MatrixUtil.transformCoords(matrix,
+                bounds.x, bounds.y);
+            var rb:Point = MatrixUtil.transformCoords(matrix,
+                bounds.x + bounds.width, bounds.y + bounds.height);
+            resultRect.setTo(lt.x, lt.y, rb.x - lt.x, rb.y - lt.y);
+            return resultRect;
         }
         
         /**
@@ -118,6 +142,42 @@ package sk.yoz.ycanvas.map.display
             
             indexBuffer = Starling.context.createIndexBuffer(indexData.length);
             indexBuffer.uploadFromVector(indexData, 0, indexData.length);
+        }
+        
+        /**
+        * Evaluates hitTest at indices in a specific range.
+        */
+        protected function hitTestIndices(localPoint:Point, 
+            indexMin:uint, indexMax:uint):Boolean
+        {
+            var offset:uint, offset1:uint, i1:uint, i2:uint;
+            var elementsPerVertex:uint = VertexData.ELEMENTS_PER_VERTEX;
+            var positionOffset:uint = VertexData.POSITION_OFFSET;
+            for(var i:uint = indexMin; i <= indexMax; i += 3)
+            {
+                offset = indexData[i] * elementsPerVertex + positionOffset;
+                offset1 = offset + 1;
+                var p1x:Number = vertexData.rawData[offset];
+                var p1y:Number = vertexData.rawData[offset1];
+                
+                i1 = i + 1;
+                offset = indexData[i1] * elementsPerVertex + positionOffset;
+                offset1 = offset + 1;
+                var p2x:Number = vertexData.rawData[offset];
+                var p2y:Number = vertexData.rawData[offset1];
+                
+                i2 = i + 2;
+                offset = indexData[i2] * elementsPerVertex + positionOffset;
+                offset1 = offset + 1;
+                var p3x:Number = vertexData.rawData[offset];
+                var p3y:Number = vertexData.rawData[offset1];
+                
+                if(FastCollisions.pointInTriangle(localPoint.x, 
+                    localPoint.y, p1x, p1y, p2x, p2y, p3x, p3y))
+                    return true;
+            }
+            
+            return false;
         }
         
         /**

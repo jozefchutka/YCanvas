@@ -31,7 +31,8 @@
     <classEntry path="sk.yoz.ycanvas.map.utils.PolygonUtils"/>
     <classEntry path="sk.yoz.ycanvas.map.display.AbstractGraphics"/>
     <classEntry path="sk.yoz.ycanvas.map.utils.PolygonUtilsTest"/>
-    <classEntry path="sk.yoz.ycanvas.map.display.MapPolygon"/>
+    <classEntry path="sk.yoz.ycanvas.map.utils.OptimizedPointsUtils"/>
+    <classEntry path="sk.yoz.ycanvas.map.valueObjects.OptimizedPoints"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

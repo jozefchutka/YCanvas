@@ -3,12 +3,9 @@ package sk.yoz.ycanvas.map.display
     import sk.yoz.utils.PathSimplify;
     
     /**
-    * Stroke extension for maps with optimizations.
+    * Stroke extension for maps with simplify optimization.
     * 
-    * 1. pivotX, pivotY are shifted in order to prevent ragged rendering
-    * when panning map on max zoom.
-    * 
-    * 2. simplify algorithms are used to re-calculate stroke path at lower 
+    * The simplify algorithms are used to re-calculate stroke path at lower 
     * zoom. Simplifying reduces the points / triangles making it faster to 
     * evaluate hitTest() method.
     */
@@ -31,16 +28,6 @@ package sk.yoz.ycanvas.map.display
             _originalThickness = thickness;
             
             super(null, thickness, color, alpha, false);
-            
-            var length:uint = basePoints.length;
-            pivotX = -(basePoints[0] + basePoints[length - 2]) / 2;
-            pivotY = -(basePoints[1] + basePoints[length - 1]) / 2;
-            
-            for(var x:uint = 0, y:uint = 1; x < length; x += 2, y += 2)
-            {
-                basePoints[x] += pivotX;
-                basePoints[y] += pivotY;
-            }
         }
         
         /**

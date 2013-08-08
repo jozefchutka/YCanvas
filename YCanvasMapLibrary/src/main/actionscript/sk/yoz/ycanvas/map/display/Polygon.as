@@ -4,26 +4,49 @@ package sk.yoz.ycanvas.map.display
     import flash.geom.Point;
     import flash.geom.Rectangle;
     
-    import sk.yoz.math.FastCollisions;
     import sk.yoz.ycanvas.map.utils.PolygonUtils;
     
     import starling.core.Starling;
     import starling.display.DisplayObject;
     import starling.errors.MissingContextError;
     import starling.events.Event;
-    import starling.utils.VertexData;
     
     public class Polygon extends AbstractGraphics
     {
+        /**
+        * Program/shader name.
+        */
         private static const PROGRAM_NAME:String = "YCanvasPolygon";
         
+        /**
+        * If true, changing points or color would be automatically rendered.
+        * If false, update() method must be called manualy.
+        */
         public var autoUpdate:Boolean = true;
         
+        /**
+        * Variable holder for points.
+        */
         private var _points:Vector.<Number>;
+        
+        /**
+        * Variable holder for color.
+        */
         private var _color:Number;
+        
+        /**
+        * Variable holder for bounds.
+        */
         private var _bounds:Rectangle;
         
+        /**
+        * Flag describing that points variable has changed.
+        */
         private var pointsChanged:Boolean = true;
+        
+        /**
+        * Flag describing that color variable has changed.
+        */
         private var colorChanged:Boolean = true;
         
         public function Polygon(points:Vector.<Number>, color:uint=0xffffff,
@@ -40,11 +63,17 @@ package sk.yoz.ycanvas.map.display
                 update();
         }
         
+        /**
+        * Program/shader name.
+        */
         override protected function get programName():String
         {
             return PROGRAM_NAME;
         }
         
+        /**
+        * Array of x, y values defining the polygon shape.
+        */
         public function set points(value:Vector.<Number>):void
         {
             if(points == value)
@@ -61,6 +90,9 @@ package sk.yoz.ycanvas.map.display
             return _points;
         }
         
+        /**
+        * Polygon fill Color.
+        */
         public function set color(value:uint):void
         {
             if(color == value)
@@ -77,11 +109,17 @@ package sk.yoz.ycanvas.map.display
             return _color;
         }
         
+        /**
+        * Cached bounds.
+        */
         override public function get bounds():Rectangle
         {
             return _bounds;
         }
         
+        /**
+        * Updates vertex data and index data based on points and color.
+        */
         public function update():void
         {
             if(!pointsChanged && !colorChanged)
@@ -118,6 +156,10 @@ package sk.yoz.ycanvas.map.display
                 updateIndexBuffer();
         }
         
+        /**
+        * For performance optimization, first the main bounds is tested for a 
+        * collision, then all the triagles are evaluated for a collision. 
+        */
         override public function hitTest(localPoint:Point, 
             forTouch:Boolean=false):DisplayObject
         {
@@ -127,32 +169,8 @@ package sk.yoz.ycanvas.map.display
             if(!bounds.containsPoint(localPoint))
                 return null;
             
-            var offset:uint, offset1:uint, i1:uint, i2:uint;
-            var elementsPerVertex:uint = VertexData.ELEMENTS_PER_VERTEX;
-            var positionOffset:uint = VertexData.POSITION_OFFSET;
-            for(var i:uint = 0, length:uint = indexData.length; i < length; i += 3)
-            {
-                offset = indexData[i] * elementsPerVertex + positionOffset;
-                offset1 = offset + 1;
-                var p1x:Number = vertexData.rawData[offset];
-                var p1y:Number = vertexData.rawData[offset1];
-                
-                i1 = i + 1;
-                offset = indexData[i1] * elementsPerVertex + positionOffset;
-                offset1 = offset + 1;
-                var p2x:Number = vertexData.rawData[offset];
-                var p2y:Number = vertexData.rawData[offset1];
-                
-                i2 = i + 2;
-                offset = indexData[i2] * elementsPerVertex + positionOffset;
-                offset1 = offset + 1;
-                var p3x:Number = vertexData.rawData[offset];
-                var p3y:Number = vertexData.rawData[offset1];
-                
-                if(FastCollisions.pointInTriangle(localPoint.x, 
-                    localPoint.y, p1x, p1y, p2x, p2y, p3x, p3y))
-                    return this;
-            }
+            if(hitTestIndices(localPoint, 0, indexData.length - 1))
+                return this;
             
             return null;
         }

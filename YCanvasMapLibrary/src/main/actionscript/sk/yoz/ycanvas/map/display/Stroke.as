@@ -1,11 +1,9 @@
 package sk.yoz.ycanvas.map.display
 {
     import flash.display3D.Context3D;
-    import flash.geom.Matrix;
     import flash.geom.Point;
     import flash.geom.Rectangle;
     
-    import sk.yoz.math.FastCollisions;
     import sk.yoz.ycanvas.map.utils.PartialBoundsUtils;
     import sk.yoz.ycanvas.map.utils.StrokeUtils;
     import sk.yoz.ycanvas.map.utils.VertexDataUtils;
@@ -15,8 +13,6 @@ package sk.yoz.ycanvas.map.display
     import starling.display.DisplayObject;
     import starling.errors.MissingContextError;
     import starling.events.Event;
-    import starling.utils.MatrixUtil;
-    import starling.utils.VertexData;
     
     /**
     * Starling implementation for simple stroke.
@@ -172,24 +168,6 @@ package sk.yoz.ycanvas.map.display
         }
         
         /**
-        * @inheritDoc
-        */
-        override public function getBounds(targetSpace:DisplayObject,
-            resultRect:Rectangle=null):Rectangle
-        {
-            if(resultRect == null)
-                resultRect = new Rectangle();
-            
-            var matrix:Matrix = getTransformationMatrix(targetSpace);
-            var lt:Point = MatrixUtil.transformCoords(matrix,
-                bounds.x, bounds.y);
-            var rb:Point = MatrixUtil.transformCoords(matrix,
-                bounds.x + bounds.width, bounds.y + bounds.height);
-            resultRect.setTo(lt.x, lt.y, rb.x - lt.x, rb.y - lt.y);
-            return resultRect;
-        }
-        
-        /**
         * Updates vertex data and index data based on points, thickness and 
         * color.
         */
@@ -253,34 +231,9 @@ package sk.yoz.ycanvas.map.display
                 if(!partialBound.rectangle.containsPoint(localPoint))
                     continue;
                 
-                var offset:uint, offset1:uint, i1:uint, i2:uint;
-                var elementsPerVertex:uint = VertexData.ELEMENTS_PER_VERTEX;
-                var positionOffset:uint = VertexData.POSITION_OFFSET;
-                var min:uint = partialBound.indiceIndexMin;
-                var max:uint = partialBound.indiceIndexMax;
-                for(var i:uint = min; i <= max; i += 3)
-                {
-                    offset = indexData[i] * elementsPerVertex + positionOffset;
-                    offset1 = offset + 1;
-                    var p1x:Number = vertexData.rawData[offset];
-                    var p1y:Number = vertexData.rawData[offset1];
-                    
-                    i1 = i + 1;
-                    offset = indexData[i1] * elementsPerVertex + positionOffset;
-                    offset1 = offset + 1;
-                    var p2x:Number = vertexData.rawData[offset];
-                    var p2y:Number = vertexData.rawData[offset1];
-                    
-                    i2 = i + 2;
-                    offset = indexData[i2] * elementsPerVertex + positionOffset;
-                    offset1 = offset + 1;
-                    var p3x:Number = vertexData.rawData[offset];
-                    var p3y:Number = vertexData.rawData[offset1];
-                    
-                    if(FastCollisions.pointInTriangle(localPoint.x, 
-                        localPoint.y, p1x, p1y, p2x, p2y, p3x, p3y))
-                        return this;
-                }
+                if(hitTestIndices(localPoint, partialBound.indiceIndexMin,
+                    partialBound.indiceIndexMax))
+                    return this;
             }
             
             return null;

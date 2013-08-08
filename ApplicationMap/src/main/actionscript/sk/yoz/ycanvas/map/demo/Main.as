@@ -18,8 +18,10 @@ package sk.yoz.ycanvas.map.demo
     import sk.yoz.ycanvas.map.demo.mock.Maps;
     import sk.yoz.ycanvas.map.demo.mock.RouteNewYorkWashington;
     import sk.yoz.ycanvas.map.demo.mock.RouteRomeParis;
-    import sk.yoz.ycanvas.map.display.MapPolygon;
     import sk.yoz.ycanvas.map.display.MapStroke;
+    import sk.yoz.ycanvas.map.display.Polygon;
+    import sk.yoz.ycanvas.map.utils.OptimizedPointsUtils;
+    import sk.yoz.ycanvas.map.valueObjects.OptimizedPoints;
     
     import starling.core.Starling;
     import starling.display.Sprite;
@@ -56,7 +58,7 @@ package sk.yoz.ycanvas.map.demo
         
         private var routeRomeParisStroke:MapStroke;
         private var routeNewYorkWashingtonStroke:MapStroke;
-        private var areaCzechRepublicPolygon:MapPolygon;
+        private var areaCzechRepublicPolygon:Polygon;
         
         public function Main()
         {
@@ -317,7 +319,10 @@ package sk.yoz.ycanvas.map.demo
         {
             if(routeRomeParisCheck.isSelected)
             {
-                routeRomeParisStroke = new MapStroke(RouteRomeParis.DATA, 10, 0x0000ff, 1);
+                var optimizedPoints:OptimizedPoints = OptimizedPointsUtils.calculate(RouteRomeParis.DATA);
+                routeRomeParisStroke = new MapStroke(optimizedPoints.points, 10, 0x0000ff, 1);
+                routeRomeParisStroke.pivotX = optimizedPoints.pivotX;
+                routeRomeParisStroke.pivotY = optimizedPoints.pivotY;
                 mapMain.strokeLayer.add(routeRomeParisStroke);
                 mapMain.transformationManager.showDisplayObjectTween(routeRomeParisStroke);
             }
@@ -331,7 +336,10 @@ package sk.yoz.ycanvas.map.demo
         {
             if(routeNewYorkWashingtonCheck.isSelected)
             {
-                routeNewYorkWashingtonStroke = new MapStroke(RouteNewYorkWashington.DATA, 10, 0x00ff00, 1);
+                var optimizedPoints:OptimizedPoints = OptimizedPointsUtils.calculate(RouteNewYorkWashington.DATA);
+                routeNewYorkWashingtonStroke = new MapStroke(optimizedPoints.points, 10, 0x00ff00, 1);
+                routeNewYorkWashingtonStroke.pivotX = optimizedPoints.pivotX;
+                routeNewYorkWashingtonStroke.pivotY = optimizedPoints.pivotY;
                 mapMain.strokeLayer.add(routeNewYorkWashingtonStroke);
                 mapMain.transformationManager.showDisplayObjectTween(routeNewYorkWashingtonStroke);
             }
@@ -346,7 +354,10 @@ package sk.yoz.ycanvas.map.demo
             
             if(areaCzechRepublicCheck.isSelected)
             {
-                areaCzechRepublicPolygon = new MapPolygon(AreaCzechRepublic.DATA, 0xff0000, .5);
+                var optimizedPoints:OptimizedPoints = OptimizedPointsUtils.calculate(AreaCzechRepublic.DATA);
+                areaCzechRepublicPolygon = new Polygon(optimizedPoints.points, 0xff0000, .5);
+                areaCzechRepublicPolygon.pivotX = optimizedPoints.pivotX;
+                areaCzechRepublicPolygon.pivotY = optimizedPoints.pivotY;
                 mapMain.polygonLayer.addChild(areaCzechRepublicPolygon);
                 mapMain.transformationManager.showDisplayObjectTween(areaCzechRepublicPolygon);
             }
