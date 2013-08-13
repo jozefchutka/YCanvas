@@ -52,6 +52,7 @@ package sk.yoz.ycanvas.map.managers
         public function dispose():void
         {
             stop();
+            disposeTween();
             
             allowMove = false;
             allowZoom = false;
@@ -302,14 +303,24 @@ package sk.yoz.ycanvas.map.managers
             else
                 transformationTarget.rotation = data.rotation = rotation;
             
-            tween && tween.kill();
+            disposeTween();
             tween = TweenNano.to(transformation, transitionDuration, data);
             transforming = true;
             controller.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_STARTED));
         }
         
+        private function disposeTween():void
+        {
+            if(!tween)
+                return;
+            
+            tween.kill();
+            tween = null;
+        }
+        
         private function onTweenComplete():void
         {
+            disposeTween();
             controller.dispatchEvent(new CanvasEvent(CanvasEvent.TRANSFORMATION_FINISHED));
         }
         

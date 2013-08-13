@@ -43,7 +43,7 @@ package sk.yoz.ycanvas.map.partitions
         private var buffer:URLRequestBuffer;
         private var error:Boolean;
         private var loader:Loader;
-        private var tweener:TweenNano;
+        private var tween:TweenNano;
         
         public function Partition(x:int, y:int, layer:ILayer, config:MapConfig,
             dispatcher:IEventDispatcher, buffer:URLRequestBuffer)
@@ -284,10 +284,7 @@ package sk.yoz.ycanvas.map.partitions
         public function dispose():void
         {
             stopLoading(true);
-            if(tweener)
-                tweener.kill();
-            tweener = null;
-            
+            disposeTween();
             disposeBitmapData();
             disposeTexture();
             content.dispose();
@@ -324,6 +321,18 @@ package sk.yoz.ycanvas.map.partitions
         }
         
         /**
+        * Disposees the tween.
+        */
+        private function disposeTween():void
+        {
+            if(!tween)
+                return;
+            
+            tween.kill();
+            tween = null;
+        }
+        
+        /**
         * Validates empty texture.
         */
         private function validateEmptyTexture():void
@@ -352,7 +361,8 @@ package sk.yoz.ycanvas.map.partitions
             var loaderInfo:LoaderInfo = LoaderInfo(event.target);
             bitmapData = Bitmap(loaderInfo.content).bitmapData;
             stopLoading(false);
-            tweener = TweenNano.to(content, .5, {alpha:1});
+            tween = TweenNano.to(content, .5, {alpha:1,
+                onComplete:disposeTween});
             
             var type:String = PartitionEvent.LOADED;
             dispatcher.dispatchEvent(new PartitionEvent(type, this));
