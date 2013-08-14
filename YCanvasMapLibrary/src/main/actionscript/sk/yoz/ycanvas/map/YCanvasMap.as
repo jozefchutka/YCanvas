@@ -264,6 +264,21 @@ package sk.yoz.ycanvas.map
         }
         
         /**
+        * @inheritDoc
+        */
+        override public function dispose():void
+        {
+            while(mapLayers.length)
+            {
+                var mapLayer:MapLayer = mapLayers[0];
+                mapLayer.removeChildren();
+                removeMapLayer(mapLayer);
+            }
+            
+            super.dispose();
+        }
+        
+        /**
         * Required by IEventDispatcher implementation.
         */
         public function addEventListener(type:String, listener:Function, 

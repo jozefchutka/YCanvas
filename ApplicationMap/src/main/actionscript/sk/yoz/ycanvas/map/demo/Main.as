@@ -13,7 +13,6 @@ package sk.yoz.ycanvas.map.demo
     import fr.kouma.starling.utils.Stats;
     
     import sk.yoz.utils.GeoUtils;
-    import sk.yoz.ycanvas.map.YCanvasMap;
     import sk.yoz.ycanvas.map.demo.mock.AreaCzechRepublic;
     import sk.yoz.ycanvas.map.demo.mock.Maps;
     import sk.yoz.ycanvas.map.demo.mock.RouteNewYorkWashington;
@@ -39,17 +38,21 @@ package sk.yoz.ycanvas.map.demo
         private var mapOverlay:MapHelperOverlay;
         private var mapSmall:MapHelperSmall;
         
-        private var mapPickerList:PickerList;
-        private var tilesPickerList:PickerList;
-        private var allowRotateCheck:Check;
-        private var synchronizeCheck:Check;
+        private var mapContainer:Sprite;
+        
+        private var showMapsCheck:Check;
         private var showOverlayCheck:Check;
-        private var latInput:TextInput;
-        private var lonInput:TextInput;
-        private var markerOnClickCheck:Check;
         private var routeRomeParisCheck:Check;
         private var routeNewYorkWashingtonCheck:Check;
         private var areaCzechRepublicCheck:Check;
+        private var addMarkerOnClickCheck:Check;
+        private var allowRotateCheck:Check;
+        private var synchronizeCheck:Check;
+        private var tilesPickerList:PickerList;
+        private var latInput:TextInput;
+        private var lonInput:TextInput;
+        private var navigateButton:Button;
+        private var addMarkerButton:Button;
         private var rotationSlider:Slider;
         private var zoomInButton:Button;
         private var zoomOutButton:Button;
@@ -77,10 +80,13 @@ package sk.yoz.ycanvas.map.demo
         
         private function resize(...rest):void
         {
-            mapMain.map.display.x = 200;
-            mapMain.map.display.y = 0;
-            mapMain.map.display.width = Starling.current.viewPort.width - mapMain.map.display.x;
-            mapMain.map.display.height = Starling.current.viewPort.height;
+            if(mapMain)
+            {
+                mapMain.map.display.x = 200;
+                mapMain.map.display.y = 0;
+                mapMain.map.display.width = Starling.current.viewPort.width - mapMain.map.display.x;
+                mapMain.map.display.height = Starling.current.viewPort.height;
+            }
             
             if(mapOverlay)
             {
@@ -90,10 +96,13 @@ package sk.yoz.ycanvas.map.demo
                 mapOverlay.map.display.height = mapMain.map.display.height;
             }
             
-            mapSmall.map.display.x = mapMain.map.display.x + 20;
-            mapSmall.map.display.y = mapMain.map.display.height - 150 - 20;
-            mapSmall.map.display.width = 150;
-            mapSmall.map.display.height = 150;
+            if(mapSmall)
+            {
+                mapSmall.map.display.x = mapMain.map.display.x + 20;
+                mapSmall.map.display.y = mapMain.map.display.height - 150 - 20;
+                mapSmall.map.display.width = 150;
+                mapSmall.map.display.height = 150;
+            }
             
             rotationSlider.x = (stage.stageWidth - rotationSlider.width) / 2;
             rotationSlider.y = stage.stageHeight - rotationSlider.height - 20;
@@ -107,6 +116,79 @@ package sk.yoz.ycanvas.map.demo
             stats.x = stage.stageWidth - 70;
         }
         
+        private function createMaps():void
+        {
+            mapMain = new MapHelperMain();
+            mapMain.map.display.addEventListener(TouchEvent.TOUCH, onMapMainTouch);
+            mapContainer.addChild(mapMain.map.display);
+            mapMain.map.display.invalidateStarlingViewPort();
+            
+            mapSmall = new MapHelperSmall(mapMain.map);
+            mapContainer.addChild(mapSmall.map.display);
+            mapSmall.map.display.invalidateStarlingViewPort();
+            
+            if(mapSmall.autoSync)
+                mapSmall.sync();
+        }
+        
+        private function disposeMaps():void
+        {
+            disposeRouteRomeParisStroke();
+            disposeNewYorkWashingtonStroke();
+            disposeAreaCzechRepublicPolygon();
+            
+            if(mapMain)
+            {
+                mapMain.map.display.parent.removeChild(mapMain.map.display);
+                mapMain.dispose();
+                mapMain = null;
+            }
+            
+            if(mapOverlay)
+            {
+                mapOverlay.map.display.parent.removeChild(mapOverlay.map.display);
+                mapOverlay.dispose();
+                mapOverlay = null;
+            }
+            
+            if(mapSmall)
+            {
+                mapSmall.map.display.parent.removeChild(mapSmall.map.display);
+                mapSmall.dispose();
+                mapSmall = null;
+            }
+        }
+        
+        private function disposeRouteRomeParisStroke():void
+        {
+            if(!routeRomeParisStroke)
+                return;
+            
+            mapMain.strokeLayer.remove(routeRomeParisStroke);
+            routeRomeParisStroke.dispose();
+            routeRomeParisStroke = null;
+        }
+        
+        private function disposeNewYorkWashingtonStroke():void
+        {
+            if(!routeNewYorkWashingtonStroke)
+                return;
+            
+            mapMain.strokeLayer.remove(routeNewYorkWashingtonStroke);
+            routeNewYorkWashingtonStroke.dispose();
+            routeNewYorkWashingtonStroke = null;
+        }
+        
+        private function disposeAreaCzechRepublicPolygon():void
+        {
+            if(!areaCzechRepublicPolygon)
+                return;
+            
+            mapMain.polygonLayer.removeChild(areaCzechRepublicPolygon);
+            areaCzechRepublicPolygon.dispose();
+            areaCzechRepublicPolygon = null;
+        }
+        
         /**
         * Creates UI (children).
         */
@@ -116,115 +198,29 @@ package sk.yoz.ycanvas.map.demo
             
             new MetalWorksMobileTheme();
             
-            mapMain = new MapHelperMain();
-            mapMain.map.display.addEventListener(TouchEvent.TOUCH, onBigMapTouch);
-            addChild(mapMain.map.display);
-            mapMain.map.display.invalidateStarlingViewPort();
+            mapContainer = new Sprite;
+            addChild(mapContainer);
             
-            mapSmall = new MapHelperSmall(mapMain.map);
-            addChild(mapSmall.map.display);
-            mapSmall.map.display.invalidateStarlingViewPort();
+            createMaps();
             
-            if(mapSmall.autoSync)
-                mapSmall.sync();
-            
-            mapPickerList = new PickerList;
-            mapPickerList.width = 200;
-            mapPickerList.dataProvider = new ListCollection([
-                {"label": "Main Map", data:mapMain}, 
-                {"label": "Small Map", data:mapSmall}]);
-            addChild(mapPickerList);
-            mapPickerList.validate();
-            
-            tilesPickerList = new PickerList;
-            tilesPickerList.width = 200;
-            tilesPickerList.y = mapPickerList.y + mapPickerList.height + 5;
-            tilesPickerList.dataProvider = new ListCollection([
-                {label: "ArcGIS Imagery", data: Maps.ARCGIS_IMAGERY},
-                {label: "BingMaps Imagery", data: Maps.BINGMAPS_IMAGERY},
-                {label: "ArcGIS National Geographic", data: Maps.ARCGIS_NATIONAL_GEOGRAPHIC},
-                {label: "Map Quest", data: Maps.MAPQUEST},
-                {label: "OSM", data: Maps.OSM},
-                {label: "MapBox", data: Maps.MAPBOX},
-                {label: "CloudMade", data: Maps.CLOUDMADE}]);
-            addChild(tilesPickerList);
-            tilesPickerList.validate();
-            
-            var button:Button = new Button();
-            button.label = "Update Tile Provider";
-            button.y = tilesPickerList.y + tilesPickerList.height + 5;
-            button.addEventListener(Event.TRIGGERED, onUpdateTileProviderTriggered);
-            addChild(button);
-            button.validate();
-            
-            allowRotateCheck = new Check;
-            allowRotateCheck.isSelected = true;
-            allowRotateCheck.label = "Allow 2 finger rotation";
-            allowRotateCheck.isSelected = true;
-            allowRotateCheck.y = button.y + button.height + 15;
-            allowRotateCheck.addEventListener(Event.CHANGE, onAllowRotateChange);
-            addChild(allowRotateCheck);
-            allowRotateCheck.validate();
-            
-            synchronizeCheck = new Check;
-            synchronizeCheck.label = "Sync small and big map";
-            synchronizeCheck.isSelected = true;
-            synchronizeCheck.y = allowRotateCheck.y + allowRotateCheck.height + 5;
-            synchronizeCheck.addEventListener(Event.CHANGE, onSyncCheckBoxChange);
-            addChild(synchronizeCheck);
-            synchronizeCheck.validate();
+            showMapsCheck = new Check;
+            showMapsCheck.label = "Show maps (dispose)";
+            showMapsCheck.isSelected = true;
+            addChild(showMapsCheck);
+            showMapsCheck.validate();
+            showMapsCheck.addEventListener(Event.CHANGE, onShowMapsCheckChange);
             
             showOverlayCheck = new Check;
             showOverlayCheck.label = "Show overlay";
             showOverlayCheck.isSelected = false;
-            showOverlayCheck.y = synchronizeCheck.y + synchronizeCheck.height + 5;
+            showOverlayCheck.y = showMapsCheck.y + showMapsCheck.height + 5;
             showOverlayCheck.addEventListener(Event.CHANGE, onShowOverlayCheckChange);
             addChild(showOverlayCheck);
             showOverlayCheck.validate();
             
-            latInput = new TextInput;
-            latInput.restrict = "0-9.";
-            latInput.width = 95;
-            latInput.y = showOverlayCheck.y + showOverlayCheck.height + 15;
-            addChild(latInput);
-            latInput.validate();
-            
-            lonInput = new TextInput;
-            lonInput.restrict = "0-9.";
-            lonInput.width = latInput.width;
-            lonInput.x = 100;
-            lonInput.y = latInput.y;
-            addChild(lonInput);
-            lonInput.validate();
-            
-            syncLatLon();
-            
-            button = new Button;
-            button.label = "Navigate";
-            button.width = latInput.width;
-            button.y = lonInput.y + lonInput.height + 5;
-            button.addEventListener(Event.TRIGGERED, onNavigateClick);
-            addChild(button);
-            button.validate();
-            
-            button = new Button;
-            button.label = "Add Marker";
-            button.width = lonInput.width;
-            button.x = lonInput.x;
-            button.y = lonInput.y + lonInput.height + 5;
-            button.addEventListener(Event.TRIGGERED, onAddMarkerClick);
-            addChild(button);
-            button.validate();
-            
-            markerOnClickCheck = new Check;
-            markerOnClickCheck.label = "Add Marker on click";
-            markerOnClickCheck.y = button.y + button.height + 15;
-            addChild(markerOnClickCheck);
-            markerOnClickCheck.validate();
-            
             routeRomeParisCheck = new Check;
             routeRomeParisCheck.label = "Show route Rome - Paris";
-            routeRomeParisCheck.y = markerOnClickCheck.y + markerOnClickCheck.height + 15;
+            routeRomeParisCheck.y = showOverlayCheck.y + showOverlayCheck.height + 5;
             routeRomeParisCheck.addEventListener(Event.CHANGE, onRouteRomeParisChange);
             addChild(routeRomeParisCheck);
             routeRomeParisCheck.validate();
@@ -243,6 +239,77 @@ package sk.yoz.ycanvas.map.demo
             addChild(areaCzechRepublicCheck);
             areaCzechRepublicCheck.validate();
             
+            addMarkerOnClickCheck = new Check;
+            addMarkerOnClickCheck.label = "Add Marker on click";
+            addMarkerOnClickCheck.y = areaCzechRepublicCheck.y + areaCzechRepublicCheck.height + 5;
+            addChild(addMarkerOnClickCheck);
+            addMarkerOnClickCheck.validate();
+            
+            allowRotateCheck = new Check;
+            allowRotateCheck.label = "Allow 2 finger rotation";
+            allowRotateCheck.isSelected = true;
+            allowRotateCheck.y = addMarkerOnClickCheck.y + addMarkerOnClickCheck.height + 5;
+            allowRotateCheck.addEventListener(Event.CHANGE, onAllowRotateCheckChange);
+            addChild(allowRotateCheck);
+            allowRotateCheck.validate();
+            
+            synchronizeCheck = new Check;
+            synchronizeCheck.label = "Sync small and big map";
+            synchronizeCheck.isSelected = true;
+            synchronizeCheck.y = allowRotateCheck.y + allowRotateCheck.height + 5;
+            synchronizeCheck.addEventListener(Event.CHANGE, onSynchronizeCheckChange);
+            addChild(synchronizeCheck);
+            synchronizeCheck.validate();
+            
+            tilesPickerList = new PickerList;
+            tilesPickerList.width = 200;
+            tilesPickerList.dataProvider = new ListCollection([
+                {label: "ArcGIS Imagery", data: Maps.ARCGIS_IMAGERY},
+                {label: "BingMaps Imagery", data: Maps.BINGMAPS_IMAGERY},
+                {label: "ArcGIS National Geographic", data: Maps.ARCGIS_NATIONAL_GEOGRAPHIC},
+                {label: "Map Quest", data: Maps.MAPQUEST},
+                {label: "OSM", data: Maps.OSM},
+                {label: "MapBox", data: Maps.MAPBOX},
+                {label: "CloudMade", data: Maps.CLOUDMADE}]);
+            tilesPickerList.y = synchronizeCheck.y + synchronizeCheck.height + 15;
+            addChild(tilesPickerList);
+            tilesPickerList.validate();
+            tilesPickerList.addEventListener(Event.CHANGE, onTilesPickerListChange);
+            
+            latInput = new TextInput;
+            latInput.restrict = "0-9.";
+            latInput.width = 95;
+            latInput.y = tilesPickerList.y + tilesPickerList.height + 15;
+            addChild(latInput);
+            latInput.validate();
+            
+            lonInput = new TextInput;
+            lonInput.restrict = "0-9.";
+            lonInput.width = latInput.width;
+            lonInput.x = 100;
+            lonInput.y = latInput.y;
+            addChild(lonInput);
+            lonInput.validate();
+            
+            syncLatLon();
+            
+            navigateButton = new Button;
+            navigateButton.label = "Navigate";
+            navigateButton.width = latInput.width;
+            navigateButton.y = lonInput.y + lonInput.height + 5;
+            navigateButton.addEventListener(Event.TRIGGERED, onNavigateClick);
+            addChild(navigateButton);
+            navigateButton.validate();
+            
+            addMarkerButton = new Button;
+            addMarkerButton.label = "Add Marker";
+            addMarkerButton.width = lonInput.width;
+            addMarkerButton.x = lonInput.x;
+            addMarkerButton.y = lonInput.y + lonInput.height + 5;
+            addMarkerButton.addEventListener(Event.TRIGGERED, onAddMarkerClick);
+            addChild(addMarkerButton);
+            addMarkerButton.validate();
+            
             rotationSlider = new Slider;
             rotationSlider.width = 200;
             rotationSlider.minimum = -180;
@@ -255,13 +322,13 @@ package sk.yoz.ycanvas.map.demo
             zoomOutButton.label = "-";
             addChild(zoomOutButton);
             zoomOutButton.validate();
-            zoomOutButton.addEventListener(Event.TRIGGERED, onZoomOutClick);
+            zoomOutButton.addEventListener(Event.TRIGGERED, onZoomOutButtonTriggered);
             
             zoomInButton = new Button;
             zoomInButton.label = "+";
             addChild(zoomInButton);
             zoomInButton.validate();
-            zoomInButton.addEventListener(Event.TRIGGERED, onZoomInClick);
+            zoomInButton.addEventListener(Event.TRIGGERED, onZoomInButtonTriggered);
             
             stats = new Stats();
             addChild(stats);
@@ -269,18 +336,62 @@ package sk.yoz.ycanvas.map.demo
             resize();
         }
         
-        private function onUpdateTileProviderTriggered(event:Event):void
+        private function onTilesPickerListChange(event:Event):void
         {
-            var component:YCanvasMap = mapPickerList.selectedItem.data.map;
-            component.config = tilesPickerList.selectedItem.data;
+            mapMain.map.config = tilesPickerList.selectedItem.data;
         }
         
-        private function onAllowRotateChange(event:Event):void
+        private function onShowMapsCheckChange():void
+        {
+            if(showMapsCheck.isSelected)
+            {
+                createMaps();
+                resize();
+                
+                showOverlayCheck.isEnabled = true;
+                routeRomeParisCheck.isEnabled = true;
+                routeNewYorkWashingtonCheck.isEnabled = true;
+                areaCzechRepublicCheck.isEnabled = true;
+                addMarkerOnClickCheck.isEnabled = true;
+                allowRotateCheck.isEnabled = true;
+                synchronizeCheck.isEnabled = true;
+                tilesPickerList.isEnabled = true;
+                navigateButton.isEnabled = true;
+                addMarkerButton.isEnabled = true;
+                rotationSlider.isEnabled = true;
+                zoomInButton.isEnabled = true;
+                zoomOutButton.isEnabled = true;
+            }
+            else
+            {
+                disposeMaps();
+                showOverlayCheck.isSelected = false;
+                routeRomeParisCheck.isSelected = false;
+                routeNewYorkWashingtonCheck.isSelected = false;
+                areaCzechRepublicCheck.isSelected = false;
+                
+                showOverlayCheck.isEnabled = false;
+                routeRomeParisCheck.isEnabled = false;
+                routeNewYorkWashingtonCheck.isEnabled = false;
+                areaCzechRepublicCheck.isEnabled = false;
+                addMarkerOnClickCheck.isEnabled = false;
+                allowRotateCheck.isEnabled = false;
+                synchronizeCheck.isEnabled = false;
+                tilesPickerList.isEnabled = false;
+                navigateButton.isEnabled = false;
+                addMarkerButton.isEnabled = false;
+                rotationSlider.isEnabled = false;
+                zoomInButton.isEnabled = false;
+                zoomOutButton.isEnabled = false;
+            }
+        }
+        
+        private function onAllowRotateCheckChange(event:Event):void
         {
             mapMain.transformationManager.allowRotate = allowRotateCheck.isSelected;
         }
         
-        private function onSyncCheckBoxChange(event:Event):void
+        private function onSynchronizeCheckChange(event:Event):void
         {
             mapSmall.autoSync = synchronizeCheck.isSelected;
         }
@@ -290,11 +401,11 @@ package sk.yoz.ycanvas.map.demo
             if(showOverlayCheck.isSelected)
             {
                 mapOverlay = new MapHelperOverlay(mapMain.map);
-                addChildAt(mapOverlay.map.display, getChildIndex(mapMain.map.display) + 1);
+                mapContainer.addChildAt(mapOverlay.map.display, mapContainer.getChildIndex(mapMain.map.display) + 1);
                 mapMain.map.display.invalidateStarlingViewPort();
                 resize();
             }
-            else
+            else if(mapOverlay)
             {
                 removeChild(mapOverlay.map.display);
                 mapOverlay.dispose();
@@ -327,10 +438,7 @@ package sk.yoz.ycanvas.map.demo
                 mapMain.strokeLayer.add(routeRomeParisStroke);
                 mapMain.transformationManager.showDisplayObjectTween(routeRomeParisStroke);
             }
-            else
-            {
-                mapMain.strokeLayer.remove(routeRomeParisStroke);
-            }
+            else disposeRouteRomeParisStroke();
         }
         
         private function onRouteNewYorkWashingtonChange():void
@@ -344,10 +452,7 @@ package sk.yoz.ycanvas.map.demo
                 mapMain.strokeLayer.add(routeNewYorkWashingtonStroke);
                 mapMain.transformationManager.showDisplayObjectTween(routeNewYorkWashingtonStroke);
             }
-            else
-            {
-                mapMain.strokeLayer.remove(routeNewYorkWashingtonStroke);
-            }
+            else disposeNewYorkWashingtonStroke();
         }
         
         private function onAreachCzechRepublicCheckChange():void
@@ -362,15 +467,12 @@ package sk.yoz.ycanvas.map.demo
                 mapMain.polygonLayer.addChild(areaCzechRepublicPolygon);
                 mapMain.transformationManager.showDisplayObjectTween(areaCzechRepublicPolygon);
             }
-            else
-            {
-                mapMain.polygonLayer.removeChild(areaCzechRepublicPolygon);
-            }
+            else disposeAreaCzechRepublicPolygon();
         }
         
-        private function onBigMapTouch(event:TouchEvent):void
+        private function onMapMainTouch(event:TouchEvent):void
         {
-            if(!markerOnClickCheck.isSelected)
+            if(!addMarkerOnClickCheck.isSelected)
                 return;
             
             var touch:Touch = event.getTouch(mapMain.map.display, TouchPhase.BEGAN);
@@ -387,12 +489,12 @@ package sk.yoz.ycanvas.map.demo
             mapMain.transformationManager.rotateToTween(rotation);
         }
         
-        private function onZoomInClick():void
+        private function onZoomInButtonTriggered():void
         {
             mapMain.transformationManager.scaleByTween(1.5);
         }
         
-        private function onZoomOutClick():void
+        private function onZoomOutButtonTriggered():void
         {
             mapMain.transformationManager.scaleByTween(1 / 1.5);
         }

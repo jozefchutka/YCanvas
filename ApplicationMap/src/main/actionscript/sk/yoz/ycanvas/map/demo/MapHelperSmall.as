@@ -83,6 +83,11 @@ package sk.yoz.ycanvas.map.demo
             map.render();
         }
         
+        public function dispose():void
+        {
+            map.dispose();
+        }
+        
         private function onMapTouch(event:TouchEvent):void
         {
             if(event.getTouch(map.display, TouchPhase.BEGAN))

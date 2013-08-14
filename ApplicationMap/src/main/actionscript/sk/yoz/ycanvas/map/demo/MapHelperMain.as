@@ -1,7 +1,6 @@
 package sk.yoz.ycanvas.map.demo
 {
     import flash.ui.Mouse;
-    import flash.ui.Multitouch;
     
     import feathers.controls.Label;
     import feathers.core.PopUpManager;
@@ -19,7 +18,6 @@ package sk.yoz.ycanvas.map.demo
     import sk.yoz.ycanvas.map.managers.AbstractTransformationManager;
     import sk.yoz.ycanvas.map.managers.MouseTransformationManager;
     import sk.yoz.ycanvas.map.managers.TouchTransformationManager;
-    import sk.yoz.ycanvas.map.partitions.PartitionFactory;
     import sk.yoz.ycanvas.map.valueObjects.Limit;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
     import sk.yoz.ycanvas.map.valueObjects.Transformation;
@@ -92,6 +90,13 @@ package sk.yoz.ycanvas.map.demo
             marker.pivotX = Assets.MARKER_GREEN_TEXTURE.width / 2;
             marker.pivotY = Assets.MARKER_GREEN_TEXTURE.height;
             markerLayer.add(marker);
+        }
+        
+        public function dispose():void
+        {
+            map.dispose();
+            
+            transformationManager.dispose();
         }
         
         private function showLabelPopup(message:String):void
