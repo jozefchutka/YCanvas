@@ -85,13 +85,13 @@ package sk.yoz.ycanvas.map.display
             _points = points;
             _thickness = thickness;
             _color = color;
-            this.alpha = alpha;
             this.autoUpdate = autoUpdate;
+            
+            super();
+            this.alpha = alpha;
             
             if(autoUpdate)
                 update();
-            
-            super();
         }
         
         /**
