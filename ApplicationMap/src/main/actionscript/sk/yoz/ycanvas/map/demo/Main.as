@@ -13,10 +13,12 @@ package sk.yoz.ycanvas.map.demo
     import fr.kouma.starling.utils.Stats;
     
     import sk.yoz.utils.GeoUtils;
+    import sk.yoz.ycanvas.map.demo.display.CityMarker;
     import sk.yoz.ycanvas.map.demo.mock.AreaCzechRepublic;
     import sk.yoz.ycanvas.map.demo.mock.Maps;
     import sk.yoz.ycanvas.map.demo.mock.RouteNewYorkWashington;
     import sk.yoz.ycanvas.map.demo.mock.RouteRomeParis;
+    import sk.yoz.ycanvas.map.demo.mock.Cities;
     import sk.yoz.ycanvas.map.display.MapStroke;
     import sk.yoz.ycanvas.map.display.Polygon;
     import sk.yoz.ycanvas.map.utils.OptimizedPointsUtils;
@@ -45,6 +47,7 @@ package sk.yoz.ycanvas.map.demo
         private var routeRomeParisCheck:Check;
         private var routeNewYorkWashingtonCheck:Check;
         private var areaCzechRepublicCheck:Check;
+        private var showCitiesCheck:Check;
         private var addMarkerOnClickCheck:Check;
         private var allowRotateCheck:Check;
         private var synchronizeCheck:Check;
@@ -62,6 +65,7 @@ package sk.yoz.ycanvas.map.demo
         private var routeRomeParisStroke:MapStroke;
         private var routeNewYorkWashingtonStroke:MapStroke;
         private var areaCzechRepublicPolygon:Polygon;
+        private var citiesMarkers:Vector.<CityMarker>;
         
         public function Main()
         {
@@ -136,6 +140,7 @@ package sk.yoz.ycanvas.map.demo
             disposeRouteRomeParisStroke();
             disposeNewYorkWashingtonStroke();
             disposeAreaCzechRepublicPolygon();
+            disposeCitiesMarkers();
             
             if(mapMain)
             {
@@ -189,6 +194,20 @@ package sk.yoz.ycanvas.map.demo
             areaCzechRepublicPolygon = null;
         }
         
+        private function disposeCitiesMarkers():void
+        {
+            if(!citiesMarkers)
+                return;
+            
+            for(var i:uint = 0, length:uint = citiesMarkers.length; i < length; i++)
+            {
+                var item:CityMarker = citiesMarkers[i];
+                mapMain.markerLayer.remove(item);
+                item.dispose();
+            }
+            citiesMarkers = null;
+        }
+        
         /**
         * Creates UI (children).
         */
@@ -239,9 +258,16 @@ package sk.yoz.ycanvas.map.demo
             addChild(areaCzechRepublicCheck);
             areaCzechRepublicCheck.validate();
             
+            showCitiesCheck = new Check;
+            showCitiesCheck.label = "Show world cities";
+            showCitiesCheck.y = areaCzechRepublicCheck.y + areaCzechRepublicCheck.height + 5;
+            showCitiesCheck.addEventListener(Event.CHANGE, onShowCitiesCheckChange);
+            addChild(showCitiesCheck);
+            showCitiesCheck.validate();
+            
             addMarkerOnClickCheck = new Check;
             addMarkerOnClickCheck.label = "Add Marker on click";
-            addMarkerOnClickCheck.y = areaCzechRepublicCheck.y + areaCzechRepublicCheck.height + 5;
+            addMarkerOnClickCheck.y = showCitiesCheck.y + showCitiesCheck.height + 5;
             addChild(addMarkerOnClickCheck);
             addMarkerOnClickCheck.validate();
             
@@ -352,6 +378,7 @@ package sk.yoz.ycanvas.map.demo
                 routeRomeParisCheck.isEnabled = true;
                 routeNewYorkWashingtonCheck.isEnabled = true;
                 areaCzechRepublicCheck.isEnabled = true;
+                showCitiesCheck.isEnabled = true;
                 addMarkerOnClickCheck.isEnabled = true;
                 allowRotateCheck.isEnabled = true;
                 synchronizeCheck.isEnabled = true;
@@ -369,11 +396,13 @@ package sk.yoz.ycanvas.map.demo
                 routeRomeParisCheck.isSelected = false;
                 routeNewYorkWashingtonCheck.isSelected = false;
                 areaCzechRepublicCheck.isSelected = false;
+                showCitiesCheck.isSelected = false;
                 
                 showOverlayCheck.isEnabled = false;
                 routeRomeParisCheck.isEnabled = false;
                 routeNewYorkWashingtonCheck.isEnabled = false;
                 areaCzechRepublicCheck.isEnabled = false;
+                showCitiesCheck.isEnabled = false;
                 addMarkerOnClickCheck.isEnabled = false;
                 allowRotateCheck.isEnabled = false;
                 synchronizeCheck.isEnabled = false;
@@ -457,7 +486,6 @@ package sk.yoz.ycanvas.map.demo
         
         private function onAreachCzechRepublicCheckChange():void
         {
-            
             if(areaCzechRepublicCheck.isSelected)
             {
                 var optimizedPoints:OptimizedPoints = OptimizedPointsUtils.calculate(AreaCzechRepublic.DATA);
@@ -468,6 +496,24 @@ package sk.yoz.ycanvas.map.demo
                 mapMain.transformationManager.showDisplayObjectTween(areaCzechRepublicPolygon);
             }
             else disposeAreaCzechRepublicPolygon();
+        }
+        
+        private function onShowCitiesCheckChange():void
+        {
+            if(showCitiesCheck.isSelected)
+            {
+                citiesMarkers = new Vector.<CityMarker>;
+                for(var i:uint = 0, length:uint = Cities.DATA.length; i < length; i++)
+                {
+                    var item:Array = Cities.DATA[i];
+                    var marker:CityMarker = new CityMarker(item[0]);
+                    marker.x = GeoUtils.lon2x(item[2]);
+                    marker.y = GeoUtils.lat2y(item[1]);
+                    citiesMarkers[i] = marker;
+                    mapMain.markerLayer.add(marker);
+                }
+            }
+            else disposeCitiesMarkers();
         }
         
         private function onMapMainTouch(event:TouchEvent):void
