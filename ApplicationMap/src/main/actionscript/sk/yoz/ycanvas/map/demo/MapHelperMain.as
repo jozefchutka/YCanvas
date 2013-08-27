@@ -5,7 +5,6 @@ package sk.yoz.ycanvas.map.demo
     import feathers.controls.Label;
     import feathers.core.PopUpManager;
     
-    import sk.yoz.net.URLRequestBuffer;
     import sk.yoz.utils.GeoUtils;
     import sk.yoz.ycanvas.map.YCanvasMap;
     import sk.yoz.ycanvas.map.demo.mock.Maps;
@@ -60,7 +59,7 @@ package sk.yoz.ycanvas.map.demo
             
             //Lets customize partition factory so it creates CustomPartition
             // capable of handling bing maps
-            map.partitionFactory = new CustomPartitionFactory(config, map, new URLRequestBuffer(6, 10000));
+            map.partitionFactory = new CustomPartitionFactory(config, map);
             map.layerFactory = new LayerFactory(config, map.partitionFactory);
             
             map.addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onMapTransformationFinished);

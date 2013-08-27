@@ -8,7 +8,6 @@ package sk.yoz.ycanvas.map
     import flash.geom.Rectangle;
     import flash.utils.Timer;
     
-    import sk.yoz.net.URLRequestBuffer;
     import sk.yoz.ycanvas.AbstractYCanvas;
     import sk.yoz.ycanvas.interfaces.ILayer;
     import sk.yoz.ycanvas.interfaces.IPartition;
@@ -77,7 +76,7 @@ package sk.yoz.ycanvas.map
         
         public function YCanvasMap(config:MapConfig, 
             transformation:Transformation, marginOffset:uint=0,
-            maxLayers:uint=0, buffer:URLRequestBuffer=null)
+            maxLayers:uint=0)
         {
             _config = config;
             this.marginOffset = marginOffset;
@@ -91,10 +90,7 @@ package sk.yoz.ycanvas.map
             
             super(getViewPort());
             
-            if(!buffer)
-                buffer = new URLRequestBuffer(6, 10000);
-            
-            partitionFactory = new PartitionFactory(config, this, buffer);
+            partitionFactory = new PartitionFactory(config, this);
             layerFactory = new LayerFactory(config, partitionFactory);
             center = new Point(transformation.centerX, transformation.centerY);
             scale = transformation.scale;

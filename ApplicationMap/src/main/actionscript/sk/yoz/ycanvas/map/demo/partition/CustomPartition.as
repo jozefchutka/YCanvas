@@ -2,7 +2,6 @@ package sk.yoz.ycanvas.map.demo.partition
 {
     import flash.events.IEventDispatcher;
     
-    import sk.yoz.net.URLRequestBuffer;
     import sk.yoz.ycanvas.interfaces.ILayer;
     import sk.yoz.ycanvas.map.demo.utils.BingMapsUtils;
     import sk.yoz.ycanvas.map.partitions.Partition;
@@ -11,10 +10,9 @@ package sk.yoz.ycanvas.map.demo.partition
     public class CustomPartition extends Partition
     {
         public function CustomPartition(x:int, y:int, layer:ILayer, 
-            config:MapConfig, dispatcher:IEventDispatcher,
-            buffer:URLRequestBuffer)
+            config:MapConfig, dispatcher:IEventDispatcher)
         {
-            super(x, y, layer, config, dispatcher, buffer);
+            super(x, y, layer, config, dispatcher);
         }
         
         override protected function get url():String

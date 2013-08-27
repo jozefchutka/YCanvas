@@ -12,15 +12,15 @@ package sk.yoz.ycanvas.map.partitions
     import flash.events.IOErrorEvent;
     import flash.geom.Matrix;
     import flash.net.URLRequest;
+    import flash.system.ImageDecodingPolicy;
     import flash.system.LoaderContext;
     
-    import sk.yoz.net.URLRequestBuffer;
-    import sk.yoz.net.URLRequestBufferItem;
     import sk.yoz.ycanvas.interfaces.ILayer;
     import sk.yoz.ycanvas.map.events.PartitionEvent;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
     import sk.yoz.ycanvas.starling.interfaces.IPartitionStarling;
     
+    import starling.display.BlendMode;
     import starling.display.DisplayObject;
     import starling.display.Image;
     import starling.textures.Texture;
@@ -40,20 +40,18 @@ package sk.yoz.ycanvas.map.partitions
         private var _bitmapData:BitmapData;
         
         private var dispatcher:IEventDispatcher;
-        private var buffer:URLRequestBuffer;
         private var error:Boolean;
         private var loader:Loader;
         private var tween:TweenNano;
         
         public function Partition(x:int, y:int, layer:ILayer, config:MapConfig,
-            dispatcher:IEventDispatcher, buffer:URLRequestBuffer)
+            dispatcher:IEventDispatcher)
         {
             _x = x;
             _y = y;
             _layer = layer;
             _config = config;
             this.dispatcher = dispatcher;
-            this.buffer = buffer;
             
             validateEmptyTexture();
             
@@ -62,6 +60,8 @@ package sk.yoz.ycanvas.map.partitions
             content.x = x;
             content.y = y;
             content.alpha = 0;
+            
+            super();
         }
         
         /**
@@ -221,10 +221,11 @@ package sk.yoz.ycanvas.map.partitions
             stopLoading();
             error = false;
             
-            loader = new Loader;
-            var request:URLRequest = new URLRequest(url);
             var context:LoaderContext = new LoaderContext(true);
-            buffer.push(loader, request, context);
+            context.imageDecodingPolicy = ImageDecodingPolicy.ON_LOAD;
+            
+            loader = new Loader;
+            loader.load(new URLRequest(url), context);
             
             var loaderInfo:LoaderInfo = loader.contentLoaderInfo;
             loaderInfo.addEventListener(Event.COMPLETE, onLoaderComplete);
@@ -241,12 +242,6 @@ package sk.yoz.ycanvas.map.partitions
             
             if(cancelRequest)
             {
-                var bufferItem:URLRequestBufferItem;
-                bufferItem = buffer.getWaitingByLoader(loader);
-                bufferItem && buffer.removeWaitingById(bufferItem.id);
-                bufferItem = buffer.getActiveByLoader(loader);
-                bufferItem && buffer.removeActiveById(bufferItem.id);
-                
                 try
                 {
                     loader.close();

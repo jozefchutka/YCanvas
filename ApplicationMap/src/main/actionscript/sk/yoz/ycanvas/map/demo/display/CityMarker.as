@@ -2,72 +2,70 @@ package sk.yoz.ycanvas.map.demo.display
 {
     import flash.display.BitmapData;
     import flash.display.Shape;
+    import flash.geom.Matrix;
+    import flash.geom.Point;
+    import flash.text.TextField;
+    import flash.text.TextFieldAutoSize;
     
-    import feathers.controls.Label;
-    
+    import starling.display.DisplayObject;
     import starling.display.Image;
-    import starling.display.Sprite;
-    import starling.events.Event;
     import starling.textures.Texture;
     
-    public class CityMarker extends Sprite
+    public class CityMarker extends Image
     {
         private static const POINT_SIZE:uint = 10;
         
-        private var _texture:Texture;
-        private var name:String
-        private var label:Label;
-        private var image:Image;
+        private static var _shape:Shape;
+        private static var _textField:TextField;
         
         public function CityMarker(name:String)
         {
-            this.name = name;
+            textField.text = name;
+            var width:uint = textField.width;
+            var height:uint = textField.height + POINT_SIZE;
             
-            super();
+            var bitmapData:BitmapData = new BitmapData(width, height, true, 0);
+            bitmapData.draw(shape, new Matrix(1, 0, 0, 1, width / 2 - POINT_SIZE / 2, 0));
+            bitmapData.draw(textField, new Matrix(1, 0, 0, 1, 0, POINT_SIZE));
             
-            addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+            super(Texture.fromBitmapData(bitmapData, false, true));
+            pivotX = bitmapData.width / 2;
+            pivotY = POINT_SIZE / 2;
         }
         
-        private function get texture():Texture
+        private function get shape():Shape
         {
-            if(!_texture)
+            if(!_shape)
             {
-                var shape:Shape = new Shape;
-                shape.graphics.beginFill(0xff0000);
-                shape.graphics.drawCircle(POINT_SIZE / 2, POINT_SIZE / 2, POINT_SIZE / 2 - 1);
-                shape.graphics.endFill();
-                
-                var bitmapData:BitmapData = new BitmapData(POINT_SIZE, POINT_SIZE, true, 0);
-                bitmapData.draw(shape);
-                
-                _texture = Texture.fromBitmapData(bitmapData, true);
+                _shape = new Shape;
+                _shape.graphics.beginFill(0xff0000);
+                _shape.graphics.drawCircle(POINT_SIZE / 2, POINT_SIZE / 2, POINT_SIZE / 2 - 1);
+                _shape.graphics.endFill();
             }
             
-            return _texture;
+            return _shape;
         }
         
-        override public function dispose():void
+        private function get textField():TextField
         {
-            removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
-            super.dispose();
+            if(!_textField)
+            {
+                _textField = new TextField;
+                _textField.autoSize = TextFieldAutoSize.LEFT;
+                _textField.textColor = 0xffffff;
+            }
+            
+            return _textField;
         }
         
-        private function onAddedToStage():void
+        override public function hitTest(localPoint:Point, forTouch:Boolean=false):DisplayObject
         {
-            removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+            if (forTouch && (!visible || !touchable))
+                return null;
             
-            label = new Label;
-            label.text = name;
-            addChild(label);
-            label.validate();
-            label.x = -label.width / 2;
-            label.y = POINT_SIZE / 2;
-            label.flatten();
-            
-            image = new Image(texture);
-            image.x = -texture.width / 2;
-            image.y = -texture.height / 2;
-            addChild(image);
+            var x:Number = localPoint.x - pivotX;
+            var y:Number = localPoint.y - pivotY;
+            return x * x + y * y  < (POINT_SIZE * POINT_SIZE / 4) ? this : null;
         }
     }
 }

@@ -2,7 +2,6 @@ package sk.yoz.ycanvas.map.demo
 {
     import flash.geom.Point;
     
-    import sk.yoz.net.URLRequestBuffer;
     import sk.yoz.ycanvas.map.YCanvasMap;
     import sk.yoz.ycanvas.map.demo.mock.Maps;
     import sk.yoz.ycanvas.map.demo.partition.CustomPartitionFactory;
@@ -46,7 +45,7 @@ package sk.yoz.ycanvas.map.demo
             
             //Lets customize partition factory so it creates CustomPartition
             // capable of handling bing maps
-            map.partitionFactory = new CustomPartitionFactory(config, map, new URLRequestBuffer(6, 10000));
+            map.partitionFactory = new CustomPartitionFactory(config, map);
             map.layerFactory = new LayerFactory(config, map.partitionFactory);
             
             map.display.addChildAt(background, 0);

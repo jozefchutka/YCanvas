@@ -2,7 +2,6 @@ package sk.yoz.ycanvas.map.partitions
 {
     import flash.events.IEventDispatcher;
     
-    import sk.yoz.net.URLRequestBuffer;
     import sk.yoz.ycanvas.interfaces.ILayer;
     import sk.yoz.ycanvas.interfaces.IPartition;
     import sk.yoz.ycanvas.interfaces.IPartitionFactory;
@@ -19,14 +18,12 @@ package sk.yoz.ycanvas.map.partitions
         public var config:MapConfig;
         
         protected var dispatcher:IEventDispatcher;
-        protected var buffer:URLRequestBuffer;
         
         public function PartitionFactory(config:MapConfig, 
-            dispatcher:IEventDispatcher, buffer:URLRequestBuffer)
+            dispatcher:IEventDispatcher)
         {
             this.config = config;
             this.dispatcher = dispatcher;
-            this.buffer = buffer;
         }
         
         /**
@@ -34,7 +31,7 @@ package sk.yoz.ycanvas.map.partitions
         */
         public function create(x:int, y:int, layer:ILayer):IPartition
         {
-            return new Partition(x, y, layer, config, dispatcher, buffer);
+            return new Partition(x, y, layer, config, dispatcher);
         }
         
         /**
