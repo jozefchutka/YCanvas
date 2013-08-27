@@ -112,7 +112,7 @@ package sk.yoz.ycanvas.map.display
                 VertexData.POSITION_OFFSET,
                 Context3DVertexBufferFormat.FLOAT_2); 
             context.setVertexBufferAt(1, vertexBuffer, VertexData.COLOR_OFFSET,
-                Context3DVertexBufferFormat.FLOAT_4);
+                Context3DVertexBufferFormat.BYTES_4);
             context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX,
                 0, support.mvpMatrix3D, true);
             context.setProgramConstantsFromVector(Context3DProgramType.VERTEX,
@@ -131,7 +131,7 @@ package sk.yoz.ycanvas.map.display
             
             vertexBuffer = Starling.context.createVertexBuffer(
                 vertexData.numVertices, VertexData.ELEMENTS_PER_VERTEX);
-            vertexBuffer.uploadFromVector(vertexData.rawData, 0, 
+            vertexBuffer.uploadFromByteArray(vertexData.rawData, 0, 0,
                 vertexData.numVertices);
         }
         
