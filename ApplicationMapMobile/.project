@@ -29,14 +29,14 @@
 			<locationURI>DOCUMENTS/ApplicationMap/src/main/actionscript</locationURI>
 		</link>
 		<link>
+			<name>[source path] feathers-1.1.1a</name>
+			<type>2</type>
+			<locationURI>DOCUMENTS/ApplicationMap/libs/feathers-1.1.1a</locationURI>
+		</link>
+		<link>
 			<name>[source path] resources</name>
 			<type>2</type>
 			<locationURI>DOCUMENTS/ApplicationMap/src/main/resources</locationURI>
-		</link>
-		<link>
-			<name>[source path] src</name>
-			<type>2</type>
-			<locationURI>DOCUMENTS/ApplicationMap/libs/src</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

@@ -22,4 +22,16 @@
 		<nature>com.adobe.flexbuilder.project.apollonature</nature>
 		<nature>com.adobe.flexbuilder.project.actionscriptnature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>[source path] hires</name>
+			<type>2</type>
+			<locationURI>DOCUMENTS/ApplicationExplorer/libs/hires</locationURI>
+		</link>
+		<link>
+			<name>[source path] yoz</name>
+			<type>2</type>
+			<locationURI>DOCUMENTS/ApplicationExplorer/libs/yoz</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>
