@@ -38,10 +38,10 @@ package sk.yoz.ycanvas.map.utils
             Assert.assertEquals(6, result.length);
             Assert.assertEquals("(x=0, y=-5, w=10, h=10)", result[0].rectangle.toString());
             Assert.assertEquals("(x=5, y=-5, w=10, h=10)", result[1].rectangle.toString());
-            Assert.assertEquals("(x=5, y=-3.0616169991140216e-16, w=10, h=10)", result[2].rectangle.toString());
+            Assert.assertEquals("(x=5, y=-3.061616997868383e-16, w=10, h=10)", result[2].rectangle.toString());
             Assert.assertEquals("(x=5, y=5, w=10, h=10)", result[3].rectangle.toString());
-            Assert.assertEquals("(x=-6.123233998228043e-16, y=5, w=10, h=10)", result[4].rectangle.toString());
-            Assert.assertEquals("(x=-6.123233998228043e-16, y=5, w=1.2246467996456087e-15, h=10)", result[5].rectangle.toString());
+            Assert.assertEquals("(x=-6.123233995736766e-16, y=5, w=10, h=10)", result[4].rectangle.toString());
+            Assert.assertEquals("(x=-6.123233995736766e-16, y=5, w=1.2246467991473533e-15, h=10)", result[5].rectangle.toString());
             Assert.assertEquals(
                 vertexData.getBounds().toString(),
                 PartialBoundsUtils.mergeListToRectangle(result).toString());
@@ -81,8 +81,8 @@ package sk.yoz.ycanvas.map.utils
             result = VertexDataUtils.getPartialBoundsList(vertexData, 6);
             Assert.assertEquals(3, result.length);
             Assert.assertEquals("(x=0, y=-5, w=15, h=10)", result[0].rectangle.toString());
-            Assert.assertEquals("(x=5, y=-3.0616169991140216e-16, w=10, h=15)", result[1].rectangle.toString());
-            Assert.assertEquals("(x=-6.123233998228043e-16, y=5, w=10, h=10)", result[2].rectangle.toString());
+            Assert.assertEquals("(x=5, y=-3.061616997868383e-16, w=10, h=15)", result[1].rectangle.toString());
+            Assert.assertEquals("(x=-6.123233995736766e-16, y=5, w=10, h=10)", result[2].rectangle.toString());
             
             Assert.assertEquals(
                 vertexData.getBounds().toString(),
@@ -107,7 +107,7 @@ package sk.yoz.ycanvas.map.utils
             result = VertexDataUtils.getPartialBoundsList(vertexData, 8);
             Assert.assertEquals(2, result.length);
             Assert.assertEquals("(x=0, y=-5, w=15, h=15)", result[0].rectangle.toString());
-            Assert.assertEquals("(x=-6.123233998228043e-16, y=5, w=15, h=10)", result[1].rectangle.toString());
+            Assert.assertEquals("(x=-6.123233995736766e-16, y=5, w=15, h=10)", result[1].rectangle.toString());
             
             Assert.assertEquals(
                 vertexData.getBounds().toString(),

@@ -42,6 +42,9 @@ package sk.yoz.ycanvas.map.demo
             mapMain.removeEventListener(CanvasEvent.ROTATION_CHANGED, sync);
             
             map.dispose();
+            map = null;
+            
+            mapMain = null;
         }
         
         private function sync(...rest):void

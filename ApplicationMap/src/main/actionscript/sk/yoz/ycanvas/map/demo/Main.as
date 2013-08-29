@@ -149,12 +149,7 @@ package sk.yoz.ycanvas.map.demo
                 mapMain = null;
             }
             
-            if(mapOverlay)
-            {
-                mapOverlay.map.display.parent.removeChild(mapOverlay.map.display);
-                mapOverlay.dispose();
-                mapOverlay = null;
-            }
+            disposeMapOverlay();
             
             if(mapSmall)
             {
@@ -162,6 +157,16 @@ package sk.yoz.ycanvas.map.demo
                 mapSmall.dispose();
                 mapSmall = null;
             }
+        }
+        
+        private function disposeMapOverlay():void
+        {
+            if(!mapOverlay)
+                return;
+            
+            mapOverlay.map.display.parent.removeChild(mapOverlay.map.display);
+            mapOverlay.dispose();
+            mapOverlay = null;
         }
         
         private function disposeRouteRomeParisStroke():void
@@ -203,6 +208,7 @@ package sk.yoz.ycanvas.map.demo
             {
                 var item:CityMarker = citiesMarkers[i];
                 mapMain.markerLayer.remove(item);
+                item.texture.dispose();
                 item.dispose();
             }
             citiesMarkers = null;
@@ -434,12 +440,7 @@ package sk.yoz.ycanvas.map.demo
                 mapMain.map.display.invalidateStarlingViewPort();
                 resize();
             }
-            else if(mapOverlay)
-            {
-                removeChild(mapOverlay.map.display);
-                mapOverlay.dispose();
-                mapOverlay = null;
-            }
+            else if(mapOverlay) disposeMapOverlay();
         }
         
         private function onNavigateClick():void

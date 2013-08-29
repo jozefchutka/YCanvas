@@ -85,6 +85,9 @@ package sk.yoz.ycanvas.map.demo
         public function dispose():void
         {
             map.dispose();
+            map = null;
+            
+            mapMain = null;
         }
         
         private function onMapTouch(event:TouchEvent):void

@@ -93,9 +93,16 @@ package sk.yoz.ycanvas.map.demo
         
         public function dispose():void
         {
+            map.removeEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onMapTransformationFinished);
             map.dispose();
+            map = null;
             
             transformationManager.dispose();
+            transformationManager = null;
+            
+            polygonLayer = null;
+            strokeLayer = null;
+            markerLayer = null;
         }
         
         private function showLabelPopup(message:String):void

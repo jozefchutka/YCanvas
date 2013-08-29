@@ -112,7 +112,7 @@ package sk.yoz.ycanvas.map.display
                 VertexData.POSITION_OFFSET,
                 Context3DVertexBufferFormat.FLOAT_2); 
             context.setVertexBufferAt(1, vertexBuffer, VertexData.COLOR_OFFSET,
-                Context3DVertexBufferFormat.BYTES_4);
+                Context3DVertexBufferFormat.FLOAT_4);
             context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX,
                 0, support.mvpMatrix3D, true);
             context.setProgramConstantsFromVector(Context3DProgramType.VERTEX,
@@ -131,7 +131,7 @@ package sk.yoz.ycanvas.map.display
             
             vertexBuffer = Starling.context.createVertexBuffer(
                 vertexData.numVertices, VertexData.ELEMENTS_PER_VERTEX);
-            vertexBuffer.uploadFromByteArray(vertexData.rawData, 0, 0,
+            vertexBuffer.uploadFromVector(vertexData.rawData, 0,
                 vertexData.numVertices);
         }
         
@@ -188,8 +188,8 @@ package sk.yoz.ycanvas.map.display
             // multiply color with alpha and pass it to fragment shader
             var vertex:AGALMiniAssembler = new AGALMiniAssembler();
             vertex.assemble(Context3DProgramType.VERTEX, 
-                "m44 op, va0, vc0 \n" + 
-                "mul v0, va1, vc4 \n");
+                "m44 op, va0, vc0\n" + 
+                "mul v0, va1, vc4");
             
             // just forward incoming color
             var fragment:AGALMiniAssembler = new AGALMiniAssembler();
