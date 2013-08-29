@@ -53,5 +53,14 @@ package sk.yoz.math
                 Math.sin(rad) * distance + lock.x, 
                 -Math.cos(rad) * distance + lock.y);
         }
+        
+        public static function angleOf3Points(cx:Number, cy:Number, 
+            p0x:Number, p0y:Number, p1x:Number, p1y:Number):Number
+        {
+            var a:Number = Math.sqrt((cx - p0x) * (cx - p0x) + (cy - p0y) * (cy - p0y));
+            var b:Number = Math.sqrt((p0x - p1x) * (p0x - p1x) + (p0y - p1y) * (p0y - p1y));
+            var c:Number = Math.sqrt((p1x - cx) * (p1x - cx) + (p1y - cy) * (p1y - cy));
+            return Math.acos(((a * a) + (c * c) - (b * b)) / (2 * a * c));
+        }
     }
 }
