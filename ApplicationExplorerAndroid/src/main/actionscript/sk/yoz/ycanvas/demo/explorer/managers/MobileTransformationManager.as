@@ -19,7 +19,7 @@ package sk.yoz.ycanvas.demo.explorer.managers
     import sk.yoz.ycanvas.demo.explorer.view.Board;
     import sk.yoz.ycanvas.utils.TransformationUtils;
 
-    public class TransformationManager
+    public class MobileTransformationManager
     {
         private var canvas:AbstractYCanvas;
         private var dispatcher:IEventDispatcher;
@@ -33,7 +33,7 @@ package sk.yoz.ycanvas.demo.explorer.managers
         private var transitionTarget:Point = new Point;
         private var transition:Point = new Point;
         
-        public function TransformationManager(canvas:AbstractYCanvas, 
+        public function MobileTransformationManager(canvas:AbstractYCanvas, 
             board:Board, dispatcher:IEventDispatcher):void
         {
             Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;

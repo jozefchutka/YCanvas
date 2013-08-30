@@ -6,6 +6,7 @@ package
     
     import flexunit.flexui.FlexUnitTestRunnerUIAS;
     
+    import sk.yoz.math.GeometryMathTest;
     import sk.yoz.utils.PathSimplifyTest;
     import sk.yoz.ycanvas.map.utils.PartialBoundsUtilsTest;
     import sk.yoz.ycanvas.map.utils.PolygonUtilsTest;
@@ -30,6 +31,7 @@ package
         public function currentRunTestSuite():Array
         {
             var testsToRun:Array = new Array();
+            testsToRun.push(sk.yoz.math.GeometryMathTest);
             testsToRun.push(sk.yoz.utils.PathSimplifyTest);
             testsToRun.push(sk.yoz.ycanvas.map.utils.PolygonUtilsTest);
             testsToRun.push(sk.yoz.ycanvas.map.utils.PartialBoundsUtilsTest);

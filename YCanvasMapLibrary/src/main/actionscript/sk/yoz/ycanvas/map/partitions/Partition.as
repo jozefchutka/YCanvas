@@ -20,7 +20,6 @@ package sk.yoz.ycanvas.map.partitions
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
     import sk.yoz.ycanvas.starling.interfaces.IPartitionStarling;
     
-    import starling.display.BlendMode;
     import starling.display.DisplayObject;
     import starling.display.Image;
     import starling.textures.Texture;

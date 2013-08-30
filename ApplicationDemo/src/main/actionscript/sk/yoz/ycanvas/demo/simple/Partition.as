@@ -9,6 +9,7 @@ package sk.yoz.ycanvas.demo.simple
     import flash.events.IOErrorEvent;
     import flash.geom.Matrix;
     import flash.net.URLRequest;
+    import flash.system.ImageDecodingPolicy;
     import flash.system.LoaderContext;
     
     import sk.yoz.ycanvas.interfaces.ILayer;
@@ -98,10 +99,11 @@ package sk.yoz.ycanvas.demo.simple
         
         public function load():void
         {
-            loader = new Loader;
-            var request:URLRequest = new URLRequest(url);
             var context:LoaderContext = new LoaderContext(true);
-            loader.load(request, context);
+            context.imageDecodingPolicy = ImageDecodingPolicy.ON_LOAD;
+            
+            loader = new Loader;
+            loader.load(new URLRequest(url), context);
             
             var loaderInfo:LoaderInfo = loader.contentLoaderInfo;
             loaderInfo.addEventListener(Event.COMPLETE, onComplete);

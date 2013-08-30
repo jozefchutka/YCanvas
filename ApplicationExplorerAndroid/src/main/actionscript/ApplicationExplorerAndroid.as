@@ -10,7 +10,7 @@ package
     
     import sk.yoz.ycanvas.demo.explorer.events.ModeEvent;
     import sk.yoz.ycanvas.demo.explorer.managers.CanvasManager;
-    import sk.yoz.ycanvas.demo.explorer.managers.TransformationManager;
+    import sk.yoz.ycanvas.demo.explorer.managers.MobileTransformationManager;
     import sk.yoz.ycanvas.demo.explorer.modes.Mode;
     import sk.yoz.ycanvas.demo.explorer.view.Board;
     import sk.yoz.ycanvas.demo.explorer.view.Buttons;
@@ -21,7 +21,7 @@ package
         private var board:Board = new Board;
         
         private var canvasManager:CanvasManager;
-        private var transformationManager:TransformationManager;
+        private var transformationManager:MobileTransformationManager;
         private var buttons:Buttons;
         
         public function ApplicationExplorerAndroid()
@@ -50,7 +50,7 @@ package
         
         private function canvasInit():void
         {
-            transformationManager = new TransformationManager(canvasManager.canvas, board, this);
+            transformationManager = new MobileTransformationManager(canvasManager.canvas, board, this);
             transformationManager.limits = Mode.ONBOARD.limits;
             canvasManager.mode = Mode.ONBOARD;
             

@@ -24,9 +24,19 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>[source path] actionscript</name>
+			<type>2</type>
+			<locationURI>DOCUMENTS/ApplicationExplorer/src/main/actionscript</locationURI>
+		</link>
+		<link>
 			<name>[source path] hires</name>
 			<type>2</type>
 			<locationURI>DOCUMENTS/ApplicationExplorer/libs/hires</locationURI>
+		</link>
+		<link>
+			<name>[source path] resources</name>
+			<type>2</type>
+			<locationURI>DOCUMENTS/ApplicationExplorer/src/main/resources</locationURI>
 		</link>
 		<link>
 			<name>[source path] yoz</name>

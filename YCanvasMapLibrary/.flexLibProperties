@@ -1,34 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
   <includeClasses>
-    <classEntry path="sk.yoz.ycanvas.map.YCanvasMap"/>
-    <classEntry path="sk.yoz.ycanvas.map.display.AbstractGraphics"/>
-    <classEntry path="sk.yoz.ycanvas.map.display.MapDisplay"/>
-    <classEntry path="sk.yoz.ycanvas.map.display.MapLayer"/>
-    <classEntry path="sk.yoz.ycanvas.map.display.MapStroke"/>
-    <classEntry path="sk.yoz.ycanvas.map.display.MarkerLayer"/>
-    <classEntry path="sk.yoz.ycanvas.map.display.Polygon"/>
-    <classEntry path="sk.yoz.ycanvas.map.display.Stroke"/>
-    <classEntry path="sk.yoz.ycanvas.map.display.StrokeLayer"/>
-    <classEntry path="sk.yoz.ycanvas.map.events.CanvasEvent"/>
-    <classEntry path="sk.yoz.ycanvas.map.events.PartitionEvent"/>
-    <classEntry path="sk.yoz.ycanvas.map.layers.Layer"/>
-    <classEntry path="sk.yoz.ycanvas.map.layers.LayerFactory"/>
-    <classEntry path="sk.yoz.ycanvas.map.managers.AbstractTransformationManager"/>
-    <classEntry path="sk.yoz.ycanvas.map.managers.MouseTransformationManager"/>
-    <classEntry path="sk.yoz.ycanvas.map.managers.TouchTransformationManager"/>
-    <classEntry path="sk.yoz.ycanvas.map.partitions.Partition"/>
-    <classEntry path="sk.yoz.ycanvas.map.partitions.PartitionFactory"/>
-    <classEntry path="sk.yoz.ycanvas.map.utils.OptimizedPointsUtils"/>
-    <classEntry path="sk.yoz.ycanvas.map.utils.PartialBoundsUtils"/>
-    <classEntry path="sk.yoz.ycanvas.map.utils.PolygonUtils"/>
-    <classEntry path="sk.yoz.ycanvas.map.utils.StrokeUtils"/>
-    <classEntry path="sk.yoz.ycanvas.map.utils.VertexDataUtils"/>
-    <classEntry path="sk.yoz.ycanvas.map.valueObjects.Limit"/>
-    <classEntry path="sk.yoz.ycanvas.map.valueObjects.MapConfig"/>
-    <classEntry path="sk.yoz.ycanvas.map.valueObjects.OptimizedPoints"/>
-    <classEntry path="sk.yoz.ycanvas.map.valueObjects.PartialBounds"/>
-    <classEntry path="sk.yoz.ycanvas.map.valueObjects.Transformation"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

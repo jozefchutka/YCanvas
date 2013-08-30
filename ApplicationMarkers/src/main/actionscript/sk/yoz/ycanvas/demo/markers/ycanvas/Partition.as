@@ -12,10 +12,9 @@ package sk.yoz.ycanvas.demo.markers.ycanvas
     import flash.events.IOErrorEvent;
     import flash.geom.Matrix;
     import flash.net.URLRequest;
+    import flash.system.ImageDecodingPolicy;
     import flash.system.LoaderContext;
     
-    import sk.yoz.net.URLRequestBuffer;
-    import sk.yoz.net.URLRequestBufferItem;
     import sk.yoz.ycanvas.demo.markers.events.PartitionEvent;
     import sk.yoz.ycanvas.starling.interfaces.IPartitionStarling;
     
@@ -25,7 +24,6 @@ package sk.yoz.ycanvas.demo.markers.ycanvas
     
     public class Partition implements IPartitionStarling
     {
-        private static const buffer:URLRequestBuffer = new URLRequestBuffer(6, 15000);
         private static var cachedTexture:Texture;
         
         protected var bitmapData:BitmapData;
@@ -135,10 +133,11 @@ package sk.yoz.ycanvas.demo.markers.ycanvas
             stopLoading();
             error = false;
             
-            loader = new Loader;
-            var request:URLRequest = new URLRequest(url);
             var context:LoaderContext = new LoaderContext(true);
-            buffer.push(loader, request, context);
+            context.imageDecodingPolicy = ImageDecodingPolicy.ON_LOAD;
+            
+            loader = new Loader;
+            loader.load(new URLRequest(url), context);
             
             var loaderInfo:LoaderInfo = loader.contentLoaderInfo;
             loaderInfo.addEventListener(Event.COMPLETE, onComplete);
@@ -152,12 +151,6 @@ package sk.yoz.ycanvas.demo.markers.ycanvas
             
             if(cancelRequest)
             {
-                var bufferItem:URLRequestBufferItem;
-                bufferItem = buffer.getWaitingByLoader(loader);
-                bufferItem && buffer.removeWaitingById(bufferItem.id);
-                bufferItem = buffer.getActiveByLoader(loader);
-                bufferItem && buffer.removeActiveById(bufferItem.id);
-                
                 try
                 {
                     loader.close();
