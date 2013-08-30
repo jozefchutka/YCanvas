@@ -7,7 +7,7 @@ YCanvas is an open source 2D tile renderer library written in ActionScript 3. It
 The engine is optimized for rendering speed as well as for releasing unused system resources. While GPU api for flash player requires textures at width and height at power of two, you can reach the best performance when using 256x256 or 512x512 tiles.
 
 === YCanvasMap ===
-YCanvasMap is a more specific extension of YCanvas providing base implementation for map applications. It includes tools like polygons, strokes, markers and handlers for mouse or multi-touch navigation. The library works smoothly for web, Android or iOS applications.
+YCanvasMap is a more specific extension of YCanvas providing base implementation for map applications. It includes tools like polygons, strokes, markers and handlers for mouse or multi-touch navigation. The library works smoothly for web, Android or iOS applications. ([http://ycanvas.yoz.sk/maps/ example])
 
 === Projects using YCanvas ===
 * [http://trainlord.com Train Lord] is a live massively multi-player game (MMOG) using real world data and maps. Get it on [https://play.google.com/store/apps/details?id=air.com.trainlord.ApplicationAndroid Google play] and [https://itunes.apple.com/WebObjects/MZStore.woa/wa/viewSoftware?id=661042774&mt=8 App Store]
