@@ -1,5 +1,5 @@
 
-[[File:http://ycanvas.yoz.sk/images/preview.png|preview]]
+[[File:http://ycanvas.yoz.sk/images/preview.jpg|preview]]
 
 == YCanvas ==
 YCanvas is an open source 2D tile renderer library written in ActionScript 3. It provides high performance solution for rendering world maps or projects like [http://onboard.yoz.sk onBoard]. The library also contains Stage3D (GPU) accelerated implementation based on [http://gamua.com/starling/ Starling].
