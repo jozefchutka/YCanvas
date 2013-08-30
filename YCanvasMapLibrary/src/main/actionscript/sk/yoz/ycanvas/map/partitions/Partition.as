@@ -228,8 +228,8 @@ package sk.yoz.ycanvas.map.partitions
             loader.load(new URLRequest(url), context);
             
             var loaderInfo:LoaderInfo = loader.contentLoaderInfo;
-            loaderInfo.addEventListener(Event.COMPLETE, onLoaderComplete);
-            loaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onLoaderError);
+            loaderInfo.addEventListener(Event.COMPLETE, onLoaderComplete, false, 0, true);
+            loaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onLoaderError, false, 0, true);
         }
         
         /**
@@ -259,8 +259,8 @@ package sk.yoz.ycanvas.map.partitions
             var loaderInfo:LoaderInfo = loader.loaderInfo;
             if(loaderInfo)
             {
-                loaderInfo.removeEventListener(Event.COMPLETE, onLoaderComplete);
-                loaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onLoaderError);
+                loaderInfo.removeEventListener(Event.COMPLETE, onLoaderComplete, false);
+                loaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onLoaderError, false);
             }
             loader = null;
         }

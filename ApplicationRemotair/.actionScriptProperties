@@ -2,7 +2,8 @@
 <actionScriptProperties analytics="false" mainApplicationPath="sk/yoz/ycanvas/demo/remotair/ApplicationRemotair.as" projectUUID="7425cb71-7782-455f-bf0a-6e672eac56de" version="11">
   <compiler additionalCompilerArguments="-locale en_US -swf-version=13" advancedTelemetry="false" autoRSLOrdering="true" copyDependentFiles="true" fteInMXComponents="false" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="true" htmlHistoryManagement="true" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin-debug" removeUnusedRSL="true" sourceFolderPath="src/main/actionscript" strict="true" targetPlayerVersion="11.1.0" useApolloConfig="false" useDebugRSLSwfs="true" useFlashSDK="true" verifyDigests="true" warn="true">
     <compilerSourcePath>
-      <compilerSourcePathEntry kind="1" linkType="1" path="libs/src"/>
+      <compilerSourcePathEntry kind="1" linkType="1" path="libs/yoz"/>
+      <compilerSourcePathEntry kind="1" linkType="1" path="libs/hires"/>
       <compilerSourcePathEntry kind="1" linkType="1" path="src/main/resources"/>
     </compilerSourcePath>
     <libraryPath defaultLinkType="0">
@@ -32,7 +33,8 @@
         </excludedEntries>
       </libraryPathEntry>
       <libraryPathEntry kind="3" linkType="1" path="/YCanvasLibrary/bin/YCanvasLibrary.swc" useDefaultLinkType="false"/>
-      <libraryPathEntry kind="1" linkType="1" path="libs/swcs"/>
+      <libraryPathEntry kind="3" linkType="1" path="libs/greensock.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="libs/Remotair.swc" useDefaultLinkType="false"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>

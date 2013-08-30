@@ -3,8 +3,6 @@ package sk.yoz.ycanvas.map.display
     import flash.geom.Point;
     import flash.geom.Rectangle;
     
-    import starling.core.RenderSupport;
-    import starling.core.Starling;
     import starling.display.DisplayObject;
     import starling.display.Sprite;
     
@@ -21,6 +19,7 @@ package sk.yoz.ycanvas.map.display
         private var _width:Number = 200;
         private var _height:Number = 200;
         private var _starlingViewPort:Rectangle;
+        private var _clipRect:Rectangle = new Rectangle;
         
         /**
         * Width of the component is handled custom for clipping purposes.
@@ -33,6 +32,7 @@ package sk.yoz.ycanvas.map.display
         override public function set width(value:Number):void
         {
             _width = value;
+            validateClipRect();
             invalidateStarlingViewPort();
         }
         
@@ -47,6 +47,7 @@ package sk.yoz.ycanvas.map.display
         override public function set height(value:Number):void
         {
             _height = value;
+            validateClipRect();
             invalidateStarlingViewPort();
         }
         
@@ -103,17 +104,13 @@ package sk.yoz.ycanvas.map.display
         }
         
         /**
-        * Renders component with clipping.
+        * Clip rectangle is updated whenever width/height is changed.
         */
-        override public function render(support:RenderSupport, alpha:Number):void
+        private function validateClipRect():void
         {
-            support.finishQuadBatch()
-            
-            Starling.context.setScissorRectangle(starlingViewPort);
-            super.render(support, alpha);
-            support.finishQuadBatch();
-            
-            Starling.context.setScissorRectangle(null);
+            _clipRect.width = width;
+            _clipRect.height = height;
+            clipRect = _clipRect;
         }
         
         /**

@@ -131,7 +131,7 @@ package sk.yoz.ycanvas.map.display
             
             vertexBuffer = Starling.context.createVertexBuffer(
                 vertexData.numVertices, VertexData.ELEMENTS_PER_VERTEX);
-            vertexBuffer.uploadFromVector(vertexData.rawData, 0, 
+            vertexBuffer.uploadFromVector(vertexData.rawData, 0,
                 vertexData.numVertices);
         }
         
@@ -150,30 +150,21 @@ package sk.yoz.ycanvas.map.display
         protected function hitTestIndices(localPoint:Point, 
             indexMin:uint, indexMax:uint):Boolean
         {
-            var offset:uint, offset1:uint, i1:uint, i2:uint;
-            var elementsPerVertex:uint = VertexData.ELEMENTS_PER_VERTEX;
-            var positionOffset:uint = VertexData.POSITION_OFFSET;
-            for(var i:uint = indexMin; i <= indexMax; i += 3)
+            var i1:uint, i2:uint, i3:uint;
+            var p1:Point = new Point;
+            var p2:Point = new Point;
+            var p3:Point = new Point;
+            for(i1 = indexMin; i1 <= indexMax; i1 += 3)
             {
-                offset = indexData[i] * elementsPerVertex + positionOffset;
-                offset1 = offset + 1;
-                var p1x:Number = vertexData.rawData[offset];
-                var p1y:Number = vertexData.rawData[offset1];
+                i2 = i1 + 1;
+                i3 = i2 + 1;
                 
-                i1 = i + 1;
-                offset = indexData[i1] * elementsPerVertex + positionOffset;
-                offset1 = offset + 1;
-                var p2x:Number = vertexData.rawData[offset];
-                var p2y:Number = vertexData.rawData[offset1];
-                
-                i2 = i + 2;
-                offset = indexData[i2] * elementsPerVertex + positionOffset;
-                offset1 = offset + 1;
-                var p3x:Number = vertexData.rawData[offset];
-                var p3y:Number = vertexData.rawData[offset1];
+                vertexData.getPosition(indexData[i1], p1);
+                vertexData.getPosition(indexData[i2], p2);
+                vertexData.getPosition(indexData[i3], p3);
                 
                 if(FastCollisions.pointInTriangle(localPoint.x, 
-                    localPoint.y, p1x, p1y, p2x, p2y, p3x, p3y))
+                    localPoint.y, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y))
                     return true;
             }
             
@@ -197,8 +188,8 @@ package sk.yoz.ycanvas.map.display
             // multiply color with alpha and pass it to fragment shader
             var vertex:AGALMiniAssembler = new AGALMiniAssembler();
             vertex.assemble(Context3DProgramType.VERTEX, 
-                "m44 op, va0, vc0 \n" + 
-                "mul v0, va1, vc4 \n");
+                "m44 op, va0, vc0\n" + 
+                "mul v0, va1, vc4");
             
             // just forward incoming color
             var fragment:AGALMiniAssembler = new AGALMiniAssembler();
