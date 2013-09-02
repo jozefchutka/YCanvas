@@ -13,6 +13,8 @@ package
     import flash.system.Capabilities;
     import flash.utils.ByteArray;
     
+    import net.hires.debug.Stats;
+    
     import sk.yoz.ycanvas.map.demo.Main;
     
     import starling.core.Starling;
@@ -24,6 +26,12 @@ package
     [SWF(width="960",height="640",frameRate="60",backgroundColor="#4a4137")]
     public class ApplicationMapMobile extends Sprite
     {
+        private var _starling:Starling;
+        private var _launchImage:Loader;
+        private var _savedAutoOrients:Boolean;
+        
+        private var stats:Stats;
+        
         public function ApplicationMapMobile()
         {
             if(this.stage)
@@ -35,10 +43,6 @@ package
             this.showLaunchImage();
             this.loaderInfo.addEventListener(Event.COMPLETE, loaderInfo_completeHandler);
         }
-        
-        private var _starling:Starling;
-        private var _launchImage:Loader;
-        private var _savedAutoOrients:Boolean;
         
         private function showLaunchImage():void
         {
@@ -112,6 +116,10 @@ package
             
             this.stage.addEventListener(Event.RESIZE, stage_resizeHandler, false, int.MAX_VALUE, true);
             this.stage.addEventListener(Event.DEACTIVATE, stage_deactivateHandler, false, 0, true);
+            
+            stats = new Stats;
+            stats.x = stage.stageWidth - 70;
+            addChild(stats);
         }
         
         private function starling_rootCreatedHandler(event:Object):void
@@ -138,6 +146,9 @@ package
                 this._starling.viewPort = viewPort;
             }
             catch(error:Error) {}
+            
+            if(stats)
+                stats.x = stage.stageWidth - 70;
         }
         
         private function stage_deactivateHandler(event:Event):void

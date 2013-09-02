@@ -10,15 +10,13 @@ package sk.yoz.ycanvas.map.demo
     import feathers.data.ListCollection;
     import feathers.themes.MetalWorksMobileTheme;
     
-    import fr.kouma.starling.utils.Stats;
-    
     import sk.yoz.utils.GeoUtils;
     import sk.yoz.ycanvas.map.demo.display.CityMarker;
     import sk.yoz.ycanvas.map.demo.mock.AreaCzechRepublic;
+    import sk.yoz.ycanvas.map.demo.mock.Cities;
     import sk.yoz.ycanvas.map.demo.mock.Maps;
     import sk.yoz.ycanvas.map.demo.mock.RouteNewYorkWashington;
     import sk.yoz.ycanvas.map.demo.mock.RouteRomeParis;
-    import sk.yoz.ycanvas.map.demo.mock.Cities;
     import sk.yoz.ycanvas.map.display.MapStroke;
     import sk.yoz.ycanvas.map.display.Polygon;
     import sk.yoz.ycanvas.map.utils.OptimizedPointsUtils;
@@ -59,8 +57,6 @@ package sk.yoz.ycanvas.map.demo
         private var rotationSlider:Slider;
         private var zoomInButton:Button;
         private var zoomOutButton:Button;
-        
-        private var stats:Stats;
         
         private var routeRomeParisStroke:MapStroke;
         private var routeNewYorkWashingtonStroke:MapStroke;
@@ -116,8 +112,6 @@ package sk.yoz.ycanvas.map.demo
             
             zoomInButton.x = stage.stageWidth - zoomInButton.width - 20;
             zoomInButton.y = stage.stageHeight - zoomInButton.height * 2 - 20;
-            
-            stats.x = stage.stageWidth - 70;
         }
         
         private function createMaps():void
@@ -361,9 +355,6 @@ package sk.yoz.ycanvas.map.demo
             addChild(zoomInButton);
             zoomInButton.validate();
             zoomInButton.addEventListener(Event.TRIGGERED, onZoomInButtonTriggered);
-            
-            stats = new Stats();
-            addChild(stats);
             
             resize();
         }

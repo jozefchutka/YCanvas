@@ -6,6 +6,8 @@ package
     import flash.events.Event;
     import flash.geom.Rectangle;
     
+    import net.hires.debug.Stats;
+    
     import sk.yoz.ycanvas.map.demo.Main;
     
     import starling.core.Starling;
@@ -18,6 +20,7 @@ package
     public class ApplicationMap extends Sprite
     {
         private var _starling:Starling;
+        private var stats:Stats;
         
         public function ApplicationMap()
         {
@@ -33,6 +36,10 @@ package
             _starling.start();
             stage.addEventListener(Event.RESIZE, onStageResize, false, int.MAX_VALUE, true);
             stage.addEventListener(Event.DEACTIVATE, onStageDeactivate, false, 0, true);
+            
+            stats = new Stats;
+            stats.x = stage.stageWidth - 70;
+            addChild(stats);
         }
         
         private function onStageResize(event:Event):void
@@ -48,6 +55,8 @@ package
                 _starling.viewPort = viewPort;
             }
             catch(error:Error){}
+            
+            stats.x = stage.stageWidth - 70;
         }
         
         private function onStageDeactivate(event:Event):void
