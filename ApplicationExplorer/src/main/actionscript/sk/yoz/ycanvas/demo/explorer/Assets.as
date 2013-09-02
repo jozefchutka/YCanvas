@@ -1,7 +1,5 @@
 package sk.yoz.ycanvas.demo.explorer
 {
-    import flash.text.Font;
-    
     public class Assets
     {
         [Embed(source="/elements.swf", symbol="drag_rotate")]
@@ -30,5 +28,11 @@ package sk.yoz.ycanvas.demo.explorer
         
         [Embed(source="/buttons/flickr.png")]
         public static const BUTTON_FLICKR_CLASS:Class;
+        
+        [Embed(source="/buttons/superfreedraw.png")]
+        public static const BUTTON_SUPERFREEDRAW_CLASS:Class;
+        
+        [Embed(source="/buttons/jotwol.png")]
+        public static const BUTTON_JOTWOL_CLASS:Class;
     }
 }

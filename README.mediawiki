@@ -17,6 +17,8 @@ YCanvasMap is a more specific extension of YCanvas providing base implementation
 See [http://ycanvas.yoz.sk/explorer Ycanvas explorer demo] ([http://ycanvas.yoz.sk/explorer/?debug=true +stats]) and compare the speed of YCanvas vs. the original implementation:
 * [http://wall-of-fame.com Wall Of Fame]
 * [http://webcanvas.com WebCanvas]
+* [http://www.superfreedraw.com/ SuperFreeDraw]
+* [http://www.jotwol.com Jotwol]
 * [http://www.mapquest.com MapQuest]
 * [http://www.esri.com/software/arcgis/index.html ArcGIS]
 * [http://www.openstreetmap.org Open Street Map]

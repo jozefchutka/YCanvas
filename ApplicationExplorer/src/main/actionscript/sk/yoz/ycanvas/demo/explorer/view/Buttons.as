@@ -15,6 +15,8 @@ package sk.yoz.ycanvas.demo.explorer.view
             add(Assets.BUTTON_ONBOARD_CLASS, Mode.ONBOARD);
             add(Assets.BUTTON_WALLOFFAME_CLASS, Mode.WALLOFFAME);
             add(Assets.BUTTON_WEBCANVAS_CLASS, Mode.WEBCANVAS);
+            add(Assets.BUTTON_SUPERFREEDRAW_CLASS, Mode.SUPERFREEDRAW);
+            add(Assets.BUTTON_JOTWOL_CLASS, Mode.JOTWOL);
             add(Assets.BUTTON_MAPQUEST_CLASS, Mode.MAPQUEST);
             add(Assets.BUTTON_ARCGIS_CLASS, Mode.ARCGIS);
             add(Assets.BUTTON_OPENSTREETMAPS_CLASS, Mode.OPENSTREETMAPS);

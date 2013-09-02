@@ -2,9 +2,11 @@ package sk.yoz.ycanvas.demo.explorer.modes
 {
     import sk.yoz.ycanvas.demo.explorer.modes.arcgis.ArcGisPartition;
     import sk.yoz.ycanvas.demo.explorer.modes.flickr.FlickrPartition;
+    import sk.yoz.ycanvas.demo.explorer.modes.jotwol.JotwolPartition;
     import sk.yoz.ycanvas.demo.explorer.modes.mapquest.MapQuestPartition;
     import sk.yoz.ycanvas.demo.explorer.modes.onboard.OnBoardPartition;
     import sk.yoz.ycanvas.demo.explorer.modes.openstreetmaps.OpenStreetMapsPartition;
+    import sk.yoz.ycanvas.demo.explorer.modes.superfreedraw.SuperFreeDrawPartition;
     import sk.yoz.ycanvas.demo.explorer.modes.walloffame.WallOfFameLayerFactory;
     import sk.yoz.ycanvas.demo.explorer.modes.walloffame.WallOfFamePartition;
     import sk.yoz.ycanvas.demo.explorer.modes.webcanvas.WebCanvasLayerFactory;
@@ -21,7 +23,7 @@ package sk.yoz.ycanvas.demo.explorer.modes
         
         public static const WALLOFFAME:Mode = 
             new Mode(WallOfFameLayerFactory, PartitionFactory, 
-                9, 3, WallOfFamePartition, 512, 512, 1, 1 / 12, 100000, 10000, 1 / 4, 0);
+                9, 3, WallOfFamePartition, 512, 512, 1, 1 / 16, 100000, 10000, 1 / 4, 0);
         
         public static const WEBCANVAS:Mode = 
             new Mode(WebCanvasLayerFactory, PartitionFactory, 
@@ -42,6 +44,14 @@ package sk.yoz.ycanvas.demo.explorer.modes
         public static const FLICKR:Mode = 
             new Mode(LayerFactory, PartitionFactory,
                 1, 2, FlickrPartition, 512, 512, 1, 1 / 3, 0, 0, 1 / 1.5, 0);
+        
+        public static const SUPERFREEDRAW:Mode = 
+            new Mode(LayerFactory, PartitionFactory,
+                256, 2, SuperFreeDrawPartition, 500, 500, 1, 1 / 256, 0, 0, 1 / 8, 0);
+        
+        public static const JOTWOL:Mode = 
+            new Mode(LayerFactory, PartitionFactory,
+                1, 64, JotwolPartition, 512, 512, 1, 1 / 4, 0, 0, 1 / 2, 0);
         
         public var layerFactory:Class;
         public var partitionFactory:Class;
