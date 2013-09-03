@@ -140,8 +140,8 @@ package sk.yoz.ycanvas.demo.markers.ycanvas
             loader.load(new URLRequest(url), context);
             
             var loaderInfo:LoaderInfo = loader.contentLoaderInfo;
-            loaderInfo.addEventListener(Event.COMPLETE, onComplete);
-            loaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onError);
+            loaderInfo.addEventListener(Event.COMPLETE, onComplete, false, 0, true);
+            loaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onError, false, 0, true);
         }
         
         public function stopLoading(cancelRequest:Boolean = true):void
@@ -156,20 +156,13 @@ package sk.yoz.ycanvas.demo.markers.ycanvas
                     loader.close();
                 }
                 catch(error:Error){}
-                
-                try
-                {
-                    loader.unload();
-                }
-                catch(error:Error){}
-                
             }
             
-            var loaderInfo:LoaderInfo = loader.loaderInfo;
+            var loaderInfo:LoaderInfo = loader.contentLoaderInfo;
             if(loaderInfo)
             {
-                loaderInfo.removeEventListener(Event.COMPLETE, onComplete);
-                loaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onError);
+                loaderInfo.removeEventListener(Event.COMPLETE, onComplete, false);
+                loaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onError, false);
             }
             loader = null;
         }

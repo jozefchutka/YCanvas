@@ -15,6 +15,7 @@ package sk.yoz.ycanvas.map.demo
     import sk.yoz.ycanvas.map.events.CanvasEvent;
     import sk.yoz.ycanvas.map.layers.LayerFactory;
     import sk.yoz.ycanvas.map.managers.AbstractTransformationManager;
+    import sk.yoz.ycanvas.map.managers.LoaderOptimizer;
     import sk.yoz.ycanvas.map.managers.MouseTransformationManager;
     import sk.yoz.ycanvas.map.managers.TouchTransformationManager;
     import sk.yoz.ycanvas.map.valueObjects.Limit;
@@ -37,7 +38,7 @@ package sk.yoz.ycanvas.map.demo
         public var markerLayer:MarkerLayer;
         public var transformationManager:AbstractTransformationManager;
         
-        public function MapHelperMain()
+        public function MapHelperMain(loaderOptimizer:LoaderOptimizer)
         {
             var transformation:Transformation = new Transformation;
             transformation.centerX = GeoUtils.lon2x(7.75);
@@ -56,10 +57,11 @@ package sk.yoz.ycanvas.map.demo
             var config:MapConfig = Maps.ARCGIS_IMAGERY;
             
             map = new YCanvasMap(config, transformation, 256);
+            map.loaderOptimizer = loaderOptimizer;
             
             //Lets customize partition factory so it creates CustomPartition
             // capable of handling bing maps
-            map.partitionFactory = new CustomPartitionFactory(config, map);
+            map.partitionFactory = new CustomPartitionFactory(config, map, map.loaderOptimizer);
             map.layerFactory = new LayerFactory(config, map.partitionFactory);
             
             map.addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onMapTransformationFinished);

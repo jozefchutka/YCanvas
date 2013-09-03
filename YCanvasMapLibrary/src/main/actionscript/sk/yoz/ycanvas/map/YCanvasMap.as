@@ -17,6 +17,7 @@ package sk.yoz.ycanvas.map
     import sk.yoz.ycanvas.map.events.PartitionEvent;
     import sk.yoz.ycanvas.map.layers.Layer;
     import sk.yoz.ycanvas.map.layers.LayerFactory;
+    import sk.yoz.ycanvas.map.managers.LoaderOptimizer;
     import sk.yoz.ycanvas.map.partitions.Partition;
     import sk.yoz.ycanvas.map.partitions.PartitionFactory;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
@@ -42,6 +43,8 @@ package sk.yoz.ycanvas.map
     */
     public class YCanvasMap extends AbstractYCanvas implements IEventDispatcher
     {
+        public var loaderOptimizer:LoaderOptimizer = new LoaderOptimizer;
+        
         /**
         * Timer is started on any canvas transformation and executes render() 
         * method when complete. 
@@ -90,7 +93,7 @@ package sk.yoz.ycanvas.map
             
             super(getViewPort());
             
-            partitionFactory = new PartitionFactory(config, this);
+            partitionFactory = new PartitionFactory(config, this, loaderOptimizer);
             layerFactory = new LayerFactory(config, partitionFactory);
             center = new Point(transformation.centerX, transformation.centerY);
             scale = transformation.scale;
@@ -270,6 +273,13 @@ package sk.yoz.ycanvas.map
                 mapLayer.removeChildren();
                 removeMapLayer(mapLayer);
             }
+            
+            timer.removeEventListener(TimerEvent.TIMER_COMPLETE, onTimerComplete);
+            timer.stop();
+            timer = null;
+            
+            loaderOptimizer.dispose();
+            loaderOptimizer = null;
             
             super.dispose();
         }

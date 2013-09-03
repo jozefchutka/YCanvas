@@ -4,15 +4,17 @@ package sk.yoz.ycanvas.map.demo.partition
     
     import sk.yoz.ycanvas.interfaces.ILayer;
     import sk.yoz.ycanvas.map.demo.utils.BingMapsUtils;
+    import sk.yoz.ycanvas.map.managers.LoaderOptimizer;
     import sk.yoz.ycanvas.map.partitions.Partition;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
     
     public class CustomPartition extends Partition
     {
         public function CustomPartition(x:int, y:int, layer:ILayer, 
-            config:MapConfig, dispatcher:IEventDispatcher)
+            config:MapConfig, dispatcher:IEventDispatcher, 
+            loaderOptimizer:LoaderOptimizer)
         {
-            super(x, y, layer, config, dispatcher);
+            super(x, y, layer, config, dispatcher, loaderOptimizer);
         }
         
         override protected function get url():String

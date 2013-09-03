@@ -3,6 +3,8 @@ package sk.yoz.ycanvas.map.demo
     import sk.yoz.ycanvas.map.YCanvasMap;
     import sk.yoz.ycanvas.map.demo.mock.Maps;
     import sk.yoz.ycanvas.map.events.CanvasEvent;
+    import sk.yoz.ycanvas.map.managers.LoaderOptimizer;
+    import sk.yoz.ycanvas.map.valueObjects.MapConfig;
     import sk.yoz.ycanvas.map.valueObjects.Transformation;
 
     /**
@@ -15,7 +17,7 @@ package sk.yoz.ycanvas.map.demo
         
         private var mapMain:YCanvasMap;
         
-        public function MapHelperOverlay(mapMain:YCanvasMap)
+        public function MapHelperOverlay(loaderOptimizer:LoaderOptimizer, mapMain:YCanvasMap)
         {
             this.mapMain = mapMain;
             
@@ -25,7 +27,10 @@ package sk.yoz.ycanvas.map.demo
             transformation.scale = mapMain.scale;
             transformation.rotation = mapMain.rotation;
             
-            map = new YCanvasMap(Maps.ARCGIS_REFERENCE, transformation, 0, 1);
+            var config:MapConfig = Maps.ARCGIS_REFERENCE;
+            
+            map = new YCanvasMap(config, transformation, 0, 1);
+            map.loaderOptimizer = loaderOptimizer;
             map.display.touchable = false;
             
             mapMain.addEventListener(CanvasEvent.RENDERED, sync);

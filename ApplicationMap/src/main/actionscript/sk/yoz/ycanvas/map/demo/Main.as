@@ -19,6 +19,7 @@ package sk.yoz.ycanvas.map.demo
     import sk.yoz.ycanvas.map.demo.mock.RouteRomeParis;
     import sk.yoz.ycanvas.map.display.MapStroke;
     import sk.yoz.ycanvas.map.display.Polygon;
+    import sk.yoz.ycanvas.map.managers.LoaderOptimizer;
     import sk.yoz.ycanvas.map.utils.OptimizedPointsUtils;
     import sk.yoz.ycanvas.map.valueObjects.OptimizedPoints;
     
@@ -62,6 +63,7 @@ package sk.yoz.ycanvas.map.demo
         private var routeNewYorkWashingtonStroke:MapStroke;
         private var areaCzechRepublicPolygon:Polygon;
         private var citiesMarkers:Vector.<CityMarker>;
+        private var loaderOptimizer:LoaderOptimizer;
         
         public function Main()
         {
@@ -116,12 +118,14 @@ package sk.yoz.ycanvas.map.demo
         
         private function createMaps():void
         {
-            mapMain = new MapHelperMain();
+            loaderOptimizer = new LoaderOptimizer;
+            
+            mapMain = new MapHelperMain(loaderOptimizer);
             mapMain.map.display.addEventListener(TouchEvent.TOUCH, onMapMainTouch);
             mapContainer.addChild(mapMain.map.display);
             mapMain.map.display.invalidateStarlingViewPort();
             
-            mapSmall = new MapHelperSmall(mapMain.map);
+            mapSmall = new MapHelperSmall(loaderOptimizer, mapMain.map);
             mapContainer.addChild(mapSmall.map.display);
             mapSmall.map.display.invalidateStarlingViewPort();
             
@@ -151,6 +155,9 @@ package sk.yoz.ycanvas.map.demo
                 mapSmall.dispose();
                 mapSmall = null;
             }
+            
+            loaderOptimizer.dispose();
+            loaderOptimizer = null;
         }
         
         private function disposeMapOverlay():void
@@ -426,7 +433,7 @@ package sk.yoz.ycanvas.map.demo
         {
             if(showOverlayCheck.isSelected)
             {
-                mapOverlay = new MapHelperOverlay(mapMain.map);
+                mapOverlay = new MapHelperOverlay(loaderOptimizer, mapMain.map);
                 mapContainer.addChildAt(mapOverlay.map.display, mapContainer.getChildIndex(mapMain.map.display) + 1);
                 mapMain.map.display.invalidateStarlingViewPort();
                 resize();

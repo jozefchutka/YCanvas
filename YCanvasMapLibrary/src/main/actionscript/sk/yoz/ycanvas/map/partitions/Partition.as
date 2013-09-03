@@ -17,6 +17,7 @@ package sk.yoz.ycanvas.map.partitions
     
     import sk.yoz.ycanvas.interfaces.ILayer;
     import sk.yoz.ycanvas.map.events.PartitionEvent;
+    import sk.yoz.ycanvas.map.managers.LoaderOptimizer;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
     import sk.yoz.ycanvas.starling.interfaces.IPartitionStarling;
     
@@ -42,15 +43,17 @@ package sk.yoz.ycanvas.map.partitions
         private var error:Boolean;
         private var loader:Loader;
         private var tween:TweenNano;
+        private var loaderOptimizer:LoaderOptimizer;
         
         public function Partition(x:int, y:int, layer:ILayer, config:MapConfig,
-            dispatcher:IEventDispatcher)
+            dispatcher:IEventDispatcher, loaderOptimizer:LoaderOptimizer)
         {
             _x = x;
             _y = y;
             _layer = layer;
             _config = config;
             this.dispatcher = dispatcher;
+            this.loaderOptimizer = loaderOptimizer;
             
             validateEmptyTexture();
             
@@ -183,7 +186,6 @@ package sk.yoz.ycanvas.map.partitions
                 var texture:Texture = bitmapData 
                     ? Texture.fromBitmapData(bitmapData, false) : EMPTY_TEXTURE;
                 _content.texture = texture;
-                _content.readjustSize();
             }
             catch(error:Error)
             {
@@ -223,8 +225,7 @@ package sk.yoz.ycanvas.map.partitions
             var context:LoaderContext = new LoaderContext(true);
             context.imageDecodingPolicy = ImageDecodingPolicy.ON_LOAD;
             
-            loader = new Loader;
-            loader.load(new URLRequest(url), context);
+            loader = loaderOptimizer.load(new URLRequest(url), context);
             
             var loaderInfo:LoaderInfo = loader.contentLoaderInfo;
             loaderInfo.addEventListener(Event.COMPLETE, onLoaderComplete, false, 0, true);
@@ -234,33 +235,19 @@ package sk.yoz.ycanvas.map.partitions
         /**
         * Cancels loading.
         */
-        public function stopLoading(cancelRequest:Boolean = true):void
+        public function stopLoading():void
         {
             if(!loading)
                 return;
             
-            if(cancelRequest)
-            {
-                try
-                {
-                    loader.close();
-                }
-                catch(error:Error){}
-                
-                try
-                {
-                    loader.unload();
-                }
-                catch(error:Error){}
-                
-            }
-            
-            var loaderInfo:LoaderInfo = loader.loaderInfo;
+            var loaderInfo:LoaderInfo = loader.contentLoaderInfo;
             if(loaderInfo)
             {
                 loaderInfo.removeEventListener(Event.COMPLETE, onLoaderComplete, false);
                 loaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onLoaderError, false);
             }
+            
+            loaderOptimizer.release(loader);
             loader = null;
         }
         
@@ -277,7 +264,7 @@ package sk.yoz.ycanvas.map.partitions
         */
         public function dispose():void
         {
-            stopLoading(true);
+            stopLoading();
             disposeTween();
             disposeBitmapData();
             disposeTexture();
@@ -292,7 +279,6 @@ package sk.yoz.ycanvas.map.partitions
             if(!bitmapData)
                 return;
             
-            bitmapData.dispose();
             _bitmapData = null;
         }
         
@@ -304,12 +290,6 @@ package sk.yoz.ycanvas.map.partitions
             if(!content || !_content.texture 
                 || _content.texture == EMPTY_TEXTURE)
                 return;
-            
-            try
-            {
-                _content.texture.base.dispose();
-            }
-            catch(error:Error){}
             
             _content.texture.dispose();
         }
@@ -354,9 +334,9 @@ package sk.yoz.ycanvas.map.partitions
         {
             var loaderInfo:LoaderInfo = LoaderInfo(event.target);
             bitmapData = Bitmap(loaderInfo.content).bitmapData;
-            stopLoading(false);
+            stopLoading();
             tween = TweenNano.to(content, .5, {alpha:1,
-                onComplete:disposeTween});
+                onComplete:onRevealComplete});
             
             var type:String = PartitionEvent.LOADED;
             dispatcher.dispatchEvent(new PartitionEvent(type, this));
@@ -370,6 +350,14 @@ package sk.yoz.ycanvas.map.partitions
             error = true;
             bitmapData = null;
             stopLoading();
+        }
+        
+        /**
+        * Listener is invoked when reveal tween is complete.
+        */
+        private function onRevealComplete():void
+        {
+            disposeTween();
         }
     }
 }
