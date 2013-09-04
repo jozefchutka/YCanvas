@@ -2,13 +2,13 @@ package sk.yoz.ycanvas.map.demo
 {
     import flash.geom.Point;
     
+    import sk.yoz.net.LoaderOptimizer;
     import sk.yoz.ycanvas.map.YCanvasMap;
     import sk.yoz.ycanvas.map.demo.mock.Maps;
     import sk.yoz.ycanvas.map.demo.partition.CustomPartitionFactory;
     import sk.yoz.ycanvas.map.display.MapDisplay;
     import sk.yoz.ycanvas.map.events.CanvasEvent;
     import sk.yoz.ycanvas.map.layers.LayerFactory;
-    import sk.yoz.ycanvas.map.managers.LoaderOptimizer;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
     import sk.yoz.ycanvas.map.valueObjects.Transformation;
     

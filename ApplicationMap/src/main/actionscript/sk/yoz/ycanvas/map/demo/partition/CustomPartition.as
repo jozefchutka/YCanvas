@@ -2,9 +2,9 @@ package sk.yoz.ycanvas.map.demo.partition
 {
     import flash.events.IEventDispatcher;
     
+    import sk.yoz.net.LoaderOptimizer;
     import sk.yoz.ycanvas.interfaces.ILayer;
     import sk.yoz.ycanvas.map.demo.utils.BingMapsUtils;
-    import sk.yoz.ycanvas.map.managers.LoaderOptimizer;
     import sk.yoz.ycanvas.map.partitions.Partition;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
     

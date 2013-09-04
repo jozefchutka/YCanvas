@@ -8,7 +8,7 @@ package sk.yoz.net
     import flash.net.URLLoader;
     import flash.net.URLRequest;
     import flash.system.LoaderContext;
-    import flash.utils.Timer;
+    import flash.utils.setTimeout;
     
     public class URLRequestBufferItem extends Object
     {
@@ -47,18 +47,14 @@ package sk.yoz.net
             _ready = delay ? false : true;
             
             if(delay)
-            {
-                var timer:Timer = new Timer(delay, 1);
-                timer.addEventListener(TimerEvent.TIMER_COMPLETE, onDelay);
-                timer.start();
-            }
+                setTimeout(onDelay, delay);
         }
         
         public function get dispatcher():EventDispatcher
         {
             return loader is Loader 
-                ? Loader(loader).contentLoaderInfo 
-                : URLLoader(loader);
+                ? (loader as Loader).contentLoaderInfo 
+                : (loader as URLLoader);
         }
         
         public function get ready():Boolean
@@ -69,9 +65,9 @@ package sk.yoz.net
         public function load():void
         {
             if(loader is Loader)
-                Loader(loader).load(request, context);
-            else
-                URLLoader(loader).load(request);
+                (loader as Loader).load(request, context);
+            else if(loader is URLLoader)
+                (loader as URLLoader).load(request);
         }
         
         public function close():void
@@ -79,18 +75,15 @@ package sk.yoz.net
             try
             {
                 if(loader is Loader)
-                    Loader(loader).close();
+                    (loader as Loader).close();
                 else if(loader is URLLoader)
-                    URLLoader(loader).close();
+                    (loader as URLLoader).close();
             }
             catch(error:Error){}
         }
         
         protected function onDelay(event:TimerEvent):void
         {
-            var timer:Timer = Timer(event.currentTarget);
-            var type:String = TimerEvent.TIMER_COMPLETE;
-            timer.removeEventListener(type, onDelay);
             _ready = true;
             buffer.loadNext();
         }
@@ -98,8 +91,8 @@ package sk.yoz.net
         public static function getLoader(event:Event):EventDispatcher
         {
             return event.target is LoaderInfo
-                ? LoaderInfo(event.target).loader 
-                : URLLoader(event.target);
+                ? (event.target as LoaderInfo).loader 
+                : (event.target as URLLoader);
         }
     }
 }

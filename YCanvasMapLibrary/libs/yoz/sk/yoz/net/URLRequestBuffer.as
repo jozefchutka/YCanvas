@@ -1,16 +1,21 @@
 package sk.yoz.net
 {
-    import __AS3__.vec.Vector;
-    
     import flash.events.Event;
     import flash.events.EventDispatcher;
     import flash.events.IOErrorEvent;
-    import flash.events.TimerEvent;
     import flash.net.URLRequest;
     import flash.system.LoaderContext;
-    import flash.utils.Timer;
+    import flash.utils.setTimeout;
+    
+    import __AS3__.vec.Vector;
     
     import sk.yoz.events.URLRequestBufferEvent;
+    
+    [Event(name="URLRequestBufferRequestTimeout",type="sk.yoz.events.URLRequestBufferEvent")]
+    [Event(name="URLRequestBufferWaitingRequestAdded",type="sk.yoz.events.URLRequestBufferEvent")]
+    [Event(name="URLRequestBufferWaitingRequestRemoved",type="sk.yoz.events.URLRequestBufferEvent")]
+    [Event(name="URLRequestBufferActiveRequestAdded",type="sk.yoz.events.URLRequestBufferEvent")]
+    [Event(name="URLRequestBufferActiveRequestRemoved",type="sk.yoz.events.URLRequestBufferEvent")]
     
     public class URLRequestBuffer extends EventDispatcher
     {
@@ -102,15 +107,7 @@ package sk.yoz.net
             item.load();
             activeList.push(item);
             
-            var timer:Timer = new Timer(timeout, 1);
-            timer.addEventListener(TimerEvent.TIMER_COMPLETE, 
-                function(event:TimerEvent):void
-                {
-                    EventDispatcher(event.currentTarget)
-                        .removeEventListener(event.type, arguments.callee);
-                    onTimeout(event, item.id);
-                });
-            timer.start();
+            setTimeout(onTimeout, timeout, item.id);
             
             var type:String = URLRequestBufferEvent.ACTIVE_REQUEST_ADDED;
             dispatchEvent(new URLRequestBufferEvent(type, false, false, item));
@@ -147,7 +144,7 @@ package sk.yoz.net
             loadNext();
         }
         
-        protected function onTimeout(event:TimerEvent, id:uint):void
+        protected function onTimeout(id:uint):void
         {
             var item:URLRequestBufferItem = getActiveById(id);
             if(!item)
@@ -214,7 +211,7 @@ package sk.yoz.net
             var item:URLRequestBufferItem = getActiveById(id);
             if(!item)
                 return null;
-                
+            
             removeListeners(item.dispatcher);
             item.close();
             activeList.splice(activeList.indexOf(item), 1);

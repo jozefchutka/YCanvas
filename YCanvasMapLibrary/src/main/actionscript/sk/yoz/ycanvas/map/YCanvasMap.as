@@ -8,6 +8,7 @@ package sk.yoz.ycanvas.map
     import flash.geom.Rectangle;
     import flash.utils.Timer;
     
+    import sk.yoz.net.LoaderOptimizer;
     import sk.yoz.ycanvas.AbstractYCanvas;
     import sk.yoz.ycanvas.interfaces.ILayer;
     import sk.yoz.ycanvas.interfaces.IPartition;
@@ -17,7 +18,6 @@ package sk.yoz.ycanvas.map
     import sk.yoz.ycanvas.map.events.PartitionEvent;
     import sk.yoz.ycanvas.map.layers.Layer;
     import sk.yoz.ycanvas.map.layers.LayerFactory;
-    import sk.yoz.ycanvas.map.managers.LoaderOptimizer;
     import sk.yoz.ycanvas.map.partitions.Partition;
     import sk.yoz.ycanvas.map.partitions.PartitionFactory;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;

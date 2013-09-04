@@ -10,6 +10,7 @@ package sk.yoz.ycanvas.map.demo
     import feathers.data.ListCollection;
     import feathers.themes.MetalWorksMobileTheme;
     
+    import sk.yoz.net.LoaderOptimizer;
     import sk.yoz.utils.GeoUtils;
     import sk.yoz.ycanvas.map.demo.display.CityMarker;
     import sk.yoz.ycanvas.map.demo.mock.AreaCzechRepublic;
@@ -19,7 +20,6 @@ package sk.yoz.ycanvas.map.demo
     import sk.yoz.ycanvas.map.demo.mock.RouteRomeParis;
     import sk.yoz.ycanvas.map.display.MapStroke;
     import sk.yoz.ycanvas.map.display.Polygon;
-    import sk.yoz.ycanvas.map.managers.LoaderOptimizer;
     import sk.yoz.ycanvas.map.utils.OptimizedPointsUtils;
     import sk.yoz.ycanvas.map.valueObjects.OptimizedPoints;
     

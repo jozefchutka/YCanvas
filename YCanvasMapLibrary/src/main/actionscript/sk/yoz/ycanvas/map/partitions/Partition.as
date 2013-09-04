@@ -15,9 +15,9 @@ package sk.yoz.ycanvas.map.partitions
     import flash.system.ImageDecodingPolicy;
     import flash.system.LoaderContext;
     
+    import sk.yoz.net.LoaderOptimizer;
     import sk.yoz.ycanvas.interfaces.ILayer;
     import sk.yoz.ycanvas.map.events.PartitionEvent;
-    import sk.yoz.ycanvas.map.managers.LoaderOptimizer;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
     import sk.yoz.ycanvas.starling.interfaces.IPartitionStarling;
     
@@ -228,8 +228,8 @@ package sk.yoz.ycanvas.map.partitions
             loader = loaderOptimizer.load(new URLRequest(url), context);
             
             var loaderInfo:LoaderInfo = loader.contentLoaderInfo;
-            loaderInfo.addEventListener(Event.COMPLETE, onLoaderComplete, false, 0, true);
-            loaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onLoaderError, false, 0, true);
+            loaderInfo.addEventListener(Event.COMPLETE, onLoaderComplete, false, -1, true);
+            loaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onLoaderError, false, -1, true);
         }
         
         /**
@@ -333,7 +333,7 @@ package sk.yoz.ycanvas.map.partitions
         private function onLoaderComplete(event:Event):void
         {
             var loaderInfo:LoaderInfo = LoaderInfo(event.target);
-            bitmapData = Bitmap(loaderInfo.content).bitmapData;
+            bitmapData = Bitmap(loaderInfo.content).bitmapData; 
             stopLoading();
             tween = TweenNano.to(content, .5, {alpha:1,
                 onComplete:onRevealComplete});

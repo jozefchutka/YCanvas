@@ -1,9 +1,9 @@
 package sk.yoz.ycanvas.map.demo
 {
+    import sk.yoz.net.LoaderOptimizer;
     import sk.yoz.ycanvas.map.YCanvasMap;
     import sk.yoz.ycanvas.map.demo.mock.Maps;
     import sk.yoz.ycanvas.map.events.CanvasEvent;
-    import sk.yoz.ycanvas.map.managers.LoaderOptimizer;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
     import sk.yoz.ycanvas.map.valueObjects.Transformation;
 

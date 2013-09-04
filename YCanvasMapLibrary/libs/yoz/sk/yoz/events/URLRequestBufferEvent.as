@@ -7,15 +7,15 @@ package sk.yoz.events
     public class URLRequestBufferEvent extends Event
     {
         public static const REQUEST_TIMEOUT:String = 
-            "URLRequestBufferEventREQUEST_TIMEOUT";
+            "URLRequestBufferRequestTimeout";
         public static const WAITING_REQUEST_ADDED:String =
-            "URLRequestBufferEventWAITING_REQUEST_ADDED";
+            "URLRequestBufferWaitingRequestAdded";
         public static const WAITING_REQUEST_REMOVED:String = 
-            "URLRequestBufferEventWAITING_REQUEST_REMOVED";
+            "URLRequestBufferWaitingRequestRemoved";
         public static const ACTIVE_REQUEST_ADDED:String = 
-            "URLRequestBufferEventACTIVE_REQUEST_ADDED";
+            "URLRequestBufferActiveRequestAdded";
         public static const ACTIVE_REQUEST_REMOVED:String =
-            "URLRequestBufferEventACTIVE_REQUEST_REMOVED";
+            "URLRequestBufferActiveRequestRemoved";
         
         private var _item:URLRequestBufferItem;
         

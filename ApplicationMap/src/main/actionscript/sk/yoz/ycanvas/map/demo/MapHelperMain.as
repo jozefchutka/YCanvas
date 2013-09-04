@@ -5,6 +5,7 @@ package sk.yoz.ycanvas.map.demo
     import feathers.controls.Label;
     import feathers.core.PopUpManager;
     
+    import sk.yoz.net.LoaderOptimizer;
     import sk.yoz.utils.GeoUtils;
     import sk.yoz.ycanvas.map.YCanvasMap;
     import sk.yoz.ycanvas.map.demo.mock.Maps;
@@ -15,7 +16,6 @@ package sk.yoz.ycanvas.map.demo
     import sk.yoz.ycanvas.map.events.CanvasEvent;
     import sk.yoz.ycanvas.map.layers.LayerFactory;
     import sk.yoz.ycanvas.map.managers.AbstractTransformationManager;
-    import sk.yoz.ycanvas.map.managers.LoaderOptimizer;
     import sk.yoz.ycanvas.map.managers.MouseTransformationManager;
     import sk.yoz.ycanvas.map.managers.TouchTransformationManager;
     import sk.yoz.ycanvas.map.valueObjects.Limit;
