@@ -10,7 +10,6 @@ package sk.yoz.ycanvas.map.demo
     import feathers.data.ListCollection;
     import feathers.themes.MetalWorksMobileTheme;
     
-    import sk.yoz.net.LoaderOptimizer;
     import sk.yoz.utils.GeoUtils;
     import sk.yoz.ycanvas.map.demo.display.CityMarker;
     import sk.yoz.ycanvas.map.demo.mock.AreaCzechRepublic;
@@ -18,6 +17,7 @@ package sk.yoz.ycanvas.map.demo
     import sk.yoz.ycanvas.map.demo.mock.Maps;
     import sk.yoz.ycanvas.map.demo.mock.RouteNewYorkWashington;
     import sk.yoz.ycanvas.map.demo.mock.RouteRomeParis;
+    import sk.yoz.ycanvas.map.demo.partition.PartitionLoader;
     import sk.yoz.ycanvas.map.display.MapStroke;
     import sk.yoz.ycanvas.map.display.Polygon;
     import sk.yoz.ycanvas.map.utils.OptimizedPointsUtils;
@@ -63,7 +63,7 @@ package sk.yoz.ycanvas.map.demo
         private var routeNewYorkWashingtonStroke:MapStroke;
         private var areaCzechRepublicPolygon:Polygon;
         private var citiesMarkers:Vector.<CityMarker>;
-        private var loaderOptimizer:LoaderOptimizer;
+        private var partitionLoader:PartitionLoader;
         
         public function Main()
         {
@@ -118,14 +118,14 @@ package sk.yoz.ycanvas.map.demo
         
         private function createMaps():void
         {
-            loaderOptimizer = new LoaderOptimizer;
+            partitionLoader = new PartitionLoader;
             
-            mapMain = new MapHelperMain(loaderOptimizer);
+            mapMain = new MapHelperMain(partitionLoader);
             mapMain.map.display.addEventListener(TouchEvent.TOUCH, onMapMainTouch);
             mapContainer.addChild(mapMain.map.display);
             mapMain.map.display.invalidateStarlingViewPort();
             
-            mapSmall = new MapHelperSmall(loaderOptimizer, mapMain.map);
+            mapSmall = new MapHelperSmall(partitionLoader, mapMain.map);
             mapContainer.addChild(mapSmall.map.display);
             mapSmall.map.display.invalidateStarlingViewPort();
             
@@ -156,8 +156,8 @@ package sk.yoz.ycanvas.map.demo
                 mapSmall = null;
             }
             
-            loaderOptimizer.dispose();
-            loaderOptimizer = null;
+            partitionLoader.dispose();
+            partitionLoader = null;
         }
         
         private function disposeMapOverlay():void
@@ -433,7 +433,7 @@ package sk.yoz.ycanvas.map.demo
         {
             if(showOverlayCheck.isSelected)
             {
-                mapOverlay = new MapHelperOverlay(loaderOptimizer, mapMain.map);
+                mapOverlay = new MapHelperOverlay(partitionLoader, mapMain.map);
                 mapContainer.addChildAt(mapOverlay.map.display, mapContainer.getChildIndex(mapMain.map.display) + 1);
                 mapMain.map.display.invalidateStarlingViewPort();
                 resize();

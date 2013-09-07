@@ -2,9 +2,9 @@ package sk.yoz.ycanvas.map.demo.partition
 {
     import flash.events.IEventDispatcher;
     
-    import sk.yoz.net.LoaderOptimizer;
     import sk.yoz.ycanvas.interfaces.ILayer;
     import sk.yoz.ycanvas.map.demo.utils.BingMapsUtils;
+    import sk.yoz.ycanvas.map.partitions.IPartitionLoader;
     import sk.yoz.ycanvas.map.partitions.Partition;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
     
@@ -12,9 +12,9 @@ package sk.yoz.ycanvas.map.demo.partition
     {
         public function CustomPartition(x:int, y:int, layer:ILayer, 
             config:MapConfig, dispatcher:IEventDispatcher, 
-            loaderOptimizer:LoaderOptimizer)
+            partitionLoader:IPartitionLoader)
         {
-            super(x, y, layer, config, dispatcher, loaderOptimizer);
+            super(x, y, layer, config, dispatcher, partitionLoader);
         }
         
         override protected function get url():String

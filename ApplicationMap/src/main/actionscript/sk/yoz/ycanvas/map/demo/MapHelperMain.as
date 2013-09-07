@@ -5,11 +5,11 @@ package sk.yoz.ycanvas.map.demo
     import feathers.controls.Label;
     import feathers.core.PopUpManager;
     
-    import sk.yoz.net.LoaderOptimizer;
     import sk.yoz.utils.GeoUtils;
     import sk.yoz.ycanvas.map.YCanvasMap;
     import sk.yoz.ycanvas.map.demo.mock.Maps;
     import sk.yoz.ycanvas.map.demo.partition.CustomPartitionFactory;
+    import sk.yoz.ycanvas.map.demo.partition.PartitionLoader;
     import sk.yoz.ycanvas.map.display.MapLayer;
     import sk.yoz.ycanvas.map.display.MarkerLayer;
     import sk.yoz.ycanvas.map.display.StrokeLayer;
@@ -38,7 +38,7 @@ package sk.yoz.ycanvas.map.demo
         public var markerLayer:MarkerLayer;
         public var transformationManager:AbstractTransformationManager;
         
-        public function MapHelperMain(loaderOptimizer:LoaderOptimizer)
+        public function MapHelperMain(partitionLoader:PartitionLoader)
         {
             var transformation:Transformation = new Transformation;
             transformation.centerX = GeoUtils.lon2x(7.75);
@@ -57,11 +57,10 @@ package sk.yoz.ycanvas.map.demo
             var config:MapConfig = Maps.ARCGIS_IMAGERY;
             
             map = new YCanvasMap(config, transformation, 256);
-            map.loaderOptimizer = loaderOptimizer;
             
             //Lets customize partition factory so it creates CustomPartition
             // capable of handling bing maps
-            map.partitionFactory = new CustomPartitionFactory(config, map, map.loaderOptimizer);
+            map.partitionFactory = new CustomPartitionFactory(config, map, partitionLoader);
             map.layerFactory = new LayerFactory(config, map.partitionFactory);
             
             map.addEventListener(CanvasEvent.TRANSFORMATION_FINISHED, onMapTransformationFinished);

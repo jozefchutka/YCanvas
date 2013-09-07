@@ -2,7 +2,6 @@ package sk.yoz.ycanvas.map.demo.partition
 {
     import flash.events.IEventDispatcher;
     
-    import sk.yoz.net.LoaderOptimizer;
     import sk.yoz.ycanvas.interfaces.ILayer;
     import sk.yoz.ycanvas.interfaces.IPartition;
     import sk.yoz.ycanvas.map.partitions.PartitionFactory;
@@ -11,14 +10,14 @@ package sk.yoz.ycanvas.map.demo.partition
     public class CustomPartitionFactory extends PartitionFactory
     {
         public function CustomPartitionFactory(config:MapConfig,
-            dispatcher:IEventDispatcher, loaderOptimizer:LoaderOptimizer)
+            dispatcher:IEventDispatcher, loader:PartitionLoader)
         {
-            super(config, dispatcher, loaderOptimizer);
+            super(config, dispatcher, loader);
         }
         
         override public function create(x:int, y:int, layer:ILayer):IPartition
         {
-            return new CustomPartition(x, y, layer, config, dispatcher, loaderOptimizer);
+            return new CustomPartition(x, y, layer, config, dispatcher, loader);
         }
     }
 }

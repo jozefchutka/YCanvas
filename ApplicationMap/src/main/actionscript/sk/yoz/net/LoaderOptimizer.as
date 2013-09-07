@@ -12,7 +12,12 @@ package sk.yoz.net
     {
         private var created:Dictionary = new Dictionary(true);
         private var released:Dictionary = new Dictionary(true);
-        private var buffer:URLRequestBuffer = new URLRequestBuffer(6, 15000);
+        private var buffer:URLRequestBuffer;
+        
+        public function LoaderOptimizer(buffer:URLRequestBuffer=null)
+        {
+            this.buffer = buffer ? buffer : new URLRequestBuffer(6, 15000);
+        }
         
         public function load(request:URLRequest, context:LoaderContext):Loader
         {

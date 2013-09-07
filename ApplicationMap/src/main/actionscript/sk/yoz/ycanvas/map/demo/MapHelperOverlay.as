@@ -1,9 +1,11 @@
 package sk.yoz.ycanvas.map.demo
 {
-    import sk.yoz.net.LoaderOptimizer;
     import sk.yoz.ycanvas.map.YCanvasMap;
     import sk.yoz.ycanvas.map.demo.mock.Maps;
+    import sk.yoz.ycanvas.map.demo.partition.CustomPartitionFactory;
+    import sk.yoz.ycanvas.map.demo.partition.PartitionLoader;
     import sk.yoz.ycanvas.map.events.CanvasEvent;
+    import sk.yoz.ycanvas.map.layers.LayerFactory;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
     import sk.yoz.ycanvas.map.valueObjects.Transformation;
 
@@ -17,7 +19,7 @@ package sk.yoz.ycanvas.map.demo
         
         private var mapMain:YCanvasMap;
         
-        public function MapHelperOverlay(loaderOptimizer:LoaderOptimizer, mapMain:YCanvasMap)
+        public function MapHelperOverlay(partitionLoader:PartitionLoader, mapMain:YCanvasMap)
         {
             this.mapMain = mapMain;
             
@@ -30,8 +32,12 @@ package sk.yoz.ycanvas.map.demo
             var config:MapConfig = Maps.ARCGIS_REFERENCE;
             
             map = new YCanvasMap(config, transformation, 0, 1);
-            map.loaderOptimizer = loaderOptimizer;
             map.display.touchable = false;
+            
+            //Lets customize partition factory so it creates CustomPartition
+            // capable of handling bing maps
+            map.partitionFactory = new CustomPartitionFactory(config, map, partitionLoader);
+            map.layerFactory = new LayerFactory(config, map.partitionFactory);
             
             mapMain.addEventListener(CanvasEvent.RENDERED, sync);
             mapMain.addEventListener(CanvasEvent.CENTER_CHANGED, sync);

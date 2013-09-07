@@ -15,7 +15,6 @@ package sk.yoz.ycanvas.map.partitions
     import flash.system.ImageDecodingPolicy;
     import flash.system.LoaderContext;
     
-    import sk.yoz.net.LoaderOptimizer;
     import sk.yoz.ycanvas.interfaces.ILayer;
     import sk.yoz.ycanvas.map.events.PartitionEvent;
     import sk.yoz.ycanvas.map.valueObjects.MapConfig;
@@ -43,17 +42,17 @@ package sk.yoz.ycanvas.map.partitions
         private var error:Boolean;
         private var loader:Loader;
         private var tween:TweenNano;
-        private var loaderOptimizer:LoaderOptimizer;
+        private var partitionLoader:IPartitionLoader;
         
         public function Partition(x:int, y:int, layer:ILayer, config:MapConfig,
-            dispatcher:IEventDispatcher, loaderOptimizer:LoaderOptimizer)
+            dispatcher:IEventDispatcher, partitionLoader:IPartitionLoader)
         {
             _x = x;
             _y = y;
             _layer = layer;
             _config = config;
             this.dispatcher = dispatcher;
-            this.loaderOptimizer = loaderOptimizer;
+            this.partitionLoader = partitionLoader;
             
             validateEmptyTexture();
             
@@ -225,7 +224,17 @@ package sk.yoz.ycanvas.map.partitions
             var context:LoaderContext = new LoaderContext(true);
             context.imageDecodingPolicy = ImageDecodingPolicy.ON_LOAD;
             
-            loader = loaderOptimizer.load(new URLRequest(url), context);
+            var request:URLRequest = new URLRequest(url);
+            
+            if(partitionLoader)
+            {
+                loader = partitionLoader.load(request, context);
+            }
+            else
+            {
+                loader = new Loader;
+                loader.load(request, context);
+            }
             
             var loaderInfo:LoaderInfo = loader.contentLoaderInfo;
             loaderInfo.addEventListener(Event.COMPLETE, onLoaderComplete, false, -1, true);
@@ -247,7 +256,8 @@ package sk.yoz.ycanvas.map.partitions
                 loaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onLoaderError, false);
             }
             
-            loaderOptimizer.release(loader);
+            if(partitionLoader)
+                partitionLoader.disposeLoader(loader);
             loader = null;
         }
         

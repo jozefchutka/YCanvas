@@ -8,7 +8,6 @@ package sk.yoz.ycanvas.map
     import flash.geom.Rectangle;
     import flash.utils.Timer;
     
-    import sk.yoz.net.LoaderOptimizer;
     import sk.yoz.ycanvas.AbstractYCanvas;
     import sk.yoz.ycanvas.interfaces.ILayer;
     import sk.yoz.ycanvas.interfaces.IPartition;
@@ -43,8 +42,6 @@ package sk.yoz.ycanvas.map
     */
     public class YCanvasMap extends AbstractYCanvas implements IEventDispatcher
     {
-        public var loaderOptimizer:LoaderOptimizer = new LoaderOptimizer;
-        
         /**
         * Timer is started on any canvas transformation and executes render() 
         * method when complete. 
@@ -93,7 +90,7 @@ package sk.yoz.ycanvas.map
             
             super(getViewPort());
             
-            partitionFactory = new PartitionFactory(config, this, loaderOptimizer);
+            partitionFactory = new PartitionFactory(config, this);
             layerFactory = new LayerFactory(config, partitionFactory);
             center = new Point(transformation.centerX, transformation.centerY);
             scale = transformation.scale;
@@ -277,9 +274,6 @@ package sk.yoz.ycanvas.map
             timer.removeEventListener(TimerEvent.TIMER_COMPLETE, onTimerComplete);
             timer.stop();
             timer = null;
-            
-            loaderOptimizer.dispose();
-            loaderOptimizer = null;
             
             super.dispose();
         }

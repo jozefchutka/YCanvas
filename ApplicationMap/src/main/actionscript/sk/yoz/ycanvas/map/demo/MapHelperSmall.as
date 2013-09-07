@@ -2,10 +2,10 @@ package sk.yoz.ycanvas.map.demo
 {
     import flash.geom.Point;
     
-    import sk.yoz.net.LoaderOptimizer;
     import sk.yoz.ycanvas.map.YCanvasMap;
     import sk.yoz.ycanvas.map.demo.mock.Maps;
     import sk.yoz.ycanvas.map.demo.partition.CustomPartitionFactory;
+    import sk.yoz.ycanvas.map.demo.partition.PartitionLoader;
     import sk.yoz.ycanvas.map.display.MapDisplay;
     import sk.yoz.ycanvas.map.events.CanvasEvent;
     import sk.yoz.ycanvas.map.layers.LayerFactory;
@@ -27,7 +27,7 @@ package sk.yoz.ycanvas.map.demo
         private var background:Quad;
         private var mapMain:YCanvasMap;
         
-        public function MapHelperSmall(loaderOptimizer:LoaderOptimizer, mapMain:YCanvasMap)
+        public function MapHelperSmall(partitionLoader:PartitionLoader, mapMain:YCanvasMap)
         {
             this.mapMain = mapMain;
             
@@ -43,11 +43,10 @@ package sk.yoz.ycanvas.map.demo
             var config:MapConfig = Maps.OSM;
             
             map = new YCanvasMap(config, transformation);
-            map.loaderOptimizer = loaderOptimizer;
             
             //Lets customize partition factory so it creates CustomPartition
             // capable of handling bing maps
-            map.partitionFactory = new CustomPartitionFactory(config, map, map.loaderOptimizer);
+            map.partitionFactory = new CustomPartitionFactory(config, map, partitionLoader);
             map.layerFactory = new LayerFactory(config, map.partitionFactory);
             
             map.display.addChildAt(background, 0);
