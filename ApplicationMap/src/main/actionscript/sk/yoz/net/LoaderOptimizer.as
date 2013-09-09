@@ -51,8 +51,9 @@ package sk.yoz.net
         
         public function dispose():void
         {
-            for(var loader:Loader in created)
+            for(var key:Object in created)
             {
+                var loader:Loader = key as Loader;
                 release(loader);
                 removeLoaderListeners(loader);
                 loader.unloadAndStop(true);
@@ -78,8 +79,9 @@ package sk.yoz.net
         private function create():Loader
         {
             var loader:Loader;
-            for(loader in released)
+            for(var key:Object in released)
             {
+                loader = key as Loader;
                 delete released[loader];
                 break;
             }
