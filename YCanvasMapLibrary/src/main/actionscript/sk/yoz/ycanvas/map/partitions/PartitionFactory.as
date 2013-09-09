@@ -18,6 +18,10 @@ package sk.yoz.ycanvas.map.partitions
         public var config:MapConfig;
         
         protected var dispatcher:IEventDispatcher;
+        
+        /**
+        * For reasons related to loader usage, read IPartitionLoader docs.
+        */
         protected var loader:IPartitionLoader;
         
         public function PartitionFactory(config:MapConfig, 
