@@ -665,6 +665,8 @@ package feathers.controls.supportClasses
 			if(!typicalRenderer && !newTypicalItemIsInDataProvider && !this._typicalItemIsInDataProvider && this._typicalItemRenderer)
 			{
 				//can use reuse the old item renderer instance
+				//since it is not in the data provider, we don't need to mess
+				//with the renderer map dictionary.
 				typicalRenderer = this._typicalItemRenderer;
 				typicalRenderer.data = typicalItem;
 				typicalRenderer.index = typicalItemIndex;
@@ -675,6 +677,8 @@ package feathers.controls.supportClasses
 				if(!this._typicalItemIsInDataProvider && this._typicalItemRenderer)
 				{
 					//get rid of the old one if it isn't needed anymore
+					//since it is not in the data provider, we don't need to mess
+					//with the renderer map dictionary.
 					this.destroyRenderer(this._typicalItemRenderer);
 					this._typicalItemRenderer = null;
 				}
@@ -709,8 +713,10 @@ package feathers.controls.supportClasses
 
 		private function refreshSelection():void
 		{
-			for each(var renderer:IListItemRenderer in this._activeRenderers)
+			const rendererCount:int = this._activeRenderers.length;
+			for(var i:int = 0; i < rendererCount; i++)
 			{
+				var renderer:IListItemRenderer = this._activeRenderers[i];
 				renderer.isSelected = this._selectedIndices.getItemIndex(renderer.index) >= 0;
 			}
 		}
@@ -743,7 +749,10 @@ package feathers.controls.supportClasses
 			const temp:Vector.<IListItemRenderer> = this._inactiveRenderers;
 			this._inactiveRenderers = this._activeRenderers;
 			this._activeRenderers = temp;
-			this._activeRenderers.length = 0;
+			if(this._activeRenderers.length > 0)
+			{
+				throw new IllegalOperationError("ListDataViewPort: active renderers should be empty.");
+			}
 			if(itemRendererTypeIsInvalid)
 			{
 				this.recoverInactiveRenderers();
@@ -767,13 +776,20 @@ package feathers.controls.supportClasses
 		{
 			if(this._typicalItemRenderer && this._typicalItemIsInDataProvider)
 			{
-				//this renderer is special and doesn't need to appear in the
-				//inactive renderers cache. in fact, if it did, it could be
-				//reused for other data, which we definitely don't want!
+				//this renderer is already is use by the typical item, so we
+				//don't want to allow it to be used by other items.
 				var inactiveIndex:int = this._inactiveRenderers.indexOf(this._typicalItemRenderer);
 				if(inactiveIndex >= 0)
 				{
-					this._inactiveRenderers.splice(inactiveIndex, 1);
+					this._inactiveRenderers[inactiveIndex] = null;
+				}
+				//if refreshLayoutTypicalItem() was called, it will have already
+				//added the typical item renderer to the active renderers. if
+				//not, we need to do it here.
+				var activeRendererCount:int = this._activeRenderers.length;
+				if(activeRendererCount == 0)
+				{
+					this._activeRenderers[activeRendererCount] = this._typicalItemRenderer;
 				}
 			}
 
@@ -847,17 +863,23 @@ package feathers.controls.supportClasses
 				{
 					//the index may have changed if data was added or removed
 					renderer.index = index;
-					this._activeRenderers[activeRenderersLastIndex] = renderer;
-					activeRenderersLastIndex++;
-					var inactiveIndex:int = this._inactiveRenderers.indexOf(renderer);
-					if(inactiveIndex >= 0)
+
+					//the typical item renderer is a special case, and we will
+					//have already put it into the active renderers, so we don't
+					//want to do it again!
+					if(this._typicalItemRenderer != renderer)
 					{
-						this._inactiveRenderers[inactiveIndex] = null;
-					}
-					else if(renderer != this._typicalItemRenderer)
-					{
-						//the typicalItemRenderer may not be in the inactiveRenderers
-						throw new IllegalOperationError("This List is in an unrecoverable state.");
+						this._activeRenderers[activeRenderersLastIndex] = renderer;
+						activeRenderersLastIndex++;
+						var inactiveIndex:int = this._inactiveRenderers.indexOf(renderer);
+						if(inactiveIndex >= 0)
+						{
+							this._inactiveRenderers[inactiveIndex] = null;
+						}
+						else
+						{
+							throw new IllegalOperationError("ListDataViewPort: renderer map contains bad data.");
+						}
 					}
 					this._layoutItems[index + this._layoutIndexOffset] = DisplayObject(renderer);
 				}
@@ -904,6 +926,7 @@ package feathers.controls.supportClasses
 				var item:Object = this._unrenderedData.shift();
 				var index:int = this._dataProvider.getItemIndex(item);
 				var renderer:IListItemRenderer = this.createRenderer(item, index, true, false);
+				renderer.visible = true;
 				this._layoutItems[index + this._layoutIndexOffset] = DisplayObject(renderer);
 			}
 		}

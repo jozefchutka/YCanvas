@@ -1433,7 +1433,8 @@ package feathers.controls.renderers
 				return;
 			}
 			this._iconLoaderFactory = value;
-			this.invalidate(INVALIDATION_FLAG_STYLES);
+			this.replaceIcon(null);
+			this.invalidate(INVALIDATION_FLAG_DATA);
 		}
 
 		/**
@@ -1482,7 +1483,8 @@ package feathers.controls.renderers
 				return;
 			}
 			this._accessoryLoaderFactory = value;
-			this.invalidate(INVALIDATION_FLAG_STYLES);
+			this.replaceAccessory(null);
+			this.invalidate(INVALIDATION_FLAG_DATA);
 		}
 
 		/**
@@ -1531,7 +1533,8 @@ package feathers.controls.renderers
 				return;
 			}
 			this._accessoryLabelFactory = value;
-			this.invalidate(INVALIDATION_FLAG_STYLES);
+			this.replaceAccessory(null);
+			this.invalidate(INVALIDATION_FLAG_DATA);
 		}
 
 		/**
@@ -2018,6 +2021,9 @@ package feathers.controls.renderers
 				if(this._itemHasLabel)
 				{
 					this._label = this.itemToLabel(this._data);
+					//we don't need to invalidate because the label setter
+					//uses the same data invalidation flag that triggered this
+					//call to commitData(), so we're already properly invalid.
 				}
 				if(this._itemHasIcon)
 				{
@@ -2068,10 +2074,21 @@ package feathers.controls.renderers
 				this.currentIcon.removeFromParent(false);
 				this.currentIcon = null;
 			}
-			//we're using currentIcon above, but defaultIcon here. if you're
-			//wondering, that's intentional. the currentIcon will set to the
-			//defaultIcon elsewhere.
-			this.defaultIcon = newIcon;
+			//we're using currentIcon above, but we're emulating calling the
+			//defaultIcon setter here. the Button class sets the currentIcon
+			//elsewhere, so we want to take advantage of that exisiting code.
+
+			//we're not calling the defaultIcon setter directly because we're in
+			//the middle of validating, and it will just invalidate, which will
+			//require another validation later. we want the Button class to
+			//process the new icon immediately when we call super.draw().
+			if(this._iconSelector.defaultValue != newIcon)
+			{
+				this._iconSelector.defaultValue = newIcon;
+				//we don't need to do a full invalidation. the superclass will
+				//correctly see this flag when we call super.draw().
+				this.setInvalidationFlag(INVALIDATION_FLAG_STYLES);
+			}
 
 			if(this.iconImage)
 			{

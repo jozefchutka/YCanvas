@@ -70,14 +70,6 @@ package feathers.core
 		protected static const VALIDATION_QUEUE:ValidationQueue = new ValidationQueue();
 
 		/**
-		 * @private
-		 * Used for clipping.
-		 *
-		 * @see #clipRect
-		 */
-		protected static var currentScissorRect:Rectangle;
-
-		/**
 		 * Flag to indicate that everything is invalid and should be redrawn.
 		 */
 		public static const INVALIDATION_FLAG_ALL:String = "all";
@@ -213,7 +205,13 @@ package feathers.core
 		 * single control may have many names, and many controls can share a
 		 * single name. Names may be added, removed, or toggled on the <code>nameList</code>.
 		 *
+		 * <p>In the following example, a name is added to the name list:</p>
+		 *
+		 * <listing version="3.0">
+		 * control.nameList.add( "custom-component-name" );</listing>
+		 *
 		 * @see #name
+		 * @see http://wiki.starling-framework.org/feathers/extending-themes
 		 */
 		public function get nameList():TokenList
 		{
@@ -227,9 +225,14 @@ package feathers.core
 		 * same type of UI control. A single control may have many names, and
 		 * many controls can share a single name.
 		 *
+		 * <p>In general, the <code>name</code> property should not be set on a
+		 * Feathers component. You should add and remove names from the
+		 * <code>nameList</code> property instead.</p>
+		 *
 		 * @default ""
 		 *
 		 * @see #nameList
+		 * @see http://wiki.starling-framework.org/feathers/extending-themes
 		 */
 		override public function get name():String
 		{
@@ -254,6 +257,11 @@ package feathers.core
 		 * <code>true</code>, children cannot dispatch touch events, but hit
 		 * tests will be much faster. Easier than overriding
 		 * <code>hitTest()</code>.
+		 *
+		 * <p>In the following example, the quick hit area is enabled:</p>
+		 *
+		 * <listing version="3.0">
+		 * control.isQuickHitAreaEnabled = true;</listing>
 		 *
 		 * @default false
 		 */
@@ -284,6 +292,15 @@ package feathers.core
 		 * Determines if the component has been initialized yet. The
 		 * <code>initialize()</code> function is called one time only, when the
 		 * Feathers UI control is added to the display list for the first time.
+		 *
+		 * <p>In the following example, we check if the component is initialized
+		 * or not, and we listen for an event if it isn't:</p>
+		 *
+		 * <listing version="3.0">
+		 * if( !control.isInitialized )
+		 * {
+		 *     control.addEventListener( FeathersEventType.INITIALIZE, initializeHandler );
+		 * }</listing>
 		 */
 		public function get isInitialized():Boolean
 		{
@@ -314,6 +331,11 @@ package feathers.core
 
 		/**
 		 * Indicates whether the control is interactive or not.
+		 *
+		 * <p>In the following example, the control is disabled:</p>
+		 *
+		 * <listing version="3.0">
+		 * control.isEnabled = false;</listing>
 		 *
 		 * @default true
 		 */
@@ -374,6 +396,17 @@ package feathers.core
 		 * the dimensions before the component had validated. Call
 		 * <code>validate()</code> to tell the component to immediately redraw
 		 * and calculate an accurate values for the dimensions.</p>
+		 *
+		 * <p>In the following example, the width is set to 120 pixels:</p>
+		 *
+		 * <listing version="3.0">
+		 * control.width = 120;</listing>
+		 *
+		 * <p>In the following example, the width is cleared so that the
+		 * component can automatically measure its own width:</p>
+		 *
+		 * <listing version="3.0">
+		 * control.width = NaN;</listing>
 		 * 
 		 * @see feathers.core.IFeathersControl#validate()
 		 */
@@ -447,6 +480,17 @@ package feathers.core
 		 * the dimensions before the component had validated. Call
 		 * <code>validate()</code> to tell the component to immediately redraw
 		 * and calculate an accurate values for the dimensions.</p>
+		 *
+		 * <p>In the following example, the height is set to 120 pixels:</p>
+		 *
+		 * <listing version="3.0">
+		 * control.height = 120;</listing>
+		 *
+		 * <p>In the following example, the height is cleared so that the
+		 * component can automatically measure its own height:</p>
+		 *
+		 * <listing version="3.0">
+		 * control.height = NaN;</listing>
 		 * 
 		 * @see feathers.core.IFeathersControl#validate()
 		 */
@@ -490,6 +534,12 @@ package feathers.core
 		 * If using <code>isQuickHitAreaEnabled</code>, and the hit area's
 		 * width is smaller than this value, it will be expanded.
 		 *
+		 * <p>In the following example, the minimum width of the hit area is
+		 * set to 120 pixels:</p>
+		 *
+		 * <listing version="3.0">
+		 * control.minTouchWidth = 120;</listing>
+		 *
 		 * @default 0
 		 */
 		public function get minTouchWidth():Number
@@ -518,6 +568,12 @@ package feathers.core
 		/**
 		 * If using <code>isQuickHitAreaEnabled</code>, and the hit area's
 		 * height is smaller than this value, it will be expanded.
+		 *
+		 * <p>In the following example, the minimum height of the hit area is
+		 * set to 120 pixels:</p>
+		 *
+		 * <listing version="3.0">
+		 * control.minTouchHeight = 120;</listing>
 		 *
 		 * @default 0
 		 */
@@ -550,6 +606,12 @@ package feathers.core
 		 * is not strictly enforced in all cases. An explicit width value that
 		 * is smaller than <code>minWidth</code> may be set and will not be
 		 * affected by the minimum.
+		 *
+		 * <p>In the following example, the minimum width of the control is
+		 * set to 120 pixels:</p>
+		 *
+		 * <listing version="3.0">
+		 * control.minWidth = 120;</listing>
 		 *
 		 * @default 0
 		 */
@@ -587,6 +649,12 @@ package feathers.core
 		 * is smaller than <code>minHeight</code> may be set and will not be
 		 * affected by the minimum.
 		 *
+		 * <p>In the following example, the minimum height of the control is
+		 * set to 120 pixels:</p>
+		 *
+		 * <listing version="3.0">
+		 * control.minHeight = 120;</listing>
+		 *
 		 * @default 0
 		 */
 		public function get minHeight():Number
@@ -623,6 +691,12 @@ package feathers.core
 		 * is larger than <code>maxWidth</code> may be set and will not be
 		 * affected by the maximum.
 		 *
+		 * <p>In the following example, the maximum width of the control is
+		 * set to 120 pixels:</p>
+		 *
+		 * <listing version="3.0">
+		 * control.maxWidth = 120;</listing>
+		 *
 		 * @default Number.POSITIVE_INFINITY
 		 */
 		public function get maxWidth():Number
@@ -658,6 +732,12 @@ package feathers.core
 		 * is not strictly enforced in all cases. An explicit height value that
 		 * is larger than <code>maxHeight</code> may be set and will not be
 		 * affected by the maximum.
+		 *
+		 * <p>In the following example, the maximum width of the control is
+		 * set to 120 pixels:</p>
+		 *
+		 * <listing version="3.0">
+		 * control.maxWidth = 120;</listing>
 		 *
 		 * @default Number.POSITIVE_INFINITY
 		 */
@@ -909,6 +989,11 @@ package feathers.core
 		 * dimensions of the component or its hit area. It is simply a visual
 		 * indicator of focus.</p>
 		 *
+		 * <p>In the following example, the focus indicator skin is set:</p>
+		 *
+		 * <listing version="3.0">
+		 * control.focusIndicatorSkin = new Image( texture );</listing>
+		 *
 		 * @default null
 		 */
 		public function get focusIndicatorSkin():DisplayObject
@@ -954,7 +1039,7 @@ package feathers.core
 		 * on all sides:</p>
 		 *
 		 * <listing version="3.0">
-		 * object.padding = 2;</listing>
+		 * control.focusPadding = 2;</listing>
 		 *
 		 * @default 0
 		 *
@@ -993,7 +1078,7 @@ package feathers.core
 		 * padding on the top edge only:</p>
 		 *
 		 * <listing version="3.0">
-		 * button.focusPaddingTop = -2;</listing>
+		 * control.focusPaddingTop = -2;</listing>
 		 *
 		 * @default 0
 		 */
@@ -1029,7 +1114,7 @@ package feathers.core
 		 * padding on the right edge only:</p>
 		 *
 		 * <listing version="3.0">
-		 * button.focusPaddingRight = -2;</listing>
+		 * control.focusPaddingRight = -2;</listing>
 		 *
 		 * @default 0
 		 */
@@ -1065,7 +1150,7 @@ package feathers.core
 		 * padding on the bottom edge only:</p>
 		 *
 		 * <listing version="3.0">
-		 * button.focusPaddingBottom = -2;</listing>
+		 * control.focusPaddingBottom = -2;</listing>
 		 *
 		 * @default 0
 		 */
@@ -1101,7 +1186,7 @@ package feathers.core
 		 * padding on the right edge only:</p>
 		 *
 		 * <listing version="3.0">
-		 * button.focusPaddingLeft = -2;</listing>
+		 * control.focusPaddingLeft = -2;</listing>
 		 *
 		 * @default 0
 		 */
@@ -1272,7 +1357,7 @@ package feathers.core
 				{
 					this._delayedInvalidationFlags[flag] = true;
 				}
-				else if(flag != INVALIDATION_FLAG_ALL)
+				else if(flag != INVALIDATION_FLAG_ALL && !this._invalidationFlags.hasOwnProperty(flag))
 				{
 					this._invalidationFlags[flag] = true;
 				}
@@ -1557,6 +1642,32 @@ package feathers.core
 		protected function draw():void
 		{
 
+		}
+
+		/**
+		 * Sets an invalidation flag. This will not add the component to the
+		 * validation queue. It only sets the flag. A subclass might use
+		 * this function during <code>draw()</code> to manipulate the flags that
+		 * its superclass sees.
+		 */
+		protected function setInvalidationFlag(flag:String):void
+		{
+			if(this._invalidationFlags.hasOwnProperty(flag))
+			{
+				return;
+			}
+			this._invalidationFlags[flag] = true;
+		}
+
+		/**
+		 * Clears an invalidation flag. This will not remove the component from
+		 * the validation queue. It only clears the flag. A subclass might use
+		 * this function during <code>draw()</code> to manipulate the flags that
+		 * its superclass sees.
+		 */
+		protected function clearInvalidationFlag(flag:String):void
+		{
+			delete this._invalidationFlags[flag];
 		}
 
 		/**
