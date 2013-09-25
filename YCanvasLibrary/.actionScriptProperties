@@ -2,7 +2,7 @@
 <actionScriptProperties analytics="false" mainApplicationPath="YCanvasLibrary.as" projectUUID="e8b92a7a-8935-4114-994a-793c12ab3929" version="11">
   <compiler additionalCompilerArguments="-locale en_US -swf-version=13" autoRSLOrdering="true" copyDependentFiles="false" fteInMXComponents="false" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin" removeUnusedRSL="true" sourceFolderPath="src/main/actionscript" strict="true" targetPlayerVersion="11.2.0" useApolloConfig="false" useDebugRSLSwfs="true" useFlashSDK="true" verifyDigests="true" warn="true">
     <compilerSourcePath>
-      <compilerSourcePathEntry kind="1" linkType="1" path="libs/starling-1.4rc"/>
+      <compilerSourcePathEntry kind="1" linkType="1" path="libs/starling-1.4"/>
       <compilerSourcePathEntry kind="1" linkType="1" path="libs/yoz"/>
       <compilerSourcePathEntry kind="1" linkType="1" path="src/test/actionscript"/>
     </compilerSourcePath>
