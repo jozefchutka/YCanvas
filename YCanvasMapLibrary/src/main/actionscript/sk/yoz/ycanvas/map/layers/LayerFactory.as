@@ -47,6 +47,11 @@ package sk.yoz.ycanvas.map.layers
         
         /**
         * Converts YCanvas scale to index/level.
+        * You may want to update the zoom formula to show larger tiles for 
+        * devices with higher DPI. E.g.:
+        * var zoom:Number = 1 / scale * 2;
+        * would render the tile larger so the labels embedded in tiles are 
+        * readable.
         */
         protected function getLayerIndex(scale:Number):uint
         {
