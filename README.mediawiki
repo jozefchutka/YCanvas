@@ -12,6 +12,7 @@ YCanvasMap is a more specific extension of YCanvas providing base implementation
 === Projects using YCanvas ===
 * [http://trainlord.com Train Lord] is a live massively multi-player game (MMOG) using real world data and maps. Get it on [https://play.google.com/store/apps/details?id=air.com.trainlord.ApplicationAndroid Google play] and [https://itunes.apple.com/WebObjects/MZStore.woa/wa/viewSoftware?id=661042774&mt=8 App Store]
 * [http://onboard.yoz.sk/ onBoard] is a massive collaborative painting and drawing canvas where you can draw, sketch, paint, zoom, rotate
+* Volcans d'Auvergne on [https://play.google.com/store/apps/details?id=air.com.etamin.volcans Google Play] or [https://itunes.apple.com/fr/app/volcans-dauvergne/id928571020?mt=8 Apple Store] - Tous les volcans de la chaîne des Puys dans votre poche !
 
 === Compare ===
 See [http://ycanvas.yoz.sk/explorer Ycanvas explorer demo] ([http://ycanvas.yoz.sk/explorer/?debug=true +stats]) and compare the speed of YCanvas vs. the original implementation:
