@@ -154,7 +154,7 @@ package sk.yoz.ycanvas.map.managers
         protected function limitCenterX(centerX:Number):Number
         {
             if(centerX < limit.minCenterX)
-                return limit.minCenterY;
+                return limit.minCenterX;
             if(centerX > limit.maxCenterX)
                 return limit.maxCenterX;
             return centerX;
